@@ -1,0 +1,18 @@
+TH_SH - NIGHTFLOW : NEUTRAL
+TH_SH - NIGHTKICK : NEUTRAL
+TH_SH - NIGHTHATS : NEUTRAL
+TH_SH - NIGHTPERC : NEUTRAL
+TH_SH - NIGHTCRASH : NEUTRAL, DANGER
+TH_SH - NIGHTBASS : NEUTRAL
+TH_SH - NIGHTCHORDS : NEUTRAL
+TH_SH - NIGHTARPS : NEUTRAL
+TH_SH - NIGHTARPCRUSH : NEUTRAL
+TH_SH - NIGHTNOISE : DANGER
+
+
+Layer : TH_SH - NIGHTFLOW{Memory Crypts|Deep Crypts}
+Layer : TH_SH - NIGHTFLOW{Memory Crypts|Deep Crypts}, TH_SH - NIGHTKICK{Memory Crypts|Deep Crypts}, TH_SH - NIGHTHATS{Memory Crypts|Deep Crypts}
+Layer : TH_SH - NIGHTFLOW{Memory Crypts|Deep Crypts}, TH_SH - NIGHTKICK{Memory Crypts|Deep Crypts}, TH_SH - NIGHTHATS{Memory Crypts|Deep Crypts}, TH_SH - NIGHTPERC{Memory Crypts|Deep Crypts}, TH_SH - NIGHTCRASH{Memory Crypts|Deep Crypts}
+Layer : TH_SH - NIGHTFLOW{Memory Crypts|Deep Crypts}, TH_SH - NIGHTKICK{Memory Crypts|Deep Crypts}, TH_SH - NIGHTHATS{Memory Crypts|Deep Crypts}, TH_SH - NIGHTPERC{Memory Crypts|Deep Crypts}, TH_SH - NIGHTCRASH{Memory Crypts|Deep Crypts}, TH_SH - NIGHTBASS{Memory}, TH_SH - NIGHTCHORDS{Deep Crypts}
+Layer : TH_SH - NIGHTFLOW{Memory Crypts|Deep Crypts}, TH_SH - NIGHTKICK{Memory Crypts|Deep Crypts}, TH_SH - NIGHTHATS{Memory Crypts|Deep Crypts}, TH_SH - NIGHTPERC{Memory Crypts|Deep Crypts}, TH_SH - NIGHTCRASH{Memory Crypts|Deep Crypts}, TH_SH - NIGHTBASS{Memory}, TH_SH - NIGHTCHORDS{Deep Crypts}, TH_SH - NIGHTARPS{Memory}, TH_SH - NIGHTARPCRUSH{Deep Crypts}
+Layer : TH_SH - NIGHTFLOW{Memory Crypts|Deep Crypts}, TH_SH - NIGHTKICK{Memory Crypts|Deep Crypts}, TH_SH - NIGHTHATS{Memory Crypts|Deep Crypts}, TH_SH - NIGHTPERC{Memory Crypts|Deep Crypts}, TH_SH - NIGHTCRASH{Memory Crypts|Deep Crypts}, TH_SH - NIGHTBASS{Memory}, TH_SH - NIGHTCHORDS{Deep Crypts}, TH_SH - NIGHTARPS{Memory}, TH_SH - NIGHTARPCRUSH{Deep Crypts}, TH_SH - NIGHTNOISE : DANGER{Memory Crypts|Deep Crypts}
