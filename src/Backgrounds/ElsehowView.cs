@@ -119,8 +119,8 @@ public class ElsehowView : BackgroundScene
     }
 
     public RoomSettings.RoomEffect effect;
-    //floorlevel is from AncientUrbanView for the Buildings, this determines the exact x spacially that the towers are generated according to, yields weird results when y alters, needs to be checked out, and stuff that uses it to be altered. -Lur
-    public Color atmosphereColor = new Color(0.451f, 0.8f, 1f);
+    public Color atmosphereColor = new Color(0.274f, 0.6f, 0.819f);
+    //floorlevel is from AncientUrbanView for the Buildings
     public float floorLevel = -2000f;
     public float yShift;
 
