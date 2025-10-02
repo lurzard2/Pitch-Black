@@ -27,7 +27,7 @@ public class ElsehowView : BackgroundScene
         for (int i = 0; i < towers; i++)
         {
             // Variable X and Y Position of Towers
-            float depthRange = Random.Range(0.1f, 3f);
+            float depthRange = Random.Range(50f, 300f);
             float xplacementRange = Random.Range(-screenWidth, screenWidth);
             float ydepthRange = Random.Range(-350f, -150f);
             int visualVariation = Random.Range(0, 3);
