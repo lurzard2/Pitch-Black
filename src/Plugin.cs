@@ -94,6 +94,8 @@ class  Plugin : BaseUnityPlugin
         MachineConnector.SetRegisteredOI(MOD_ID, ModOptions.Instance);
         if (!init)
         {
+            BeaconSaveData.Initialize(self);
+
             try
             {
                 Content.Register(new LMLLCritob());
