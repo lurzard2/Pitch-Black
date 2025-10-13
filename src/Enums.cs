@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using DevInterface;
+using Menu;
 
 namespace PitchBlack;
 
@@ -94,6 +95,20 @@ public static class Enums
                 ElsehowView.Unregister();
                 ElsehowView = null;
             } 
+        }
+    }
+
+    public static class MenuSceneID
+    {
+        public static MenuScene.SceneID Slugcat_Beacon = new("Slugcat_Beacon", true);
+
+        public static void UnregisterValues()
+        {
+            if (Slugcat_Beacon != null)
+            {
+                Slugcat_Beacon.Unregister();
+                Slugcat_Beacon = null;
+            }
         }
     }
 }

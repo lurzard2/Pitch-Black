@@ -95,6 +95,7 @@ class  Plugin : BaseUnityPlugin
         if (!init)
         {
             BeaconSaveData.Initialize(self);
+            MenuSceneHooks.Apply();
 
             try
             {
@@ -149,6 +150,7 @@ class  Plugin : BaseUnityPlugin
         {
             if (mod.id == MOD_ID)
             {
+                Enums.MenuSceneID.UnregisterValues();
                 Enums.CreatureTemplateType.UnregisterValues();
                 Enums.SandboxUnlockID.UnregisterValues();
                 Enums.RoomEffectType.UnregisterValues();

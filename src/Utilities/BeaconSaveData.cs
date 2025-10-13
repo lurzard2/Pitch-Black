@@ -24,13 +24,26 @@ public static class BeaconSaveData
         }
     }
     #endregion
+    #region MetDreamer
+    private const string _metDreamerString = "MetDreamer";
+    private static bool _metDreamer = false;
+    public static bool MetDreamer
+    {
+        get => _metDreamer;
+        set
+        {
+            _metDreamer = value;
+            saveData.Set(_metDreamerString, _metDreamer);
+        }
+    }
+    #endregion
 
     public static void Initialize(RainWorld rW)
     {
         saveData = rW.progression.miscProgressionData.GetSlugBaseData();
         
-
         saveData.TryGet(_beatenBeaconString, out _beatenBeacon);
+        saveData.TryGet(_metDreamerString, out _metDreamer);
 
     }
 }
