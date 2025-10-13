@@ -14,22 +14,25 @@ public class MenuSceneHooks
 {
     public static void Apply()
     {
-        On.Menu.MenuScene.BuildWatcherScene += MenuScene_BuildWatcherScene;
+        On.Menu.MenuScene.BuildScene += MenuScene_BuildScene;
     }
 
-    // I dont know if this works
-
-    private static void MenuScene_BuildWatcherScene(On.Menu.MenuScene.orig_BuildWatcherScene orig, MenuScene self)
+    private static void MenuScene_BuildScene(On.Menu.MenuScene.orig_BuildScene orig, MenuScene self)
     {
         if (self.menu is SlugcatSelectMenu
             && self.sceneID != null
             && self.owner is SlugcatSelectMenu.SlugcatPage page)
         {
             var owner = page.slugcatNumber;
-
             if (owner == Enums.SlugcatStatsName.Beacon)
             {
-                self.sceneID = MenuScene.SceneID.Ghost_White; //Enums.MenuSceneID.Slugcat_Beacon;
+                self.sceneID = Enums.MenuSceneID.Slugcat_Beacon;
+                var markGlow = page.markGlow;
+                var markSquare = page.markSquare;
+                markGlow?.RemoveFromContainer();
+                page.markGlow = null;
+                markSquare?.RemoveFromContainer();
+                page.markSquare = null;
             }
         }
         orig(self);
