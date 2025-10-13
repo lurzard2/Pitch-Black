@@ -10,44 +10,44 @@
     },
     {
       "name": "beacon background - 6",
-      "pos": [ 492, 297 ],
-      "depth": 3.7,
-      "shader": "Normal"
-    },
-    {
-      "name": "beacon rift shadow - 5",
-      "pos": [ 602, 264 ],
-      "depth": 2.2,
-      "shader": "Normal"
-    },
-    {
-      "name": "beacon rift opening - 4",
-      "pos": [ 446, 283 ],
-      "depth": 2.0,
-      "shader": "Normal"
-    },
-    {
-      "name": "beacon rift tears - 3",
-      "pos": [ 605, 427 ],
+      "pos": [ 482, 297 ],
       "depth": 2.8,
       "shader": "Normal"
     },
     {
-      "name": "beacon ripple - 2",
-      "pos": [ 515, 265 ],
-      "depth": 1.8,
+      "name": "beacon rift shadow - 5",
+      "pos": [ 592, 264 ],
+      "depth": 2.6,
       "shader": "Normal"
     },
     {
+      "name": "beacon rift opening - 4",
+      "pos": [ 436, 283 ],
+      "depth": 2.6,
+      "shader": "Normal"
+    },
+    {
+      "name": "beacon rift tears - 3",
+      "pos": [ 595, 427 ],
+      "depth": 2.4,
+      "shader": "Normal"
+    },
+    {
+      "name": "beacon ripple - 2",
+      "pos": [ 505, 265 ],
+      "depth": 2.1,
+      "shader": "Lighten"
+    },
+    {
       "name": "beacon echo - 1",
-      "pos": [ 515, 265 ],
-      "depth": 1.8,
+      "pos": [ 505, 265 ],
+      "depth": 1.9,
       "shader": "Normal"
     },
     {
       "name": "beacon slugcat - 0",
-      "pos": [ 515, 265 ],
-      "depth": 1.8,
+      "pos": [ 505, 265 ],
+      "depth": 1.6,
       "shader": "Normal"
     }
   ],
@@ -56,6 +56,4 @@
   "mark_pos": [ 689, 583 ],
   "select_menu_pos": [ 0, 0 ],
   "slugcat_depth": 2.8
-}{
-
 }
