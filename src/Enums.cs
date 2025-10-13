@@ -100,7 +100,10 @@ public static class Enums
 
     public static class MenuSceneID
     {
+        // Slugbase registers scene jsons
         public static MenuScene.SceneID Slugcat_Beacon = new("Slugcat_Beacon", true);
+        public static MenuScene.SceneID Slugcat_Beacon_Dreamer = new("Slugcat_Beacon_Dreamer", false);
+        public static MenuScene.SceneID Dream_Beacon_Birth = new("Dream_Beacon_Birth", false);
 
         public static void UnregisterValues()
         {

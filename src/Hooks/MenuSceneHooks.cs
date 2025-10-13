@@ -26,7 +26,8 @@ public class MenuSceneHooks
             var owner = page.slugcatNumber;
             if (owner == Enums.SlugcatStatsName.Beacon)
             {
-                self.sceneID = Enums.MenuSceneID.Slugcat_Beacon;
+                self.sceneID = Enums.MenuSceneID.Slugcat_Beacon_Dreamer;
+                //self.sceneID = Enums.MenuSceneID.Slugcat_Beacon;
                 var markGlow = page.markGlow;
                 var markSquare = page.markSquare;
                 markGlow?.RemoveFromContainer();
