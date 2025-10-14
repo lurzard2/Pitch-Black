@@ -100,10 +100,18 @@ public static class Enums
 
     public static class MenuSceneID
     {
-        // Slugbase registers scene jsons
+        // Slugbase registers scene jsons but you can also do them in code
         public static MenuScene.SceneID Slugcat_Beacon = new("Slugcat_Beacon", true);
         public static MenuScene.SceneID Slugcat_Beacon_Dreamer = new("Slugcat_Beacon_Dreamer", false);
-        public static MenuScene.SceneID Dream_Beacon_Birth = new("Dream_Beacon_Birth", false);
+        // Dream - Birth
+        public static MenuScene.SceneID Dream_Birth_1 = new(nameof(Dream_Birth_1), false);
+        public static MenuScene.SceneID Dream_Birth_2 = new(nameof(Dream_Birth_2),  false);
+        public static MenuScene.SceneID Dream_Birth_3 = new(nameof(Dream_Birth_3), false);
+        public static MenuScene.SceneID Dream_Birth_4 = new(nameof(Dream_Birth_4), false);
+        public static MenuScene.SceneID Dream_Birth_5 = new(nameof(Dream_Birth_5), false);
+        public static MenuScene.SceneID Dream_Birth_6 = new(nameof(Dream_Birth_6), false);
+        public static MenuScene.SceneID Dream_Birth_7 = new(nameof(Dream_Birth_7), false);
+        public static MenuScene.SceneID Dream_Birth_8 = new(nameof(Dream_Birth_8), false);
 
         public static void UnregisterValues()
         {
@@ -111,6 +119,20 @@ public static class Enums
             {
                 Slugcat_Beacon.Unregister();
                 Slugcat_Beacon = null;
+            }
+        }
+    }
+
+    public static class SlideShowID
+    {
+        public static SlideShow.SlideShowID DreamBirth = new("DreamBirth", true);
+
+        public static void UnregisterValues()
+        {
+            if (DreamBirth != null)
+            {
+                DreamBirth.Unregister();
+                DreamBirth = null;
             }
         }
     }

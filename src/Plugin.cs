@@ -150,6 +150,7 @@ class  Plugin : BaseUnityPlugin
         {
             if (mod.id == MOD_ID)
             {
+                Enums.SlideShowID.UnregisterValues();
                 Enums.MenuSceneID.UnregisterValues();
                 Enums.CreatureTemplateType.UnregisterValues();
                 Enums.SandboxUnlockID.UnregisterValues();
