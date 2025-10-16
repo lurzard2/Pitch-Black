@@ -17,8 +17,10 @@ public static class WorldHooks
 
         if (timelineIndex != null && timelineIndex == Enums.Timeline.Beacon)
         {
-            self.regionParams.corruptionEffectColor = Colors.NightmareColor;
-            self.regionParams.corruptionEyeColor = Colors.NightmareColor;
+            self.regionParams.corruptionEffectColor = RainWorld.RippleColor;
+            self.regionParams.corruptionEyeColor = RainWorld.RippleColor;
+
+            //Todo: Add conditional for Nightmare Rot when that's being developed.
         }
     }
 }
