@@ -155,6 +155,8 @@ class  Plugin : BaseUnityPlugin
                 Enums.CreatureTemplateType.UnregisterValues();
                 Enums.SandboxUnlockID.UnregisterValues();
                 Enums.RoomEffectType.UnregisterValues();
+                Enums.PlacedObjectType.UnregisterValues();
+                Enums.GhostID.UnregisterVaues();
                 
                 // Remove creatures from CreatureUnlockList
                 if (MultiplayerUnlocks.CreatureUnlockList.Contains(Enums.SandboxUnlockID.LMiniLongLegs))

@@ -12,6 +12,21 @@ public static class Enums
         // Most code for Photo has been gutted (for now.. idk) -Lur
         public static readonly SlugcatStats.Name Photomaniac = new(nameof(Photomaniac), false);
     }
+
+    public static class GhostID
+    {
+        public static GhostWorldPresence.GhostID Dreamer;
+
+        public static void UnregisterVaues()
+        {
+            if (Dreamer != null)
+            {
+                Dreamer.Unregister();
+                Dreamer = null;
+            }
+        }
+    }
+
     public static class Timeline
     {
         public static readonly SlugcatStats.Timeline Beacon = new("Beacon", false);
@@ -98,6 +113,20 @@ public static class Enums
         }
     }
 
+    public static class PlacedObjectType
+    {
+        public static PlacedObject.Type DreamerSpot = new("DreamerSpot", true);
+
+        public static void UnregisterValues()
+        {
+            if (DreamerSpot != null)
+            {
+                DreamerSpot.Unregister();
+                DreamerSpot = null;
+            }
+        }
+    }
+
     public static class MenuSceneID
     {
         // Slugbase registers scene jsons but you can also do them in code
@@ -120,6 +149,50 @@ public static class Enums
                 Slugcat_Beacon.Unregister();
                 Slugcat_Beacon = null;
             }
+
+            #region Dream Birth IDs
+            if (Dream_Birth_1 != null)
+            {
+                Dream_Birth_1.Unregister();
+                Dream_Birth_1 = null;
+            }
+            if (Dream_Birth_2 != null)
+            {
+                Dream_Birth_2.Unregister();
+                Dream_Birth_2 = null;
+            }
+            if (Dream_Birth_3 != null)
+            {
+                Dream_Birth_3.Unregister();
+                Dream_Birth_3 = null;
+            }
+            if (Dream_Birth_4 != null)
+            {
+                Dream_Birth_4.Unregister();
+                Dream_Birth_4 = null;
+            }
+            if (Dream_Birth_5 != null)
+            {
+                Dream_Birth_5.Unregister();
+                Dream_Birth_5 = null;
+            }
+            if (Dream_Birth_6 != null)
+            {
+                Dream_Birth_6.Unregister();
+                Dream_Birth_6 = null;
+            }
+            if (Dream_Birth_7 != null)
+            { 
+                Dream_Birth_7.Unregister();
+                Dream_Birth_7 = null;
+            }
+            if (Dream_Birth_8 != null)
+            {
+                Dream_Birth_8.Unregister();
+                Dream_Birth_8 = null;
+            }
+            #endregion
+
         }
     }
 
