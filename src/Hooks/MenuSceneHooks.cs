@@ -35,7 +35,7 @@ public class MenuSceneHooks
             var owner = page.slugcatNumber;
             if (owner == Enums.SlugcatStatsName.Beacon)
             {
-                self.sceneID = Enums.MenuSceneID.Slugcat_Beacon;
+                self.sceneID = Enums.MenuSceneID.Slugcat_Spawn;
                 var markGlow = page.markGlow;
                 var markSquare = page.markSquare;
                 markGlow?.RemoveFromContainer();
@@ -44,7 +44,7 @@ public class MenuSceneHooks
                 page.markSquare = null;
             }
         }
-        //BuildPBScene(self);
+        BuildPBScene(self);
         orig(self);
     }
 

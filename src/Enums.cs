@@ -132,6 +132,7 @@ public static class Enums
         // Slugbase registers scene jsons but you can also do them in code
         public static MenuScene.SceneID Slugcat_Beacon = new("Slugcat_Beacon", true);
         public static MenuScene.SceneID Slugcat_Beacon_Dreamer = new("Slugcat_Beacon_Dreamer", false);
+        public static MenuScene.SceneID Slugcat_Spawn = new("Slugcat_Spawn", false);
         // Dream - Birth
         public static MenuScene.SceneID Dream_Birth_1 = new(nameof(Dream_Birth_1), false);
         public static MenuScene.SceneID Dream_Birth_2 = new(nameof(Dream_Birth_2),  false);
@@ -149,50 +150,6 @@ public static class Enums
                 Slugcat_Beacon.Unregister();
                 Slugcat_Beacon = null;
             }
-
-            #region Dream Birth IDs
-            if (Dream_Birth_1 != null)
-            {
-                Dream_Birth_1.Unregister();
-                Dream_Birth_1 = null;
-            }
-            if (Dream_Birth_2 != null)
-            {
-                Dream_Birth_2.Unregister();
-                Dream_Birth_2 = null;
-            }
-            if (Dream_Birth_3 != null)
-            {
-                Dream_Birth_3.Unregister();
-                Dream_Birth_3 = null;
-            }
-            if (Dream_Birth_4 != null)
-            {
-                Dream_Birth_4.Unregister();
-                Dream_Birth_4 = null;
-            }
-            if (Dream_Birth_5 != null)
-            {
-                Dream_Birth_5.Unregister();
-                Dream_Birth_5 = null;
-            }
-            if (Dream_Birth_6 != null)
-            {
-                Dream_Birth_6.Unregister();
-                Dream_Birth_6 = null;
-            }
-            if (Dream_Birth_7 != null)
-            { 
-                Dream_Birth_7.Unregister();
-                Dream_Birth_7 = null;
-            }
-            if (Dream_Birth_8 != null)
-            {
-                Dream_Birth_8.Unregister();
-                Dream_Birth_8 = null;
-            }
-            #endregion
-
         }
     }
 
