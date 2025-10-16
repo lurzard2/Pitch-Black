@@ -1,17 +1,14 @@
 ﻿using SlugBase.SaveData;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PitchBlack;
 
+// I'm unsure if this entirely works
 public static class BeaconSaveData
 {
     private static SlugBaseSaveData saveData;
 
-    #region BeatenBeacon
     private const string _beatenBeaconString = "BeatenBeacon";
     private static bool _beatenBeacon = false;
     public static bool BeatenBeacon
@@ -23,28 +20,26 @@ public static class BeaconSaveData
             saveData.Set(_beatenBeaconString, _beatenBeacon);
         }
     }
-    #endregion
-    #region MetDreamer
-    private const string _metDreamerString = "MetDreamer";
-    private static bool _metDreamer = false;
-    public static bool MetDreamer
-    {
-        get => _metDreamer;
-        set
-        {
-            _metDreamer = value;
-            saveData.Set(_metDreamerString, _metDreamer);
-        }
-    }
-    #endregion
 
     public static void Initialize(RainWorld rW)
     {
         saveData = rW.progression.miscProgressionData.GetSlugBaseData();
-        
+        // Ending tracking
         saveData.TryGet(_beatenBeaconString, out _beatenBeacon);
-        saveData.TryGet(_metDreamerString, out _metDreamer);
-
     }
-}
 
+    public static bool MetDreamer(this SaveState save)
+    {
+        return save.deathPersistentSaveData.GetSlugBaseData().TryGet("MetDreamer", out bool metDreamer) && metDreamer;
+    }
+    
+    public static List<int> DreamerEncounters(this SaveState save)
+    {
+        return save.deathPersistentSaveData.GetSlugBaseData().TryGet("DreamerEncounters", out List<int> dreamerEncounters) ? dreamerEncounters : [];
+    }
+
+    //public static bool CanUseThanatosis(this SaveState save)
+    //{
+    //    return save.deathPersistentSaveData.GetSlugBaseData().TryGet("CanUseThanatosis", out bool _canUseThanatosis) && _canUseThanatosis;
+    //}
+}
