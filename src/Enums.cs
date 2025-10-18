@@ -166,4 +166,57 @@ public static class Enums
             }
         }
     }
+
+    // These apparently HAVE to be registered to play ingame. -Lur
+    public static class SoundID
+    {
+        public static global::SoundID Player_Activated_Thanatosis;
+        public static global::SoundID Player_Deactivated_Thanatosis;
+        public static global::SoundID Player_Deactivated_Thanatosis_From_Stun;
+        public static global::SoundID Player_Died_From_Thanatosis;
+        public static global::SoundID Player_Revived;
+        public static global::SoundID Thanatosis_Drowning_LOOP;
+        public static void RegisterValues()
+        {
+            Player_Activated_Thanatosis = new global::SoundID("Player_Activated_Thanatosis", true);
+            Player_Deactivated_Thanatosis = new global::SoundID("Player_Deactivated_Thanatosis", true);
+            Player_Deactivated_Thanatosis_From_Stun = new global::SoundID("Player_Deactivated_Thanatosis_From_Stun", true);
+            Player_Died_From_Thanatosis = new global::SoundID("Player_Died_From_Thanatosis", true);
+            Player_Revived = new global::SoundID("Player_Revived", true);
+            Thanatosis_Drowning_LOOP = new global::SoundID("Drowning_Thanatosis_LOOP", true);
+        }
+        public static void UnregisterValues()
+        {
+            if (Player_Activated_Thanatosis != null)
+            {
+                Player_Activated_Thanatosis.Unregister();
+                Player_Activated_Thanatosis = null;
+            }
+            if (Player_Deactivated_Thanatosis != null)
+            {
+                Player_Deactivated_Thanatosis.Unregister();
+                Player_Deactivated_Thanatosis = null;
+            }
+            if (Player_Deactivated_Thanatosis_From_Stun != null)
+            {
+                Player_Deactivated_Thanatosis_From_Stun.Unregister();
+                Player_Deactivated_Thanatosis_From_Stun = null;
+            }
+            if (Player_Died_From_Thanatosis != null)
+            {
+                Player_Died_From_Thanatosis.Unregister();
+                Player_Died_From_Thanatosis = null;
+            }
+            if (Player_Revived != null)
+            {
+                Player_Revived.Unregister();
+                Player_Revived = null;
+            }
+            if (Thanatosis_Drowning_LOOP != null)
+            {
+                Thanatosis_Drowning_LOOP.Unregister();
+                Thanatosis_Drowning_LOOP = null;
+            }
+        }
+    }
 }
