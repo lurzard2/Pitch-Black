@@ -18,7 +18,7 @@ public class BeaconCWT : ScugCWT
     public int brightSquint = 0;
     //flashbangs to recover after respawning in jollycoop
     public int coopRefund = 0;
-    //Variables for Thanatosis (in BeaconHooks.BeaconUpdate)
+    //Variables for Thanatosis (in ScugHooks.BeaconUpdate)
     public bool deathToggle; //toggle tracking
     public bool isDead; //state tracking
     public bool isDeadButDeniedDeath; //for later implementing coming back from GameOver
@@ -28,8 +28,9 @@ public class BeaconCWT : ScugCWT
     public float thanatosisLerp; //for lerping player color based on time spent in Thanatosis
     public int inputForThanatosisCounter = 0; //spec input doesn't recursively flip isDead
     public bool graspsNeedToBeReleased = false; //stops grasp-losing recursion
-    public int numberOfOscillations = 0;
     public bool spawnLeftBody = false;
+
+    public float thanatosisLimit = 480f;
 
     public BeaconCWT(Player player) : base()
     {

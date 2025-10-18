@@ -26,6 +26,10 @@ class  Plugin : BaseUnityPlugin
 
     private bool init = false;
     public static ManualLogSource logger;
+
+    // Thanatosis values to be moved to savedata
+    public static float testingThanatosisRequirement = 1f;
+    public static bool testingThanatosis = true;
     
     // CWTs
     public static readonly ConditionalWeakTable<Player, ScugCWT> scugCWT = new();
@@ -94,7 +98,9 @@ class  Plugin : BaseUnityPlugin
         MachineConnector.SetRegisteredOI(MOD_ID, ModOptions.Instance);
         if (!init)
         {
-            BeaconSaveData.Initialize(self);
+            Enums.SoundID.RegisterValues();
+
+            //BeaconSaveData.Initialize(self);
             MenuSceneHooks.Apply();
 
             try
@@ -157,6 +163,7 @@ class  Plugin : BaseUnityPlugin
                 Enums.RoomEffectType.UnregisterValues();
                 Enums.PlacedObjectType.UnregisterValues();
                 Enums.GhostID.UnregisterVaues();
+                Enums.SoundID.UnregisterValues();
                 
                 // Remove creatures from CreatureUnlockList
                 if (MultiplayerUnlocks.CreatureUnlockList.Contains(Enums.SandboxUnlockID.LMiniLongLegs))

@@ -132,15 +132,36 @@ public static class ScugGraphics
                 Color color = PlayerGraphics.SlugcatColor(self.CharacterForColor);
                 Color skinColor = new Color(color.r, color.g, color.b);
                 Color eyeColor = new Color(color.r, color.g, color.b);
+                Color starveColor = new Color(color.r, color.g, color.b);
                 
                 int flares = bCWT.storage.storedFlares.Count;
                 // Overrite colors with these
                 skinColor = Color.Lerp(Colors.BeaconDefaultColor, Colors.BeaconFullColor, flares / (float)4);
                 eyeColor = Colors.BeaconEyeColor;
+                starveColor = Color.Lerp(skinColor, Color.gray, 0.4f);
 
                 // Assign to an updating field
-                bCWT.currentSkinColor = skinColor;
-                bCWT.currentEyeColor = eyeColor;
+                if (bCWT.isDead || bCWT.thanatosisCounter > 0)
+                {
+                    if (Plugin.testingThanatosisRequirement >= 3f)
+                    {
+                        // Rot appearance
+                        bCWT.currentSkinColor = Color.Lerp(skinColor, Colors.playerPaletteBlack, bCWT.thanatosisLerp);
+                        bCWT.currentEyeColor = Color.Lerp(eyeColor, RainWorld.RippleColor, bCWT.thanatosisLerp);
+                    }
+                    else
+                    {
+                        // Starving appearance
+                        bCWT.currentSkinColor = Color.Lerp(skinColor, starveColor, bCWT.thanatosisLerp);
+                        bCWT.currentEyeColor = Color.Lerp(eyeColor, RainWorld.RippleColor, 0.25f);
+                    }
+                }
+                else
+                {
+                    // Iconic appearance
+                    bCWT.currentSkinColor = skinColor;
+                    bCWT.currentEyeColor = eyeColor;
+                }
                 for (int i = 0; i < sLeaser.sprites.Length; i++)
                 {
                     // eyes
@@ -150,6 +171,10 @@ public static class ScugGraphics
                     }
                     else
                     {
+                        if (bCWT.isDead)
+                        {
+                            sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName("FaceDead");
+                        }
                         sLeaser.sprites[i].color = bCWT.currentEyeColor;
                     }
                 }

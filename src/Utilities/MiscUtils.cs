@@ -30,9 +30,13 @@ public static class MiscUtils
     public static bool RegionBlindsBeacon(Room room)
     {
         string regionName = room.world.region.name;
+        string roomName = room.abstractRoom.name;
         if (regionName == "VV")
         {
-            return true;
+            if (roomName != "VV_E01")
+            {
+                return true;
+            }
         }
         // then add more conditions for the echo rooms later.
         return false;

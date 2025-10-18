@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using RWCustom;
+using SlugBase.SaveData;
 using UnityEngine;
 using static PitchBlack.Plugin;
 
@@ -12,6 +16,8 @@ public static class ScugHooks
     /// </summary>
     private static void BeaconUpdate(Player self)
     {
+        ThanatosisUpdate(self);
+
         // Check here if it's Beacon
         if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
         {
@@ -51,13 +57,236 @@ public static class ScugHooks
         }
     }
 
+    private static void ThanatosisUpdate(Player self)
+    {
+        ThanatosisDeathIntensity(self);
+
+        if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
+        {
+            // inject ability and input check here
+            if (Plugin.testingThanatosis && self.input[0].spec)
+            {
+                logger.LogDebug($"[THANATOSIS] Doing input for Thanatosis, input time: {cwt.inputForThanatosisCounter}.");
+                ToggleThanatosis(self);
+            }
+            if (!self.input[0].spec)
+            {
+                cwt.inputForThanatosisCounter = 0;
+            }
+
+            // determining actual death
+            if (cwt.thanatosisCounter >= cwt.thanatosisLimit || (cwt.isDead && self.dead) && !cwt.diedInThanatosis)
+            {
+                logger.LogDebug($"[THANATOSIS] Time limit reached. Time: {cwt.thanatosisCounter}/{cwt.thanatosisLimit}.");
+                cwt.diedInThanatosis = true;
+            }
+            else if (!cwt.diedInThanatosis)
+            {
+                cwt.thanatosisDeathBumpNeedsToPlay = false;
+            }
+            if (cwt.diedInThanatosis && !cwt.thanatosisDeathBumpNeedsToPlay && self.rippleDeathTime == 80)
+            {
+                self.room.PlaySound(Enums.SoundID.Player_Died_From_Thanatosis);
+                //self.room.PlaySound(SoundID.Gate_Rails_Collide);
+                cwt.thanatosisDeathBumpNeedsToPlay = true;
+            }
+
+            switch (cwt.isDead)
+            {
+                case true:
+                    InThanatosis(self);
+                    break;
+                case false:
+                    OutsideThanatosis(self);
+                    break;
+            }
+        }
+    }
+
+    private static void ToggleThanatosis(Player self)
+    {
+        var GotCWTData = scugCWT.TryGetValue(self, out ScugCWT c);
+        if (GotCWTData && c is BeaconCWT bCWT)
+        {
+            bCWT.inputForThanatosisCounter++;
+            if (bCWT.inputForThanatosisCounter == 24)
+            {
+                bCWT.deathToggle = bCWT.isDead;
+                bCWT.isDead = !bCWT.isDead;
+                // Toggling
+                if (bCWT.deathToggle != bCWT.isDead)
+                {
+                    logger.LogDebug($"[THANATOSIS] Toggle reached! Toggling Thanatosis: {bCWT.isDead}. Ripple Layer: {self.abstractCreature.rippleLayer}.");
+                    self.abstractCreature.rippleLayer = bCWT.isDead ? 1 : 0;
+                    self.room.PlaySound(
+                        bCWT.isDead
+                            ? Enums.SoundID.Player_Activated_Thanatosis
+                            : Enums.SoundID.Player_Deactivated_Thanatosis, self.mainBodyChunk);
+                }
+            }
+
+        }
+    }
+
+    private static void InThanatosis(Player self)
+    {
+        var GotCWTData = scugCWT.TryGetValue(self, out ScugCWT c);
+        if (GotCWTData && c is BeaconCWT cwt)
+        {
+            // Spawn a DreamSpawn
+            if (!cwt.spawnLeftBody)
+            {
+                //MiscUtils.MaterializeDreamSpawn(self.room, self.mainBodyChunk.pos, PBEnums.VoidSpawn.SpawnSource.Death);
+                cwt.spawnLeftBody = true;
+            }
+
+            // Input removing is done in IL_Player_checkInput
+
+            // Increase time
+            if (cwt.thanatosisCounter <= cwt.thanatosisLimit)
+            {
+                cwt.thanatosisCounter++;
+                if (cwt.thanatosisLerp < 0.92f)
+                {
+                    cwt.thanatosisLerp += 0.01f;
+                }
+                if (!cwt.graspsNeedToBeReleased)
+                {
+                    self.LoseAllGrasps();
+                    //DropAllFlares(self);
+                    cwt.graspsNeedToBeReleased = true;
+                }
+            }
+        }
+    }
+
+    private static void OutsideThanatosis(Player self)
+    {
+        var GotCWTData = scugCWT.TryGetValue(self, out ScugCWT c);
+        if (GotCWTData && c is BeaconCWT cwt)
+        {
+            cwt.graspsNeedToBeReleased = false;
+            cwt.spawnLeftBody = false;
+            if (cwt.thanatosisCounter > 0)
+            {
+                cwt.thanatosisCounter--;
+                if (cwt.thanatosisLerp > 0f)
+                {
+                    cwt.thanatosisLerp -= 0.01f;
+                }
+            }
+            if (cwt.thanatosisLerp < 0.01f)
+            {
+                cwt.thanatosisCounter = 0;
+                self.abstractCreature.rippleLayer = 0;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Camera effect for Thanatosis using Watcher's RippleDeath shader
+    /// </summary>
+    private static void ThanatosisDeathIntensity(Player self)
+    {
+        if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beaconCWT)
+        {
+            if (beaconCWT.isDead)
+            {
+                // Calculation made by MaxDubstep <3
+                float timeCounter = beaconCWT.thanatosisCounter; //x
+                float minKarmaSafeTime = 12 * 40f; //tc
+                float maxKarmaSafeTime = 40 * 40f; // Tc
+                float beginningIntensity = 0.4f; //l
+                float endIntensity = 0.45f; //m
+                float windUpTime = 3 * 40f; //wc
+                float rampUpTime = 3 * 40f; //Wc
+                float plateauDuration = (Plugin.testingThanatosisRequirement - 1) * (maxKarmaSafeTime - (windUpTime + rampUpTime) * 2) / 4 + minKarmaSafeTime - windUpTime - rampUpTime; //c
+                // Starting plateau
+                if (timeCounter < windUpTime)
+                {
+                    self.rippleDeathIntensity = Mathf.Sqrt(timeCounter) * beginningIntensity / Mathf.Sqrt(windUpTime);
+                }
+                // Middle of plateau
+                if ((timeCounter < windUpTime + plateauDuration) && timeCounter >= windUpTime)
+                {
+                    self.rippleDeathIntensity = (timeCounter - windUpTime) * (endIntensity - beginningIntensity) / plateauDuration + beginningIntensity;
+                }
+                // Ending DIE INTENSITY!!!!
+                if (timeCounter >= windUpTime + plateauDuration + (rampUpTime / 2))
+                {
+                    float increment = 0.008f;
+                    int mult = 4;
+                    self.rippleDeathIntensity += increment;
+                    increment += 0.008f * mult;
+                    mult += 4;
+                }
+            }
+            if ((beaconCWT.diedInThanatosis || self.dead) && self.rippleDeathIntensity < 0.12f)
+            {
+                self.rippleDeathIntensity += 0.004f;
+            }
+            if (self.rippleDeathIntensity > 0 && !beaconCWT.isDead)
+            {
+                self.rippleDeathIntensity -= 0.004f;
+            }
+        }
+    }
+
     public static void Apply()
     {
         On.SlugcatStats.SlugcatToTimeline += SlugcatStats_SlugcatToTimeline;
         On.Player.ctor += Player_ctor;
         On.Player.Update += Player_Update;
         On.SlugcatHand.EngageInMovement += SlugcatHand_EngageInMovement;
+        IL.Player.checkInput += IL_Player_checkInput;
     }
+
+    private static void IL_Player_checkInput(ILContext il)
+    {
+        ILCursor cursor = new ILCursor(il);
+        try
+        {
+            // This matches to line 104 (IL_00C8) in IL view, or in the middle of line 26 in C# view, and puts the cursor after the call instruction.
+            cursor.GotoNext(MoveType.After, i => i.MatchCall(typeof(RWInput), nameof(RWInput.PlayerInput)));
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.Emit(OpCodes.Ldloc_0);
+
+            cursor.EmitDelegate((Player.InputPackage originalInputs, Player self, int num) =>
+            {
+                // This needs a proper check for if the player is in thanatosis
+                if (Plugin.scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beaconCWT)
+                {
+                    if (beaconCWT.isDead && Plugin.testingThanatosisRequirement <= 3f)
+                    {
+                        // Create new inputs
+                        Player.InputPackage newInputs = new Player.InputPackage(self.room.game.rainWorld.options.controls[num].gamePad, self.room.game.rainWorld.options.controls[num].GetActivePreset(), 0, 0, false, false, false, false, false, originalInputs.spec);
+                        newInputs.downDiagonal = 0;
+                        newInputs.analogueDir = Vector2.zero;
+
+                        // Set animation and body mode
+                        self.animation = Player.AnimationIndex.Dead;
+                        //self.bodyMode = Player.BodyModeIndex.Dead;
+
+                        // Put new values on the stack
+                        return newInputs;
+                    }
+                    else if (beaconCWT.thanatosisLerp > 0 && !beaconCWT.diedInThanatosis && !self.dead && self.animation == Player.AnimationIndex.Dead)
+                    {
+                        self.animation = Player.AnimationIndex.DownOnFours;
+                        //self.bodyMode = Player.BodyModeIndex.Crawl;
+                    }
+                }
+                // If the prior condition is not met, just return the original inputs to the stack.
+                    return originalInputs;
+            });
+            Plugin.logger.LogDebug($"PB {nameof(IL_Player_checkInput)} applied successfully");
+        }
+        catch (Exception err)
+        {
+            Plugin.logger.LogDebug($"PB {nameof(IL_Player_checkInput)} could not match IL.\n{err}");
+        }
+    }
+
 
     /// <summary>
     /// Moves hand above head when squinting if a room is too bright
