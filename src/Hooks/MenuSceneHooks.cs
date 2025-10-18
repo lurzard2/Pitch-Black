@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static PitchBlack.BeaconSaveData;
 
 namespace PitchBlack;
 public class MenuSceneHooks
