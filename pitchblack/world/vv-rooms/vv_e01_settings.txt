@@ -1,0 +1,15 @@
+Template: NONE
+DangerType: None
+CeilingDrips: 0
+RainIntensity: 0
+RumbleIntensity: 0
+WaveSpeed: 0.5108696
+WaveLength: 1
+WaveAmplitude: 0
+SecondWaveLength: 0.1666667
+SecondWaveAmplitude: 0
+Grime: 1
+Palette: 1002
+Effects: DirtyWater-1-20-20, WaterDepth-0.0326087-28-57, SilenceWater-0.8260869-34-114, WaterViscosity-0.1630435-45-121, 
+PlacedObjects: FloatingDebris><92.19566><904.2914><50~50~705019568~0~1~0.641305~1.586957~100~1051|-280~472|474~8.559999|8.63~-1.36|-1.32~12.71|12.69~Aurora~0.3913043~0v0v0v0|0v0v0v0~0, 
+WetTerrain: OFF
