@@ -18,6 +18,32 @@ public static class ScugHooks
     {
         ThanatosisUpdate(self);
 
+        // For debugging pre-Dreamer implementation
+        bool dev = true;
+        if (dev)
+        {
+            // Max: <=1f cant move in thanatosis
+            // Max: >=2f rot apearance
+            // Whole numbers will represent # of revives
+            var state = (self.room.game.session as StoryGameSession).saveState;
+            if (!BeaconSaveData.GetCanUseThanatosis(state))
+            {
+                BeaconSaveData.SetCanUseThanatosis(state, true);
+            }
+            if (BeaconSaveData.GetMinSpiralLevel(state) == 0f)
+            {
+                BeaconSaveData.SetMinSpiralLevel(state, 1f);
+            }
+            if (BeaconSaveData.GetSpiralLevel(state) == 0f)
+            {
+                BeaconSaveData.SetSpiralLevel(state, 2f);
+            }
+            if (BeaconSaveData.GetMaxSpiralLevel(state) == 0f)
+            {
+                BeaconSaveData.SetMaxSpiralLevel(state, 2f);
+            }
+        }
+
         // Check here if it's Beacon
         if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
         {
@@ -61,10 +87,12 @@ public static class ScugHooks
     {
         ThanatosisDeathIntensity(self);
 
+        var state = (self.room.game.session as StoryGameSession).saveState;
+
         if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
         {
-            // inject ability and input check here
-            if (Plugin.testingThanatosis && self.input[0].spec)
+            // inject ability and input check here specifically
+            if (BeaconSaveData.GetCanUseThanatosis(state) && self.input[0].spec)
             {
                 logger.LogDebug($"[THANATOSIS] Doing input for Thanatosis, input time: {cwt.inputForThanatosisCounter}.");
                 ToggleThanatosis(self);
@@ -87,8 +115,12 @@ public static class ScugHooks
             if (cwt.diedInThanatosis && !cwt.thanatosisDeathBumpNeedsToPlay && self.rippleDeathTime == 80)
             {
                 self.room.PlaySound(Enums.SoundID.Player_Died_From_Thanatosis);
-                //self.room.PlaySound(SoundID.Gate_Rails_Collide);
-                cwt.thanatosisDeathBumpNeedsToPlay = true;
+                if (BeaconSaveData.GetSpiralLevel(state) > BeaconSaveData.GetMinSpiralLevel(state))
+                {
+                    BeaconSaveData.SetSpiralLevel(state, BeaconSaveData.GetSpiralLevel(state) - 1f);
+                }
+                    //self.room.PlaySound(SoundID.Gate_Rails_Collide);
+                    cwt.thanatosisDeathBumpNeedsToPlay = true;
             }
 
             switch (cwt.isDead)
@@ -188,19 +220,20 @@ public static class ScugHooks
     /// </summary>
     private static void ThanatosisDeathIntensity(Player self)
     {
-        if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beaconCWT)
+        if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
         {
-            if (beaconCWT.isDead)
+            if (cwt.isDead)
             {
                 // Calculation made by MaxDubstep <3
-                float timeCounter = beaconCWT.thanatosisCounter; //x
+                float timeCounter = cwt.thanatosisCounter; //x
                 float minKarmaSafeTime = 12 * 40f; //tc
                 float maxKarmaSafeTime = 40 * 40f; // Tc
                 float beginningIntensity = 0.4f; //l
                 float endIntensity = 0.45f; //m
                 float windUpTime = 3 * 40f; //wc
                 float rampUpTime = 3 * 40f; //Wc
-                float plateauDuration = (Plugin.testingThanatosisRequirement - 1) * (maxKarmaSafeTime - (windUpTime + rampUpTime) * 2) / 4 + minKarmaSafeTime - windUpTime - rampUpTime; //c
+                var state = (self.room.game.session as StoryGameSession).saveState;
+                float plateauDuration = (BeaconSaveData.GetSpiralLevel(state) - 1) * (maxKarmaSafeTime - (windUpTime + rampUpTime) * 2) / 4 + minKarmaSafeTime - windUpTime - rampUpTime; //c
                 // Starting plateau
                 if (timeCounter < windUpTime)
                 {
@@ -221,11 +254,11 @@ public static class ScugHooks
                     mult += 4;
                 }
             }
-            if ((beaconCWT.diedInThanatosis || self.dead) && self.rippleDeathIntensity < 0.12f)
+            if ((cwt.diedInThanatosis || self.dead) && self.rippleDeathIntensity < 0.12f)
             {
                 self.rippleDeathIntensity += 0.004f;
             }
-            if (self.rippleDeathIntensity > 0 && !beaconCWT.isDead)
+            if (self.rippleDeathIntensity > 0 && !cwt.isDead)
             {
                 self.rippleDeathIntensity -= 0.004f;
             }
@@ -256,7 +289,8 @@ public static class ScugHooks
                 // This needs a proper check for if the player is in thanatosis
                 if (Plugin.scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beaconCWT)
                 {
-                    if (beaconCWT.isDead && Plugin.testingThanatosisRequirement <= 3f)
+                    var state = (self.room.game.session as StoryGameSession).saveState;
+                    if (beaconCWT.isDead && BeaconSaveData.GetMaxSpiralLevel(state) <= 1f)
                     {
                         // Create new inputs
                         Player.InputPackage newInputs = new Player.InputPackage(self.room.game.rainWorld.options.controls[num].gamePad, self.room.game.rainWorld.options.controls[num].GetActivePreset(), 0, 0, false, false, false, false, false, originalInputs.spec);
@@ -265,15 +299,15 @@ public static class ScugHooks
 
                         // Set animation and body mode
                         self.animation = Player.AnimationIndex.Dead;
-                        //self.bodyMode = Player.BodyModeIndex.Dead;
+                        self.bodyMode = Player.BodyModeIndex.Dead;
 
                         // Put new values on the stack
                         return newInputs;
                     }
-                    else if (beaconCWT.thanatosisLerp > 0 && !beaconCWT.diedInThanatosis && !self.dead && self.animation == Player.AnimationIndex.Dead)
+                    else if (beaconCWT.thanatosisLerp > 0 && !beaconCWT.diedInThanatosis && !self.dead && self.bodyMode == Player.BodyModeIndex.Dead)
                     {
-                        self.animation = Player.AnimationIndex.DownOnFours;
-                        //self.bodyMode = Player.BodyModeIndex.Crawl;
+                        //self.animation = Player.AnimationIndex.DownOnFours;
+                        self.bodyMode = Player.BodyModeIndex.Crawl;
                     }
                 }
                 // If the prior condition is not met, just return the original inputs to the stack.

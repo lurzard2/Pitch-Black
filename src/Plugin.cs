@@ -28,8 +28,8 @@ class  Plugin : BaseUnityPlugin
     public static ManualLogSource logger;
 
     // Thanatosis values to be moved to savedata
-    public static float testingThanatosisRequirement = 1f;
-    public static bool testingThanatosis = true;
+    //public static float testingThanatosisRequirement = 1f;
+    //public static bool testingThanatosis = true;
     
     // CWTs
     public static readonly ConditionalWeakTable<Player, ScugCWT> scugCWT = new();

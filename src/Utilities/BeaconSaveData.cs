@@ -1,57 +1,32 @@
-﻿#if false
-using SlugBase.SaveData;
+﻿using SlugBase.SaveData;
 using System;
 using System.Collections.Generic;
 
 namespace PitchBlack;
-
-// I'm unsure if this entirely works
 public static class BeaconSaveData
 {
-    public static SlugBaseSaveData slugBaseSaveData;
-    private static SaveState save;
+    // Dreamer needs this to spawn
+    public static string dreamerEncounters = "DreamerEncounters";
+    public static List<int> GetDreamerEncounters(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(dreamerEncounters, out List<int> encounters) ? encounters : null;
+    //public static void SetDreamerEncounters(this SaveState save, List<int> value) => save.deathPersistentSaveData.GetSlugBaseData().Set(dreamerEncounters, value);
 
-    private const string _beatenBeaconString = "BeatenBeacon";
-    private static bool _beatenBeacon = false;
-    public static bool BeatenBeacon
-    {
-        get => _beatenBeacon;
-        set
-        {
-            _beatenBeacon = value;
-            slugBaseSaveData.Set(_beatenBeaconString, _beatenBeacon);
-        }
-    }
-    private const string _canUseThanatosisString = "CanUseThanatosis";
-    private static bool _canUseThanatosis = false;
-    public static bool CanUseThanatosis
-    {
-        get => _canUseThanatosis;
-        set
-        {
-            _canUseThanatosis = value;
-            slugBaseSaveData.Set(_canUseThanatosisString, _canUseThanatosis);
-        }
-    }
+    // ThanatosisUpdate() ability check
+    public static string canUseThanatosis = "CanUseThanatosis";
+    public static bool GetCanUseThanatosis(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(canUseThanatosis, out bool thanatosis) && thanatosis;
+    public static void SetCanUseThanatosis(this SaveState save, bool value) => save.deathPersistentSaveData.GetSlugBaseData().Set(canUseThanatosis, value);
 
-    public static void Initialize(RainWorld rW)
-    {
-        slugBaseSaveData = rW.progression.miscProgressionData.GetSlugBaseData();
+    public static string hasUsedThanatosis = "HasUsedThanatosis";
 
-        slugBaseSaveData.TryGet(_beatenBeaconString, out _beatenBeacon);
+    // Spiral
+    public static string spiralLevel = "SpiralLevel";
+    public static float GetSpiralLevel(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(spiralLevel, out float value) ? value : 0f;
+    public static void SetSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(spiralLevel, value);
 
-        save.deathPersistentSaveData.GetSlugBaseData().TryGet(_canUseThanatosisString, out _canUseThanatosis);
+    public static string minSpiralLevel = "MinSpiralLevel";
+    public static float GetMinSpiralLevel(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(minSpiralLevel, out float value) ? value : 0f;
+    public static void SetMinSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(minSpiralLevel, value);
 
-    }
-
-    public static bool MetDreamer(this SaveState save)
-    {
-        return save.deathPersistentSaveData.GetSlugBaseData().TryGet("MetDreamer", out bool metDreamer) && metDreamer;
-    }
-    
-    public static List<int> DreamerEncounters(this SaveState save)
-    {
-        return save.deathPersistentSaveData.GetSlugBaseData().TryGet("DreamerEncounters", out List<int> dreamerEncounters) ? dreamerEncounters : [];
-    }
+    public static string maxSpiralLevel = "MaxSpiralLevel";
+    public static float GetMaxSpiralLevel(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(maxSpiralLevel, out float value) ? value : 0f;
+    public static void SetMaxSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(maxSpiralLevel, value);
 }
-#endif

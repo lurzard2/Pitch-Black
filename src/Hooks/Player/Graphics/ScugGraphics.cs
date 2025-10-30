@@ -128,6 +128,8 @@ public static class ScugGraphics
         {
             if (cwt is BeaconCWT bCWT)
             {
+                var state = (self.player.room.game.session as StoryGameSession).saveState;
+
                 // "gets" slugcat color stuff to then be assigned
                 Color color = PlayerGraphics.SlugcatColor(self.CharacterForColor);
                 Color skinColor = new Color(color.r, color.g, color.b);
@@ -135,7 +137,6 @@ public static class ScugGraphics
                 Color starveColor = new Color(color.r, color.g, color.b);
                 
                 int flares = bCWT.storage.storedFlares.Count;
-                // Overrite colors with these
                 skinColor = Color.Lerp(Colors.BeaconDefaultColor, Colors.BeaconFullColor, flares / (float)4);
                 eyeColor = Colors.BeaconEyeColor;
                 starveColor = Color.Lerp(skinColor, Color.gray, 0.4f);
@@ -143,22 +144,30 @@ public static class ScugGraphics
                 // Assign to an updating field
                 if (bCWT.isDead || bCWT.thanatosisCounter > 0)
                 {
-                    if (Plugin.testingThanatosisRequirement >= 3f)
+                    if (BeaconSaveData.GetMaxSpiralLevel(state) >= 2f)
                     {
-                        // Rot appearance
                         bCWT.currentSkinColor = Color.Lerp(skinColor, Colors.playerPaletteBlack, bCWT.thanatosisLerp);
-                        bCWT.currentEyeColor = Color.Lerp(eyeColor, RainWorld.RippleColor, bCWT.thanatosisLerp);
+                        if (BeaconSaveData.GetMaxSpiralLevel(state) == 4f)
+                        {
+                            // Hybrid color
+                            bCWT.currentEyeColor = Color.Lerp(eyeColor, Colors.NightmareColor, bCWT.thanatosisLerp);
+                        }
+                        else
+                        {
+                            // Rot color
+                            bCWT.currentEyeColor = Color.Lerp(eyeColor, RainWorld.RippleColor, bCWT.thanatosisLerp);
+                        }
                     }
-                    else
+                    else if (BeaconSaveData.GetMaxSpiralLevel(state) <= 1.5f && BeaconSaveData.GetMaxSpiralLevel(state) >= 1f)
                     {
-                        // Starving appearance
+                        // Starving color
                         bCWT.currentSkinColor = Color.Lerp(skinColor, starveColor, bCWT.thanatosisLerp);
                         bCWT.currentEyeColor = Color.Lerp(eyeColor, RainWorld.RippleColor, 0.25f);
                     }
                 }
                 else
                 {
-                    // Iconic appearance
+                    // Regular color
                     bCWT.currentSkinColor = skinColor;
                     bCWT.currentEyeColor = eyeColor;
                 }

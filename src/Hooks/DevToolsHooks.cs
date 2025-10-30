@@ -36,7 +36,6 @@ public static class DevToolsHooks
         }
 
         // iM LOSING MY FUCKING MIND omg - Based on L889 for SpinningTopSpot, I just want to spawn it
-
 #if false
         for (int num2 = 0; num2 < self.roomSettings.placedObjects.Count; num2++)
         {
@@ -61,18 +60,20 @@ public static class DevToolsHooks
                         // Todo: Requires SpinningTopData equivalent to assign presence
                         //dreamerWorldPresence = new DreamerPresence(self.world, Enums.GhostID.Dreamer, self.roomSettings.placedObjects[num2].data as DreamerData).spawnIdentifier);
                         dreamerWorldPresence.ghostRoom = self.abstractRoom;
-                        if (!BeaconSaveData.DreamerEncounters(self.game.GetStorySession.saveState).Contains(dreamerWorldPresence.dreamerSpawnId))
+                        if (!BeaconSaveData.GetDreamerEncounters(self.game.GetStorySession.saveState).Contains(dreamerWorldPresence.dreamerSpawnId))
                         {
-                            //Todo: Figure out how to mark this where it works
-                            //self.spawnedDreamer = true;
-                            self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[num2], dreamerWorldPresence));
+                            dreamerPresences.Add(dreamerWorldPresence);
                         }
+                    }
+                    if (!BeaconSaveData.GetDreamerEncounters(self.game.GetStorySession.saveState).Contains(dreamerWorldPresence.dreamerSpawnId))
+                    {
+                        //this.spawnedSpinningTop = true;
+                        //this.AddObject(new SpinningTop(this, this.roomSettings.placedObjects[num11], ghostWorldPresence));
                     }
                 }
             }
         }
 #endif
-
     }
 
     // Adding effect to Pitch-Black page in Devtools Effects
