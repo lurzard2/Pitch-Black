@@ -23,4 +23,7 @@ public static class Colors
     public static readonly Color SaturatedRose = Rose * 2f;
     public static readonly Color VisibleWhite = new(.9f, .9f, .9f);
     //public static readonly Color VisibleBlack = new(.003f, .003f, .003f);
+
+    //#42cb82
+    public static readonly Color ComplementaryRose = new(66f/255f, 203f/255f, 130f/255f);
 }

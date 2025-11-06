@@ -1,12 +1,13 @@
-﻿using System;
+﻿using BepInEx;
+using BepInEx.Logging;
+using Fisobs.Core;
+using SlugBase.Features;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Security;
 using System.Security.Permissions;
-using BepInEx;
-using BepInEx.Logging;
-using Fisobs.Core;
-using SlugBase.Features;
+using UnityEngine;
 using static SlugBase.Features.FeatureTypes;
 
 // Allows access to private members
@@ -139,7 +140,20 @@ class  Plugin : BaseUnityPlugin
             if (!Futile.atlasManager.DoesContainAtlas("lmllspr"))
                 Futile.atlasManager.LoadAtlas("atlases/lmllspr");
             Futile.atlasManager.LoadAtlas("atlases/nightTerroratlas");
-            
+
+            //AssetBundle assetBundle = AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("path/to/assetbundle"));
+            string both = "ripple_both_sides";
+            string other = "ripple_other_side";
+
+            // Dreamer
+            self.Shaders["DreamerRag"] = FShader.CreateShader("dreamerrag", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerrag")).LoadAsset<Shader>("Assets/Shaders/DreamerRag.shader"), [both]);
+            self.Shaders["DreamerSkin"] = FShader.CreateShader("dreamerskin", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerskin")).LoadAsset<Shader>("Assets/Shaders/DreamerSkin.shader"), [both]);
+            self.Shaders["DreamerDistortion"] = FShader.CreateShader("dreamerdistortion", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerdistortion")).LoadAsset<Shader>("Assets/Shaders/DreamerDistortion.shader"), [both]);
+            self.Shaders["DreamerRagRipple"] = FShader.CreateShader("dreamerrag", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerrag")).LoadAsset<Shader>("Assets/Shaders/DreamerRag.shader"), [other]);
+            self.Shaders["DreamerSkinRipple"] = FShader.CreateShader("dreamerskin", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerskin")).LoadAsset<Shader>("Assets/Shaders/DreamerSkin.shader"), [other]);
+            self.Shaders["DreamerDistortionRipple"] = FShader.CreateShader("dreamerdistortion", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerdistortion")).LoadAsset<Shader>("Assets/Shaders/DreamerDistortion.shader"), [other]);
+
+
             init = true;
         }
     }
@@ -162,7 +176,6 @@ class  Plugin : BaseUnityPlugin
                 Enums.SandboxUnlockID.UnregisterValues();
                 Enums.RoomEffectType.UnregisterValues();
                 Enums.PlacedObjectType.UnregisterValues();
-                Enums.GhostID.UnregisterVaues();
                 Enums.SoundID.UnregisterValues();
                 
                 // Remove creatures from CreatureUnlockList

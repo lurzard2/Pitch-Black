@@ -13,20 +13,6 @@ public static class Enums
         public static readonly SlugcatStats.Name Photomaniac = new(nameof(Photomaniac), false);
     }
 
-    public static class GhostID
-    {
-        public static GhostWorldPresence.GhostID Dreamer;
-
-        public static void UnregisterVaues()
-        {
-            if (Dreamer != null)
-            {
-                Dreamer.Unregister();
-                Dreamer = null;
-            }
-        }
-    }
-
     public static class Timeline
     {
         public static readonly SlugcatStats.Timeline Beacon = new("Beacon", false);
@@ -216,6 +202,20 @@ public static class Enums
             {
                 Thanatosis_Drowning_LOOP.Unregister();
                 Thanatosis_Drowning_LOOP = null;
+            }
+        }
+    }
+
+    public class ConversationID
+    {
+        public static Conversation.ID Dreamer_1 = new(nameof(Dreamer_1), true);
+
+        public static void UnregisterValues()
+        {
+            if (Dreamer_1 != null)
+            {
+                Dreamer_1.Unregister();
+                Dreamer_1 = null;
             }
         }
     }

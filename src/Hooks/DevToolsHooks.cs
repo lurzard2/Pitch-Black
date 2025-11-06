@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace PitchBlack;
 
-public static class DevToolsHooks
+public class DevToolsHooks
 {
     /// <summary>
     /// Effects and such need to be added to the 3 hooks
@@ -13,8 +13,8 @@ public static class DevToolsHooks
     /// - Room.NowViewed for backgrounds to apply a fix
     /// - RoomSettingsPage.DevEffectGetCategoryFromEffectType to add to correct catagory
     /// </summary> -Lur
-    
-    public static List<GhostWorldPresence> dreamerPresences = new List<GhostWorldPresence>();
+
+    public static bool spawnedDreamer;
 
     public static void Apply()
     {
@@ -22,58 +22,35 @@ public static class DevToolsHooks
         On.Room.Loaded += Room_Loaded;
         On.DevInterface.RoomSettingsPage.DevEffectGetCategoryFromEffectType += RoomSettingsPage_DevEffectGetCategoryFromEffectType;
     }
-    
+
     // Actually adds our effects' objects -Lur
     private static void Room_Loaded(On.Room.orig_Loaded orig, Room self)
     {
         orig(self);
-        for (int num = 0; num < self.roomSettings.effects.Count; num++)
+        for (int effects = 0; effects < self.roomSettings.effects.Count; effects++)
         {
-            if (self.roomSettings.effects[num].type == Enums.RoomEffectType.ElsehowView)
+            if (self.roomSettings.effects[effects].type == Enums.RoomEffectType.ElsehowView)
             {
-                self.AddObject(new ElsehowView(self, self.roomSettings.effects[num]));
+                self.AddObject(new ElsehowView(self, self.roomSettings.effects[effects]));
             }
         }
 
-        // iM LOSING MY FUCKING MIND omg - Based on L889 for SpinningTopSpot, I just want to spawn it
-#if false
-        for (int num2 = 0; num2 < self.roomSettings.placedObjects.Count; num2++)
+        // iM LOSING MY FUCKING MIND omg
+        for (int objects = 0; objects < self.roomSettings.placedObjects.Count; objects++)
         {
-            if ((num2 != 1 || !self.roomSettings.placedObjects[num2].deactivatedByWarpFilter)
-                && (num2 != 2 || self.roomSettings.placedObjects[num2].deactivatedByWarpFilter)
-                && self.roomSettings.placedObjects[num2].active)
+            if (self.roomSettings.placedObjects[objects].type == Enums.PlacedObjectType.DreamerSpot
+                && self.game.IsStorySession)
             {
-                if (self.roomSettings.placedObjects[num2].type == Enums.PlacedObjectType.DreamerSpot
-                    && self.game.IsStorySession)
+                var dreamerRooms = BeaconSaveData.GetDreamerEncountersRoom(self.world.game.GetStorySession.saveState);
+                // We have to ASSIGN this to a room so it isn't null: See World.SpawnGhost(), World.InitiateGeneralWeaverHintTrail(), World.InitiateWeaverPresence()
+                var dreamerPresence = Dreamer.dreamerPresence;
+                if (dreamerPresence != null && !dreamerRooms.Contains(self.abstractRoom.name))
                 {
-                    DreamerPresence dreamerWorldPresence = null;
-                    for (int num3 = 0; num3 < dreamerPresences.Count; num3++)
-                    {
-                        if (dreamerPresences[num3].ghostRoom == self.abstractRoom)
-                        {
-                            dreamerWorldPresence = (DreamerPresence)dreamerPresences[num3];
-                            break;
-                        }
-                    }
-                    if (dreamerWorldPresence == null)
-                    {
-                        // Todo: Requires SpinningTopData equivalent to assign presence
-                        //dreamerWorldPresence = new DreamerPresence(self.world, Enums.GhostID.Dreamer, self.roomSettings.placedObjects[num2].data as DreamerData).spawnIdentifier);
-                        dreamerWorldPresence.ghostRoom = self.abstractRoom;
-                        if (!BeaconSaveData.GetDreamerEncounters(self.game.GetStorySession.saveState).Contains(dreamerWorldPresence.dreamerSpawnId))
-                        {
-                            dreamerPresences.Add(dreamerWorldPresence);
-                        }
-                    }
-                    if (!BeaconSaveData.GetDreamerEncounters(self.game.GetStorySession.saveState).Contains(dreamerWorldPresence.dreamerSpawnId))
-                    {
-                        //this.spawnedSpinningTop = true;
-                        //this.AddObject(new SpinningTop(this, this.roomSettings.placedObjects[num11], ghostWorldPresence));
-                    }
+                    spawnedDreamer = true;
+                    self.AddObject(new Dreamer(self.roomSettings.placedObjects[objects]));
                 }
             }
         }
-#endif
     }
 
     // Adding effect to Pitch-Black page in Devtools Effects

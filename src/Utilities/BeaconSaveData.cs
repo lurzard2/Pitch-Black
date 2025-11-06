@@ -6,9 +6,12 @@ namespace PitchBlack;
 public static class BeaconSaveData
 {
     // Dreamer needs this to spawn
-    public static string dreamerEncounters = "DreamerEncounters";
-    public static List<int> GetDreamerEncounters(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(dreamerEncounters, out List<int> encounters) ? encounters : null;
-    //public static void SetDreamerEncounters(this SaveState save, List<int> value) => save.deathPersistentSaveData.GetSlugBaseData().Set(dreamerEncounters, value);
+    public static string dreamerEncountersNumber = "DreamerEncountersNumber";
+    public static int GetDreamerEncountersNumber(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(dreamerEncountersNumber, out int encounters) ? encounters : 0;
+    public static void SetDreamerEncountersNumber(this SaveState save, int value) => save.deathPersistentSaveData.GetSlugBaseData().Set(dreamerEncountersNumber, value);
+
+    public static string dreamerEncountersRoom = "DreamerEncountersRoom";
+    public static List<string> GetDreamerEncountersRoom(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(dreamerEncountersRoom, out List<string> encounters) ? encounters : new List<string>();
 
     // ThanatosisUpdate() ability check
     public static string canUseThanatosis = "CanUseThanatosis";
