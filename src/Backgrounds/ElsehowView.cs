@@ -121,7 +121,7 @@ public class ElsehowView : BackgroundScene
     public RoomSettings.RoomEffect effect;
     public Color atmosphereColor = new Color(0.274f, 0.6f, 0.819f);
     //floorlevel is from AncientUrbanView for the Buildings
-    public float floorLevel = -2000f;
+    public float floorLevel = -6000f;
     public float yShift;
 
     #region ElseCloud
@@ -191,10 +191,10 @@ public class ElsehowView : BackgroundScene
         {
             for (int i = 0; i < sLeaser.sprites.Length; i++)
             {
-                Vector2 vector = base.DrawPos(new Vector2(camPos.x, camPos.y + vvScene.yShift), rCam.hDisplace);
+                Vector2 vector = DrawPos(new Vector2(camPos.x, camPos.y + vvScene.yShift), rCam.hDisplace);
                 sLeaser.sprites[i].x = vector.x;
                 sLeaser.sprites[i].y = vector.y;
-                sLeaser.sprites[i].color = new Color(Mathf.Pow(Mathf.InverseLerp(0f, 600f, this.depth + this.atmosphericalDepthAdd), 0.3f) * 0.9f, 1f - (float)i / 3f, 0f);
+                sLeaser.sprites[i].color = new Color(Mathf.Pow(Mathf.InverseLerp(0f, 600f, depth + atmosphericalDepthAdd), 0.3f) * 0.9f, 1f - (float)i / 3f, 1f);
             }
             base.DrawSprites(sLeaser, rCam, timeStacker, camPos);
         }
