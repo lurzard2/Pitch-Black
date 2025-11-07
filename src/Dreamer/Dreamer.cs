@@ -23,13 +23,6 @@ namespace PitchBlack;
 /// </summary>
 public class Dreamer : CosmeticSprite
 {
-    public PlacedObject placedObject;
-
-    // Object inheriting an additional constructor adding Dreamer
-    public Dreamer(PlacedObject placedObject) : this(placedObject.pos, -(placedObject.data as PlacedObject.ResizableObjectData).handlePos.normalized)
-    {
-        this.placedObject = placedObject;
-    }
 
     #region Sprite Gets
     public int LightSprite
@@ -52,7 +45,6 @@ public class Dreamer : CosmeticSprite
     {
         return behindBodySprites + 1 + side;
     }
-
     public int ThightSprite(int side)
     {
         return behindBodySprites + 3 + side;
@@ -88,10 +80,10 @@ public class Dreamer : CosmeticSprite
     }
     #endregion
 
-    public Dreamer(Vector2 targetPos, Vector2 targetDir)
+    public Dreamer(Room room, PlacedObject placedObject)
     {
-        this.targetPos = targetPos;
-        this.targetDir = targetDir;
+        this.placedObject = placedObject;
+        pos = placedObject.pos;
         behavior = new DefaultBehavior(this);
         scale = 0.5f;
         UnityEngine.Random.State state = UnityEngine.Random.state;
@@ -100,8 +92,8 @@ public class Dreamer : CosmeticSprite
         LoadElement("ghostPlates");
         LoadElement("ghostBand");
         UnityEngine.Random.state = state;
-        spine = new Part[spineSegments];
 
+        spine = new Part[spineSegments];
         for (int i = 0; i < spine.Length; i++)
         {
             spine[i] = new Part(scale);
@@ -511,12 +503,6 @@ public class Dreamer : CosmeticSprite
         chains.Update();
 
         //<Removing warp visuals>
-
-        if (placedObject != null)
-        {
-            targetPos = placedObject.pos;
-            targetDir = -(placedObject.data as PlacedObject.ResizableObjectData).handlePos.normalized;
-        }
 
         Behavior behavior = this.behavior;
         if (behavior != null)
@@ -1067,10 +1053,11 @@ public class Dreamer : CosmeticSprite
             }
             StoryGameSession storyGameSession = room.game.session as StoryGameSession;
             var state = storyGameSession.saveState;
-            if (storyGameSession != null && !BeaconSaveData.GetDreamerEncountersRoom(state).Contains(room.abstractRoom.name))
+            var dreamerRooms = BeaconSaveData.GetDreamerEncountersRoom(state);
+            if (storyGameSession != null && !dreamerRooms.Contains(room.abstractRoom.name))
             {
                 // Add room string to the saved list of encounter rooms, then increase the encounter int
-                BeaconSaveData.GetDreamerEncountersRoom(state).Add(room.abstractRoom.name);
+                dreamerRooms.Add(room.abstractRoom.name);
                 int i = BeaconSaveData.GetDreamerEncountersNumber(state);
                 BeaconSaveData.SetDreamerEncountersNumber(state, i++);
             }
@@ -1146,6 +1133,7 @@ public class Dreamer : CosmeticSprite
 
     public Behavior behavior;
     private VoidWeaverFade fadeOut;
+    public PlacedObject placedObject;
 
     public abstract class Behavior : Conversation.IOwnAConversation
     {

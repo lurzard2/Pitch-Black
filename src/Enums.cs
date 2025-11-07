@@ -78,7 +78,7 @@ public static class Enums
     public static class RoomEffectType
     {
         // I just threw this in here, it's used with the others.
-        public static RoomSettingsPage.DevEffectsCategories PitchBlackCatagory = new ("Pitch-Black", true);
+        public static RoomSettingsPage.DevEffectsCategories PitchBlackCatagory = new("Pitch-Black", true);
         // Actual effects
         public static RoomSettings.RoomEffect.Type ElsehowView = new("ElsehowView", true);
         public static RoomSettings.RoomEffect.Type RippleSpawn = new("RippleSpawn", true);
@@ -101,10 +101,16 @@ public static class Enums
 
     public static class PlacedObjectType
     {
+        public static ObjectsPage.DevObjectCategories PitchBlackCatagory = new("Pitch-Black", true);
         public static PlacedObject.Type DreamerSpot = new("DreamerSpot", true);
 
         public static void UnregisterValues()
         {
+            if (PitchBlackCatagory != null)
+            {
+                PitchBlackCatagory.Unregister();
+                PitchBlackCatagory = null;
+            }
             if (DreamerSpot != null)
             {
                 DreamerSpot.Unregister();

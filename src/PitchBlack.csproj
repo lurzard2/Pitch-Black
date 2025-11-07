@@ -34,7 +34,7 @@
     
     <Target Name="GenerateMod" AfterTargets="PostBuildEvent">
 		<ItemGroup>
-			<RemovePlugins Include="../pitchblack/plugins/*.dll" />
+			<RemovePlugins Include="../pitchblack/newest/plugins/*.dll" />
 		</ItemGroup>
 		<ItemGroup>
 			<CopyPlugins Include="$(TargetPath)" />

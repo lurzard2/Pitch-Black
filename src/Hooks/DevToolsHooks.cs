@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DevInterface;
+using RWCustom;
 using UnityEngine;
 
 namespace PitchBlack;
@@ -14,13 +15,14 @@ public class DevToolsHooks
     /// - RoomSettingsPage.DevEffectGetCategoryFromEffectType to add to correct catagory
     /// </summary> -Lur
 
-    public static bool spawnedDreamer;
-
     public static void Apply()
     {
         On.Room.NowViewed += Room_NowViewed;
         On.Room.Loaded += Room_Loaded;
         On.DevInterface.RoomSettingsPage.DevEffectGetCategoryFromEffectType += RoomSettingsPage_DevEffectGetCategoryFromEffectType;
+        On.DevInterface.ObjectsPage.DevObjectGetCategoryFromPlacedType += ObjectsPage_DevObjectGetCategoryFromPlacedType;
+        On.PlacedObject.GenerateEmptyData += PlacedObject_GenerateEmptyData;
+        On.DevInterface.ObjectsPage.CreateObjRep += ObjectsPage_CreateObjRep;
     }
 
     // Actually adds our effects' objects -Lur
@@ -35,7 +37,6 @@ public class DevToolsHooks
             }
         }
 
-        // iM LOSING MY FUCKING MIND omg
         for (int objects = 0; objects < self.roomSettings.placedObjects.Count; objects++)
         {
             if (self.roomSettings.placedObjects[objects].type == Enums.PlacedObjectType.DreamerSpot
@@ -46,14 +47,14 @@ public class DevToolsHooks
                 var dreamerPresence = Dreamer.dreamerPresence;
                 if (dreamerPresence != null && !dreamerRooms.Contains(self.abstractRoom.name))
                 {
-                    spawnedDreamer = true;
-                    self.AddObject(new Dreamer(self.roomSettings.placedObjects[objects]));
+                    //spawnedDreamer = true;
+                    self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[objects]));
                 }
             }
         }
     }
 
-    // Adding effect to Pitch-Black page in Devtools Effects
+    #region Catagories
     private static RoomSettingsPage.DevEffectsCategories RoomSettingsPage_DevEffectGetCategoryFromEffectType(On.DevInterface.RoomSettingsPage.orig_DevEffectGetCategoryFromEffectType orig, RoomSettingsPage self, RoomSettings.RoomEffect.Type type)
     {
         RoomSettingsPage.DevEffectsCategories res = orig(self, type);
@@ -63,7 +64,52 @@ public class DevToolsHooks
         }
         return res;
     }
-    
+    private static ObjectsPage.DevObjectCategories ObjectsPage_DevObjectGetCategoryFromPlacedType(On.DevInterface.ObjectsPage.orig_DevObjectGetCategoryFromPlacedType orig, ObjectsPage self, PlacedObject.Type type)
+    {
+        ObjectsPage.DevObjectCategories res = orig(self, type);
+        if (type == Enums.PlacedObjectType.DreamerSpot)
+        {
+            res = Enums.PlacedObjectType.PitchBlackCatagory;
+        }
+        return res;
+    }
+    #endregion
+
+    private static void ObjectsPage_CreateObjRep(On.DevInterface.ObjectsPage.orig_CreateObjRep orig, ObjectsPage self, PlacedObject.Type tp, PlacedObject pObj)
+    {
+        if (pObj == null)
+        {
+            pObj = new PlacedObject(tp, null);
+            pObj.pos = self.owner.room.game.cameras[0].pos + Vector2.Lerp(self.owner.mousePos, new Vector2(-683f, 384f), 0.25f) + Custom.DegToVec(UnityEngine.Random.value * 360f) * 0.2f;
+            self.RoomSettings.placedObjects.Add(pObj);
+        }
+
+        PlacedObjectRepresentation rep = null;
+
+        if (tp == Enums.PlacedObjectType.DreamerSpot)
+        {
+            rep = new DreamerSpotRepresentation(self.owner, tp.ToString() + "_Rep", self, pObj, tp.ToString());
+        }
+
+        if (rep != null)
+        {
+            self.tempNodes.Add(rep);
+            self.subNodes.Add(rep);
+        }
+
+        // Call orig HERE
+        orig(self, tp, pObj);
+    }
+
+    private static void PlacedObject_GenerateEmptyData(On.PlacedObject.orig_GenerateEmptyData orig, PlacedObject self)
+    {
+        orig(self);
+        if (self.type == Enums.PlacedObjectType.DreamerSpot)
+        {
+            self.data = new DreamerData(self);
+        }
+    }
+
     // Background shader fix, seems mandatory for some things.
     private static void Room_NowViewed(On.Room.orig_NowViewed orig, Room self)
     {

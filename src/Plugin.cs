@@ -1,12 +1,16 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using Fisobs.Core;
+using RWCustom;
 using SlugBase.Features;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security;
 using System.Security.Permissions;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using static SlugBase.Features.FeatureTypes;
 
@@ -39,9 +43,11 @@ class  Plugin : BaseUnityPlugin
     public static readonly ConditionalWeakTable<RainWorldGame, List<NTTracker>> pursuerTracker = new();
     public static readonly ConditionalWeakTable<MouseGraphics, RotData> rotRatData = new();
 
-    
+    // Like regionSpinningTopRooms - regionWeaverRooms
+    public Dictionary<string, List<string>> regionDreamerRooms = new Dictionary<string, List<string>>();
+
     // Colors moved to Colors.cs after I saw Alduris set up his codespace that way -Lur 
-    
+
     /// <summary>
     /// SlugBase Features for PB:
     /// - Names MUST match in both code and .json in order to work, otherwise SlugBase throws a fit.
@@ -67,6 +73,7 @@ class  Plugin : BaseUnityPlugin
         On.RainWorld.OnModsInit += OnModsInit;
         On.RainWorld.OnModsDisabled += DisableMod;
         On.RainWorld.PostModsInit += RainWorld_PostModsInit;
+        On.RainWorld.BuildTokenCache += RainWorld_BuildTokenCache;
         On.RainWorldGame.ctor += RainWorldGame_ctor;
         On.RainWorldGame.Update += RainWorldGame_Update;
         On.RainWorld.UnloadResources += (orig, self) =>
@@ -87,7 +94,79 @@ class  Plugin : BaseUnityPlugin
         
         logger.LogDebug("PitchBlack's hooks successfully applied!");
     }
-    
+
+    private void RainWorld_BuildTokenCache(On.RainWorld.orig_BuildTokenCache orig, RainWorld self, bool modded, string region)
+    {
+        orig(self, modded, region);
+        string fileName = region.ToLowerInvariant();
+        regionDreamerRooms[fileName] = new List<string>();
+
+        // Very iffy decompiled code...
+        //string[] array = AssetManager.ListDirectory("World" + Path.DirectorySeparatorChar.ToString() + region + "-Rooms", false, false, false);
+        //List<string> list = new List<string>();
+        //List<string> list2 = new List<string>();
+        //for (int i = 0; i < array.Length; i++)
+        //{
+        //    string fileName3 = Path.GetFileName(array[i]);
+        //    if (fileName3.Contains("settings"))
+        //    {
+        //        list.Add(array[i]);
+        //        if (fileName3.Contains("settings-"))
+        //        {
+        //            list2.Add(array[i]);
+        //        }
+        //    }
+        //}
+        //for (int j = 0; j < list.Count; j++)
+        //{
+        //    string[] array2 = File.ReadAllLines(list[j]);
+        //    List<string[]> list5 = new List<string[]>();
+        //    for (int k = 0; k < array2.Length; k++)
+        //    {
+        //        string[] array3 = Regex.Split(Custom.ValidateSpacedDelimiter(array2[k], ":"), ": ");
+        //        if (array3.Length == 2)
+        //        {
+        //            list5.Add(array3);
+        //        }
+        //    }
+        //    for (int l = 0; l < list5.Count; l++)
+        //    {
+        //        if (list5[l][0] == "PlacedObjects")
+        //        {
+        //            string[] array4 = Regex.Split(Custom.ValidateSpacedDelimiter(list5[l][1], ","), ", ");
+        //            for (int m = 0; m < array4.Length; m++)
+        //            {
+        //                string[] array5 = Regex.Split(array4[m].Trim(), "><");
+        //                string fileName2 = Path.GetFileName(list[j].Substring(0, list[j].ToLowerInvariant().IndexOf("_settings")));
+        //                if (array5.Length > 1)
+        //                {
+        //                    // The important bit
+        //                    PlacedObject placedObject = new PlacedObject(PlacedObject.Type.None, null);
+        //                    if (placedObject.type == Enums.PlacedObjectType.DreamerSpot)
+        //                    {
+        //                        int spawnIdentifier = (placedObject.data as SpinningTopData).spawnIdentifier;
+        //                        string destRoom = (placedObject.data as SpinningTopData).destRoom;
+        //                        string item = string.Concat(new string[]
+        //                        {
+        //                            fileName2,
+        //                            ":",
+        //                            spawnIdentifier.ToString(),
+        //                            ":",
+        //                            (destRoom == null) ? "NULL" : destRoom
+        //                        });
+        //                        if (!regionDreamerRooms[fileName].Contains(item))
+        //                        {
+        //                            regionDreamerRooms[fileName].Add(item);
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //            break;
+        //        }
+        //    }
+        //}
+    }
+
     /// <summary>
     /// Load any resources
     /// Enum Registering
@@ -95,7 +174,7 @@ class  Plugin : BaseUnityPlugin
     private void OnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld self)
     {
         orig(self);
-        
+
         MachineConnector.SetRegisteredOI(MOD_ID, ModOptions.Instance);
         if (!init)
         {
@@ -141,18 +220,22 @@ class  Plugin : BaseUnityPlugin
                 Futile.atlasManager.LoadAtlas("atlases/lmllspr");
             Futile.atlasManager.LoadAtlas("atlases/nightTerroratlas");
 
-            //AssetBundle assetBundle = AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("path/to/assetbundle"));
-            string both = "ripple_both_sides";
-            string other = "ripple_other_side";
-
             // Dreamer
-            self.Shaders["DreamerRag"] = FShader.CreateShader("dreamerrag", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerrag")).LoadAsset<Shader>("Assets/Shaders/DreamerRag.shader"), [both]);
-            self.Shaders["DreamerSkin"] = FShader.CreateShader("dreamerskin", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerskin")).LoadAsset<Shader>("Assets/Shaders/DreamerSkin.shader"), [both]);
-            self.Shaders["DreamerDistortion"] = FShader.CreateShader("dreamerdistortion", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerdistortion")).LoadAsset<Shader>("Assets/Shaders/DreamerDistortion.shader"), [both]);
-            self.Shaders["DreamerRagRipple"] = FShader.CreateShader("dreamerrag", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerrag")).LoadAsset<Shader>("Assets/Shaders/DreamerRag.shader"), [other]);
-            self.Shaders["DreamerSkinRipple"] = FShader.CreateShader("dreamerskin", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerskin")).LoadAsset<Shader>("Assets/Shaders/DreamerSkin.shader"), [other]);
-            self.Shaders["DreamerDistortionRipple"] = FShader.CreateShader("dreamerdistortion", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerdistortion")).LoadAsset<Shader>("Assets/Shaders/DreamerDistortion.shader"), [other]);
-
+            self.Shaders["DreamerRag"] = FShader.CreateShader("dreamerrag", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerrag")).LoadAsset<Shader>("Assets/Shaders/DreamerRag.shader"), new string[]
+            {
+                "ripple_both_sides"
+            });
+            self.Shaders["DreamerSkin"] = FShader.CreateShader("dreamerskin", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerskin")).LoadAsset<Shader>("Assets/Shaders/DreamerSkin.shader"), new string[]
+            {
+                "ripple_both_sides"
+            });
+            self.Shaders["DreamerDistortion"] = FShader.CreateShader("dreamerdistortion", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerdistortion")).LoadAsset<Shader>("Assets/Shaders/DreamerDistortion.shader"), new string[]
+            {
+                "ripple_both_sides"
+            });
+            //self.Shaders["DreamerRagRipple"] = FShader.CreateShader("dreamerrag", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerrag")).LoadAsset<Shader>("Assets/Shaders/DreamerRag.shader"), [other]);
+            //self.Shaders["DreamerSkinRipple"] = FShader.CreateShader("dreamerskin", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerskin")).LoadAsset<Shader>("Assets/Shaders/DreamerSkin.shader"), [other]);
+            //self.Shaders["DreamerDistortionRipple"] = FShader.CreateShader("dreamerdistortion", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerdistortion")).LoadAsset<Shader>("Assets/Shaders/DreamerDistortion.shader"), [other]);
 
             init = true;
         }
