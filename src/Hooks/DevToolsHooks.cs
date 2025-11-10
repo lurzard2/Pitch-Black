@@ -15,6 +15,8 @@ public class DevToolsHooks
     /// - RoomSettingsPage.DevEffectGetCategoryFromEffectType to add to correct catagory
     /// </summary> -Lur
 
+    public static bool spawnedDreamer;
+
     public static void Apply()
     {
         On.Room.NowViewed += Room_NowViewed;
@@ -29,6 +31,7 @@ public class DevToolsHooks
     private static void Room_Loaded(On.Room.orig_Loaded orig, Room self)
     {
         orig(self);
+
         for (int effects = 0; effects < self.roomSettings.effects.Count; effects++)
         {
             if (self.roomSettings.effects[effects].type == Enums.RoomEffectType.ElsehowView)
@@ -42,12 +45,15 @@ public class DevToolsHooks
             if (self.roomSettings.placedObjects[objects].type == Enums.PlacedObjectType.DreamerSpot
                 && self.game.IsStorySession)
             {
+                DreamerPresence dreamerPresence = null;
+                if (dreamerPresence == null)
+                {
+                    dreamerPresence = new DreamerPresence(self.world, self.abstractRoom);
+                }
                 var dreamerRooms = BeaconSaveData.GetDreamerEncountersRoom(self.world.game.GetStorySession.saveState);
                 // We have to ASSIGN this to a room so it isn't null: See World.SpawnGhost(), World.InitiateGeneralWeaverHintTrail(), World.InitiateWeaverPresence()
-                var dreamerPresence = Dreamer.dreamerPresence;
-                if (dreamerPresence != null && !dreamerRooms.Contains(self.abstractRoom.name))
+                if (!dreamerRooms.Contains(self.abstractRoom.name) && dreamerPresence.dreamerRoom == self.abstractRoom)
                 {
-                    //spawnedDreamer = true;
                     self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[objects]));
                 }
             }

@@ -700,7 +700,7 @@ public class Dreamer : CosmeticSprite
 
     public override void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner)
     {
-        if (newContatiner != null)
+        if (newContatiner == null)
         {
             newContatiner = rCam.ReturnFContainer("Items");
         }
@@ -734,26 +734,27 @@ public class Dreamer : CosmeticSprite
         Vector2 vector = Vector2.Lerp(spine[spine.Length - 1].lastPos, spine[spine.Length - 1].pos, timeStacker);
         Vector2 vector2 = Custom.DirVec(Vector2.Lerp(spine[spine.Length - 2].lastPos, spine[spine.Length - 2].pos, timeStacker), vector);
         vector += vector2 * 5f * scale;
-        Vector2 vector3 = vector + vector2 * 130f * scale + Custom.PerpendicularVector(vector2) * 40f * scale * num;
+        Vector2 vector3 = vector + vector2 * 190f * scale + Custom.PerpendicularVector(vector2) * 40f * scale * num;
         Vector2 vector4 = Vector2.Lerp(spine[0].lastPos, spine[0].pos, timeStacker);
         vector4 += Custom.DirVec(Vector2.Lerp(spine[1].lastPos, spine[1].pos, timeStacker), vector4);
         Vector2 vector5 = vector4;
 
         for (int i = 0; i < spineBendPoint; i++)
         {
-            float f = (float)i / (float)(spineBendPoint - 1);
-            Vector2 vector6 = Vector2.Lerp(spine[i].lastPos, spine[i].pos, timeStacker);
-            // from SpinningTop
-            float num6 = Mathf.Lerp(10f, Custom.LerpMap(num, -1f, 1f, 50f, 25f, 2f), Mathf.Sin(3.1415927f * Mathf.Pow(f, 1.3f))) * scale; ;
-            float num7 = Mathf.Lerp(10f, Custom.LerpMap(num, 1f, -1f, 50f, 25f, 2f), Mathf.Sin(3.1415927f * Mathf.Pow(f, 1.3f))) * scale; ;
+            float f = (float)i / (float)(this.spineBendPoint - 1);
+            Vector2 vector6 = Vector2.Lerp(this.spine[i].lastPos, this.spine[i].pos, timeStacker);
+            float num6;
+            float num7;
+                num6 = Mathf.Lerp(10f, Custom.LerpMap(num, -1f, 1f, 50f, 25f, 2f), Mathf.Sin(3.1415927f * Mathf.Pow(f, 1.3f))) * this.scale;
+                num7 = Mathf.Lerp(10f, Custom.LerpMap(num, 1f, -1f, 50f, 25f, 2f), Mathf.Sin(3.1415927f * Mathf.Pow(f, 1.3f))) * this.scale;
             Vector2 normalized = (vector4 - vector6).normalized;
             Vector2 a = Custom.PerpendicularVector(normalized);
             float d = Vector2.Distance(vector4, vector6) / 5f;
-            (sLeaser.sprites[BodyMeshSprite] as TriangleMesh).MoveVertice(i * 4, vector4 - normalized * d - a * (num2 + num6) * 0.5f - camPos);
-            (sLeaser.sprites[BodyMeshSprite] as TriangleMesh).MoveVertice(i * 4 + 1, vector4 - normalized * d + a * (num3 + num7) * 0.5f - camPos);
-            (sLeaser.sprites[BodyMeshSprite] as TriangleMesh).MoveVertice(i * 4 + 2, vector6 + normalized * d - a * num6 - camPos);
-            (sLeaser.sprites[BodyMeshSprite] as TriangleMesh).MoveVertice(i * 4 + 3, vector6 + normalized * d + a * num7 - camPos);
-            if (i == spineBendPoint - 2)
+            (sLeaser.sprites[this.BodyMeshSprite] as TriangleMesh).MoveVertice(i * 4, vector4 - normalized * d - a * (num2 + num6) * 0.5f - camPos);
+            (sLeaser.sprites[this.BodyMeshSprite] as TriangleMesh).MoveVertice(i * 4 + 1, vector4 - normalized * d + a * (num3 + num7) * 0.5f - camPos);
+            (sLeaser.sprites[this.BodyMeshSprite] as TriangleMesh).MoveVertice(i * 4 + 2, vector6 + normalized * d - a * num6 - camPos);
+            (sLeaser.sprites[this.BodyMeshSprite] as TriangleMesh).MoveVertice(i * 4 + 3, vector6 + normalized * d + a * num7 - camPos);
+            if (i == this.spineBendPoint - 2)
             {
                 vector5 = vector6;
             }
@@ -1010,7 +1011,7 @@ public class Dreamer : CosmeticSprite
 
     public override void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
-        primaryColor = Color.Lerp(palette.blackColor, Color.white, .87f);
+        primaryColor = Color.Lerp(palette.blackColor, Colors.VisibleWhite, .87f);
         sLeaser.sprites[NeckConnectorSprite].color = primaryColor;
         sLeaser.sprites[ButtockSprite(0)].color = primaryColor;
         sLeaser.sprites[ButtockSprite(1)].color = primaryColor;

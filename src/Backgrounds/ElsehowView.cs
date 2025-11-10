@@ -33,9 +33,10 @@ public class ElsehowView : BackgroundScene
             int visualVariation = Random.Range(0, 3);
             float scaleRange = Random.Range(0.75f, 1.25f);
             float towerLayerThickness = 0.1f;
+            float rotationRange = Random.Range(-0.1f, 0.1f);
             Vector2 pos = new Vector2(PosFromDrawPosAtNeutralCamPos(new Vector2(xplacementRange, 0f), depthRange).x, floorLevel + offset + ydepthRange);
             // Adding Towers
-            AddElement(new Towers(this, "Centens_Tower_" + visualVariation.ToString(), pos, depthRange, scaleRange, 0f, towerLayerThickness));
+            AddElement(new Towers(this, "Centens_Tower_" + visualVariation.ToString(), pos, depthRange, scaleRange, rotationRange, towerLayerThickness));
         }
         if (room.world.region != null)
         {
@@ -71,7 +72,7 @@ public class ElsehowView : BackgroundScene
         // Close clouds
         if (effect.type == Enums.RoomEffectType.ElsehowView)
         {
-            int cloudCount = 7;
+            int cloudCount = 9;
             for (int i = 0; i < cloudCount; i++)
             {
                 float cloudDepth = (float)i / (float)(cloudCount - 1);
@@ -121,7 +122,7 @@ public class ElsehowView : BackgroundScene
     public RoomSettings.RoomEffect effect;
     public Color atmosphereColor = new Color(0.274f, 0.6f, 0.819f);
     //floorlevel is from AncientUrbanView for the Buildings
-    public float floorLevel = -6000f;
+    public float floorLevel = -8000f;
     public float yShift;
 
     #region ElseCloud
