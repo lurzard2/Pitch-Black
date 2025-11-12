@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using HUD;
+﻿using HUD;
+using Newtonsoft.Json.Linq;
 using RWCustom;
-using UnityEngine;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using UnityEngine;
 using Watcher;
 
 namespace PitchBlack;
@@ -21,8 +22,16 @@ namespace PitchBlack;
 /// "flip" is for x rotation of graphics, the visible turning effect
 /// 
 /// </summary>
-public class Dreamer : CosmeticSprite
+public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
 {
+    public string ReplaceParts(string s)
+    {
+        return s;
+    }
+
+    public void SpecialEvent(string eventName)
+    {
+    }
 
     #region Sprite Gets
     public int LightSprite
@@ -84,7 +93,6 @@ public class Dreamer : CosmeticSprite
     {
         this.placedObject = placedObject;
         pos = placedObject.pos;
-        behavior = new DefaultBehavior(this);
         scale = 0.5f;
         UnityEngine.Random.State state = UnityEngine.Random.state;
         UnityEngine.Random.InitState(0);
@@ -108,12 +116,12 @@ public class Dreamer : CosmeticSprite
         }
 
         // Sprite array delegating and adding sprites, very convoluted.
-        totalSprites = 1;
-        rags = new Rags(this, totalSprites);
-        behindBodySprites = 1 + rags.totalSprites;
-        totalSprites = behindBodySprites + totalStaticSprites;
-        chains = new Chains(this, totalSprites);
-        totalSprites += chains.totalSprites;
+        this.totalSprites = 1;
+        this.rags = new Rags(this, this.totalSprites);
+        this.behindBodySprites = 1 + this.rags.totalSprites;
+        this.totalSprites = this.behindBodySprites + this.totalStaticSprites;
+        this.chains = new Chains(this, this.totalSprites);
+        this.totalSprites += this.chains.totalSprites;
 
         // Spawns with varied position each time
         sinBob = UnityEngine.Random.value;
@@ -504,29 +512,6 @@ public class Dreamer : CosmeticSprite
 
         //<Removing warp visuals>
 
-        Behavior behavior = this.behavior;
-        if (behavior != null)
-        {
-            behavior.Update();
-        }
-
-        if (fadeOutCounter == 0 && behavior != null && behavior.Vanish)
-        {
-            StartDeactivate();
-        }
-
-        if (voice != null)
-        {
-            voice.alive = true;
-            voice.pos = pos;
-            if (voice.slatedForDeletetion)
-            {
-                voice = null;
-            }
-        }
-        lastTalking = talking;
-        talking = Mathf.MoveTowards(talking, (voice != null) ? 1f : 0f, 0.033333335f);
-
         // Makes them looked at by player when present
         foreach (AbstractCreature abstractCreature in room.game.Players)
         {
@@ -541,7 +526,26 @@ public class Dreamer : CosmeticSprite
             }
         }
 
-        sinBob += 1f / Mathf.Lerp(140f, 210f, UnityEngine.Random.value);
+        if (OnScreen())
+        {
+            onScreenCounter.Tick();
+        }
+        else
+        {
+            onScreenCounter.Reset();
+        }
+
+        if (onScreenCounter.isFinished && conversation == null && room.game.cameras[0].hud != null)
+        {
+            StartConversation();
+        }
+
+        if (conversation != null && convoActive)
+        {
+            conversation.Update();
+        }
+
+            sinBob += 1f / Mathf.Lerp(140f, 210f, UnityEngine.Random.value);
         pos = placedObject.pos + new Vector2(0f, Mathf.Sin(sinBob * 3.1415927f * 2f) * 18f * scale);
         flipProg = Mathf.Min(1f, flipProg + flipSpeed);
         flip = Mathf.Lerp(flipFrom, flipTo, Custom.SCurve(flipProg, 0.7f));
@@ -584,74 +588,100 @@ public class Dreamer : CosmeticSprite
         #endregion
 
         #region Legs
-        for (int k = 0; k < legs.GetLength(0); k++)
+        for (int k = 0; k < this.legs.GetLength(0); k++)
         {
-            for (int l = 0; l < legs.GetLength(1); l++)
+            for (int l = 0; l < this.legs.GetLength(1); l++)
             {
                 Vector2 a2;
                 float num3 = (k == 0) ? -1f : 1f;
                 if (l == 0)
                 {
-                    a2 = Vector2.Lerp(pos, spine[spineBendPoint - 3].pos, 0.5f) + new Vector2(flip * -70f + num3 * Mathf.Lerp(8f, 4f, Mathf.Pow(Mathf.Abs(flip), 2f)), -20f) * scale;
+                    a2 = Vector2.Lerp(this.pos, this.spine[this.spineBendPoint - 3].pos, 0.5f) + new Vector2(this.flip * -70f + num3 * Mathf.Lerp(8f, 4f, Mathf.Pow(Mathf.Abs(this.flip), 2f)), -20f) * this.scale;
                 }
                 else if (l == 1)
                 {
-                    a2 = Vector2.Lerp(pos, spine[0].pos, 0.5f) + new Vector2(flip * 40f + num3 * Mathf.Lerp(20f, 10f, Mathf.Pow(Mathf.Abs(flip), 2f)), -110f) * scale;
+                    a2 = Vector2.Lerp(this.pos, this.spine[0].pos, 0.5f) + new Vector2(this.flip * 40f + num3 * Mathf.Lerp(20f, 10f, Mathf.Pow(Mathf.Abs(this.flip), 2f)), -110f) * this.scale;
                 }
                 else
                 {
-                    a2 = Vector2.Lerp(pos, spine[0].pos, 0.5f) + new Vector2(flip * 40f + num3 * Mathf.Lerp(20f, 10f, Mathf.Pow(Mathf.Abs(flip), 2f)), -130f) * scale;
-                    legs[k, l].vel += Custom.DirVec(legs[k, 0].pos, legs[k, l].pos) * 2f * scale;
+                    a2 = Vector2.Lerp(this.pos, this.spine[0].pos, 0.5f) + new Vector2(this.flip * 40f + num3 * Mathf.Lerp(20f, 10f, Mathf.Pow(Mathf.Abs(this.flip), 2f)), -130f) * this.scale;
+                    this.legs[k, l].vel += Custom.DirVec(this.legs[k, 0].pos, this.legs[k, l].pos) * 2f * this.scale;
                 }
-                legs[k, l].vel *= airResistance;
-                legs[k, l].Update();
-                legs[k, l].vel += (a2 - legs[k, l].pos) / 10f;
+                this.legs[k, l].vel *= this.airResistance;
+                this.legs[k, l].Update();
+                this.legs[k, l].vel += (a2 - this.legs[k, l].pos) / 10f;
             }
-            Vector2 normalized2 = (legs[k, 0].pos - legs[k, 1].pos).normalized;
-            float num4 = Vector2.Distance(legs[k, 0].pos, legs[k, 1].pos);
-            float num5 = 210f * scale;
-            // from SpinningTop
+            Vector2 normalized2 = (this.legs[k, 0].pos - this.legs[k, 1].pos).normalized;
+            float num4 = Vector2.Distance(this.legs[k, 0].pos, this.legs[k, 1].pos);
+            float num5 = 210f * this.scale;
             num5 *= 0.6f;
-            legs[k, 0].pos += normalized2 * (num5 - num4) * 0.5f;
-            legs[k, 0].vel += normalized2 * (num5 - num4) * 0.5f;
-            legs[k, 1].pos -= normalized2 * (num5 - num4) * 0.5f;
-            legs[k, 1].vel -= normalized2 * (num5 - num4) * 0.5f;
-            normalized2 = (legs[k, 0].pos - spine[0].pos).normalized;
-            num4 = Vector2.Distance(legs[k, 0].pos, spine[0].pos);
-            num5 = 120f * scale;
+            this.legs[k, 0].pos += normalized2 * (num5 - num4) * 0.5f;
+            this.legs[k, 0].vel += normalized2 * (num5 - num4) * 0.5f;
+            this.legs[k, 1].pos -= normalized2 * (num5 - num4) * 0.5f;
+            this.legs[k, 1].vel -= normalized2 * (num5 - num4) * 0.5f;
+            normalized2 = (this.legs[k, 0].pos - this.spine[0].pos).normalized;
+            num4 = Vector2.Distance(this.legs[k, 0].pos, this.spine[0].pos);
+            num5 = 120f * this.scale;
             num5 *= 0.75f;
-            legs[k, 0].pos += normalized2 * (num5 - num4) * 0.5f;
-            legs[k, 0].vel += normalized2 * (num5 - num4) * 0.5f;
-            spine[0].pos -= normalized2 * (num5 - num4) * 0.5f;
-            spine[0].vel -= normalized2 * (num5 - num4) * 0.5f;
-            normalized2 = (legs[k, 1].pos - legs[k, 2].pos).normalized;
-            num4 = Vector2.Distance(legs[k, 1].pos, legs[k, 2].pos);
-            num5 = 40f * scale;
-            legs[k, 1].pos += normalized2 * (num5 - num4) * 0.15f;
-            legs[k, 1].vel += normalized2 * (num5 - num4) * 0.15f;
-            legs[k, 2].pos -= normalized2 * (num5 - num4) * 0.85f;
-            legs[k, 2].vel -= normalized2 * (num5 - num4) * 0.85f;
+            this.legs[k, 0].pos += normalized2 * (num5 - num4) * 0.5f;
+            this.legs[k, 0].vel += normalized2 * (num5 - num4) * 0.5f;
+            this.spine[0].pos -= normalized2 * (num5 - num4) * 0.5f;
+            this.spine[0].vel -= normalized2 * (num5 - num4) * 0.5f;
+            normalized2 = (this.legs[k, 1].pos - this.legs[k, 2].pos).normalized;
+            num4 = Vector2.Distance(this.legs[k, 1].pos, this.legs[k, 2].pos);
+            num5 = 40f * this.scale;
+            this.legs[k, 1].pos += normalized2 * (num5 - num4) * 0.15f;
+            this.legs[k, 1].vel += normalized2 * (num5 - num4) * 0.15f;
+            this.legs[k, 2].pos -= normalized2 * (num5 - num4) * 0.85f;
+            this.legs[k, 2].vel -= normalized2 * (num5 - num4) * 0.85f;
         }
+
         #endregion
 
-        if (fadeOutCounter > 0)
-        {
-            fadeOutCounter++;
-        }
-        if (fadeOutCounter > 80)
-        {
-            if (fadeOut == null)
-            {
-                fadeOut = new VoidWeaverFade(pos);
-                room.AddObject(fadeOut);
-            }
-            fadeOut.setPos = new Vector2?(pos);
-            if (fadeOut.RampingDown)
-            {
-                DeactivateDreamer();
-            }
-        }
     }
+
+    #region Dialogue and Speaking
+    private void StartConversation()
+    {
+        if (room.game.cameras[0].hud.dialogBox == null)
+        {
+            room.game.cameras[0].hud.InitDialogBox();
+        }
+        conversation = new DreamerConversation(this, GetConversationID(), room.game.cameras[0].hud.dialogBox);
+        convoActive = true;
+
+    }
+
+    private Conversation.ID GetConversationID()
+    {
+        StoryGameSession session = room.game.GetStorySession;
+        Conversation.ID result;
+        switch ((session != null) ? BeaconSaveData.GetDreamerEncountersNumber(session.saveState) : 0)
+        {
+            case 0:
+                result = Enums.ConversationID.Dreamer_1;
+                break;
+            default:
+                result = Enums.ConversationID.Dreamer_1;
+                break;
+        }
+        return result;
+    }
+
+    public void Speak(SoundID line)
+    {
+        voice = new PositionedSoundEmitter(pos, 1f, 1f)
+        {
+            requireActiveUpkeep = true
+        };
+        room.PlaySound(line, voice, false, 1f, 1f, false);
+    }
+
+    public void StopSpeaking()
+    {
+        voice = null;
+    }
+    #endregion
 
     #region Graphics
     public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
@@ -734,11 +764,13 @@ public class Dreamer : CosmeticSprite
         Vector2 vector = Vector2.Lerp(spine[spine.Length - 1].lastPos, spine[spine.Length - 1].pos, timeStacker);
         Vector2 vector2 = Custom.DirVec(Vector2.Lerp(spine[spine.Length - 2].lastPos, spine[spine.Length - 2].pos, timeStacker), vector);
         vector += vector2 * 5f * scale;
-        Vector2 vector3 = vector + vector2 * 190f * scale + Custom.PerpendicularVector(vector2) * 40f * scale * num;
+        float headLength = 100f;
+        Vector2 vector3 = vector + vector2 * headLength * scale + Custom.PerpendicularVector(vector2) * 40f * scale * num;
         Vector2 vector4 = Vector2.Lerp(spine[0].lastPos, spine[0].pos, timeStacker);
         vector4 += Custom.DirVec(Vector2.Lerp(spine[1].lastPos, spine[1].pos, timeStacker), vector4);
         Vector2 vector5 = vector4;
 
+        // Body
         for (int i = 0; i < spineBendPoint; i++)
         {
             float f = (float)i / (float)(this.spineBendPoint - 1);
@@ -778,6 +810,7 @@ public class Dreamer : CosmeticSprite
         vector4 += Custom.DirVec(Vector2.Lerp(spine[spineBendPoint + 1].lastPos, spine[spineBendPoint + 1].pos, timeStacker), vector4);
         vector4 += vector7;
 
+        // Neck and head
         for (int j = spineBendPoint; j < spineSegments + snoutSegments; j++)
         {
             float num8 = Mathf.InverseLerp((float)spineBendPoint, (float)(spineSegments + snoutSegments - 1), (float)j);
@@ -832,8 +865,7 @@ public class Dreamer : CosmeticSprite
         for (int k = 0; k < (sLeaser.sprites[HeadMeshSprite] as TriangleMesh).verticeColors.Length; k++)
         {
             float num12 = (float)k / (float)((sLeaser.sprites[HeadMeshSprite] as TriangleMesh).verticeColors.Length - 1);
-            // from SpinningTop
-            num12 *= 0.12f;
+            num12 *= 0.5f;
             float num13;
             float num14;
             if (num12 < 0.15f)
@@ -855,6 +887,7 @@ public class Dreamer : CosmeticSprite
             (sLeaser.sprites[HeadMeshSprite] as TriangleMesh).verticeColors[k] = new Color(Mathf.InverseLerp(0.1f, 30f, value), Mathf.InverseLerp(-1f, 1f, num), Mathf.InverseLerp(0.25f, 0.05f, num12), a3);
         }
 
+        // Legs
         Vector2 vector10 = Vector2.Lerp(Vector2.Lerp(spine[0].lastPos, spine[0].pos, timeStacker), Vector2.Lerp(spine[1].lastPos, spine[1].pos, timeStacker), 0.5f);
         vector10 += Custom.DirVec(Vector2.Lerp(spine[2].lastPos, spine[2].pos, timeStacker), vector10) * 20f * scale;
         for (int l = 0; l < legs.GetLength(0); l++)
@@ -1011,7 +1044,7 @@ public class Dreamer : CosmeticSprite
 
     public override void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
-        primaryColor = Color.Lerp(palette.blackColor, Colors.VisibleWhite, .87f);
+        //primaryColor = Color.Lerp(palette.blackColor, Colors.VisibleWhite, .87f);
         sLeaser.sprites[NeckConnectorSprite].color = primaryColor;
         sLeaser.sprites[ButtockSprite(0)].color = primaryColor;
         sLeaser.sprites[ButtockSprite(1)].color = primaryColor;
@@ -1071,25 +1104,7 @@ public class Dreamer : CosmeticSprite
     public static DreamerPresence dreamerPresence;
     public void DeactivateDreamerPresence(World world)
     {
-        world.migrationInfluences.Remove(dreamerPresence);
         dreamerPresence = null;
-    }
-
-    #endregion
-
-    #region Talking
-    public void Speak(SoundID line)
-    {
-        voice = new PositionedSoundEmitter(pos, 1f, 1f)
-        {
-            requireActiveUpkeep = true
-        };
-        room.PlaySound(line, voice, false, 1f, 1f, false);
-    }
-
-    public void StopSpeaking()
-    {
-        voice = null;
     }
 
     #endregion
@@ -1099,7 +1114,7 @@ public class Dreamer : CosmeticSprite
     public readonly int totalSprites;
     public readonly int lightSprite;
     public readonly int behindBodySprites;
-    public readonly int totalStaticSprites;
+    public readonly int totalStaticSprites = 10;
     public float sinBob;
     public Part[] spine;
     public Part[,] legs;
@@ -1114,6 +1129,8 @@ public class Dreamer : CosmeticSprite
     private float defaultFlip;
 
     private int fadeOutCounter;
+    private Counter onScreenCounter = new Counter(120, 0, true);
+    private bool convoActive;
 
     private PositionedSoundEmitter voice;
     private float talking;
@@ -1122,7 +1139,7 @@ public class Dreamer : CosmeticSprite
     public float scale;
     public float lightSpriteScale = 0.3f;
     public int spineSegments = 11;
-    public int snoutSegments = 9;
+    public int snoutSegments = 6;
     public int spineBendPoint = 7;
     public int thighSegments = 7;
     public int lowerLegSegments = 17;
@@ -1132,287 +1149,6 @@ public class Dreamer : CosmeticSprite
     public Color accentColor = Colors.Rose;
     public Color glowColor = Colors.ComplementaryRose;
 
-    public Behavior behavior;
-    private VoidWeaverFade fadeOut;
     public PlacedObject placedObject;
-
-    public abstract class Behavior : Conversation.IOwnAConversation
-    {
-        public virtual bool Vanish { get { return false; } }
-        public virtual bool NoticedPlayer { get { return false; } }
-        public Player FocusPlayer { get; set; }
-
-        public Behavior(Dreamer owner)
-        {
-            this.owner = owner;
-        }
-
-        #region Implementations
-        public virtual string ReplaceParts(string s)
-        {
-            return s;
-        }
-        public virtual void SpecialEvent(string eventName)
-        {
-        }
-        #endregion
-
-        public virtual void Update()
-        {
-            if (NoticedPlayer && (FocusPlayer == null || FocusPlayer.room != owner.room))
-            {
-                FocusPlayer = FindClosestPlayer();
-            }
-        }
-
-        private Player FindClosestPlayer()
-        {
-            Player player = null;
-            foreach (AbstractCreature creature in owner.room.game.Players)
-            {
-                Player player2 = creature.realizedObject as Player;
-                if (player2 != null && player2.room == owner.room && (player != null || Vector2.Distance(player2.mainBodyChunk.pos, owner.pos) < Vector2.Distance(player.mainBodyChunk.pos, owner.pos)))
-                {
-                    player = player2;
-                }
-            }
-            return player;
-        }
-
-        protected Dreamer owner;
-    }
-
-    #region Behavior
-    public class DefaultBehavior : Behavior
-    {
-        public override bool Vanish
-        {
-            get
-            {
-                return stage == Stage.Disappear;
-            }
-        }
-
-        public override bool NoticedPlayer
-        {
-            get
-            {
-                return stage != Stage.Idle;
-            }
-        }
-
-        private bool IsOnScreen
-        {
-            get
-            {
-                int num = owner.room.CameraViewingPoint(owner.targetPos);
-                foreach (RoomCamera roomCamera in owner.room.game.cameras)
-                {
-                    if (roomCamera.room == owner.room && roomCamera.currentCameraPosition == num)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        }
-
-        private bool AnyCameraInRoom
-        {
-            get
-            {
-                RoomCamera[] cameras = owner.room.game.cameras;
-                for (int i = 0; i < cameras.Length; i++)
-                {
-                    if (cameras[i].room == owner.room)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        }
-
-        public DialogBox DialogBox
-        {
-            get
-            {
-                if (conversation != null)
-                {
-                    return conversation.dialogBox;
-                }
-                HUD.HUD hud = owner.room.game.cameras[0].hud;
-                if (hud.dialogBox == null)
-                {
-                    hud.InitDialogBox();
-                }
-                return hud.dialogBox;
-            }
-        }
-
-        public DefaultBehavior(Dreamer owner) : base(owner)
-        {
-        }
-
-        public override void Update()
-        {
-            base.Update();
-            timeInStage++;
-            DreamerConversation dreamConversation = conversation;
-            if (dreamConversation != null)
-            {
-                dreamConversation.Update();
-            }
-            if (stage == Stage.Idle)
-            {
-                if (IsOnScreen)
-                {
-                    onScreenCounter++;
-                }
-                else
-                {
-                    onScreenCounter = 0;
-                }
-                if (onScreenCounter > 60)
-                {
-                    NextStage();
-                    return;
-                }
-            }
-            else if (stage == Stage.Noticed)
-            {
-                if (timeInStage > 100)
-                {
-                    StartInternalDialogue();
-                    NextStage();
-                    return;
-                }
-            }
-            else if (stage == Stage.Talking)
-            {
-                if (!AnyCameraInRoom)
-                {
-                    owner.StopSpeaking();
-                    DreamerConversation dreamConversation2 = conversation;
-                    if (dreamConversation2 != null)
-                    {
-                        dreamConversation2.Destroy();
-                    }
-                    conversation = null;
-                    stage = Stage.Idle;
-                    onScreenCounter = 0;
-                    timeInStage = 0;
-                    return;
-                }
-
-                if (conversation.slatedForDeletion)
-                {
-                    conversation = null;
-                    Player player = null;
-                    float num = 0f;
-                    for (int i = 0; i < owner.room.game.Players.Count; i++)
-                    {
-                        if (owner.room.game.Players[i].realizedCreature != null)
-                        {
-                            Player player2 = owner.room.game.Players[i].realizedCreature as Player;
-                            if (player2.controller == null)
-                            {
-                                player2.controller = new Player.NullController();
-                            }
-                            if (player2.room == owner.room && (player == null || Vector2.Distance(player2.mainBodyChunk.pos, owner.pos) < num))
-                            {
-                                player = player2;
-                                num = Vector2.Distance(player2.mainBodyChunk.pos, owner.pos);
-                            }
-                        }
-                    }
-                    if (player != null)
-                    {
-                        owner.room.game.cameras[0].EnterCutsceneMode(player.abstractCreature, RoomCamera.CameraCutsceneType.Standard);
-                    }
-                    NextStage();
-                }
-            }
-            else if (stage == Stage.Pause)
-            {
-                if (timeInStage > 160)
-                {
-                    NextStage();
-                    return;
-                }
-            }
-            else
-            {
-                stage = Stage.Disappear;
-            }
-
-        }
-
-        private Conversation.ID GetID()
-        {
-            StoryGameSession getStorySession = owner.room.game.GetStorySession;
-            Conversation.ID result;
-            switch ((getStorySession != null) ? BeaconSaveData.GetDreamerEncountersNumber(getStorySession.saveState) : 0)
-            {
-                case 0:
-                    result = Enums.ConversationID.Dreamer_1;
-                    break;
-                default:
-                    result = null;
-                    break;
-            }
-            return result;
-        }
-
-        private void StartInternalDialogue()
-        {
-            conversation = new DreamerConversation(this, GetID(), DialogBox);
-            owner.Speak(conversation.Voiceline);
-        }
-
-        private void NextStage()
-        {
-            if (stage == Stage.Idle)
-            {
-                stage = Stage.Noticed;
-            }
-            else if (stage == Stage.Noticed)
-            {
-                stage = Stage.Talking;
-            }
-            else if (stage == Stage.Talking)
-            {
-                stage = Stage.Pause;
-            }
-            else
-            {
-                if (!(stage == Stage.Pause))
-                {
-                    return;
-                }
-                stage = Stage.Disappear;
-            }
-            timeInStage = 0;
-        }
-
-        private int timeInStage;
-        private int onScreenCounter;
-        private DreamerConversation conversation;
-        private Stage stage = Stage.Idle;
-
-        private class Stage : ExtEnum<Stage>
-        {
-            public Stage (string value, bool register = false) : base(value, register)
-            {
-            }
-
-            public static Stage Idle = new(nameof(Idle), true);
-            public static Stage Noticed = new(nameof(Noticed), true);
-            public static Stage Talking = new(nameof(Talking), true);
-            public static Stage Pause = new(nameof(Pause), true);
-            public static Stage Disappear = new(nameof(Disappear), true);
-        }
-    }
-    #endregion
-
+    public DreamerConversation conversation;
 }
