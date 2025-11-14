@@ -43,9 +43,6 @@ class  Plugin : BaseUnityPlugin
     public static readonly ConditionalWeakTable<RainWorldGame, List<NTTracker>> pursuerTracker = new();
     public static readonly ConditionalWeakTable<MouseGraphics, RotData> rotRatData = new();
 
-    // Like regionSpinningTopRooms - regionWeaverRooms
-    public Dictionary<string, List<string>> regionDreamerRooms = new Dictionary<string, List<string>>();
-
     // Colors moved to Colors.cs after I saw Alduris set up his codespace that way -Lur 
 
     /// <summary>
@@ -73,7 +70,7 @@ class  Plugin : BaseUnityPlugin
         On.RainWorld.OnModsInit += OnModsInit;
         On.RainWorld.OnModsDisabled += DisableMod;
         On.RainWorld.PostModsInit += RainWorld_PostModsInit;
-        On.RainWorld.BuildTokenCache += RainWorld_BuildTokenCache;
+        //On.RainWorld.BuildTokenCache += RainWorld_BuildTokenCache;
         On.RainWorldGame.ctor += RainWorldGame_ctor;
         On.RainWorldGame.Update += RainWorldGame_Update;
         On.RainWorld.UnloadResources += (orig, self) =>
@@ -95,77 +92,66 @@ class  Plugin : BaseUnityPlugin
         logger.LogDebug("PitchBlack's hooks successfully applied!");
     }
 
-    private void RainWorld_BuildTokenCache(On.RainWorld.orig_BuildTokenCache orig, RainWorld self, bool modded, string region)
-    {
-        orig(self, modded, region);
-        string fileName = region.ToLowerInvariant();
-        regionDreamerRooms[fileName] = new List<string>();
+    //private void RainWorld_BuildTokenCache(On.RainWorld.orig_BuildTokenCache orig, RainWorld self, bool modded, string region)
+    //{
+    //    orig(self, modded, region);
+    //    string fileName = region.ToLowerInvariant();
+    //    regionDreamerRooms[fileName] = new List<string>();
 
-        // Very iffy decompiled code...
-        //string[] array = AssetManager.ListDirectory("World" + Path.DirectorySeparatorChar.ToString() + region + "-Rooms", false, false, false);
-        //List<string> list = new List<string>();
-        //List<string> list2 = new List<string>();
-        //for (int i = 0; i < array.Length; i++)
-        //{
-        //    string fileName3 = Path.GetFileName(array[i]);
-        //    if (fileName3.Contains("settings"))
-        //    {
-        //        list.Add(array[i]);
-        //        if (fileName3.Contains("settings-"))
-        //        {
-        //            list2.Add(array[i]);
-        //        }
-        //    }
-        //}
-        //for (int j = 0; j < list.Count; j++)
-        //{
-        //    string[] array2 = File.ReadAllLines(list[j]);
-        //    List<string[]> list5 = new List<string[]>();
-        //    for (int k = 0; k < array2.Length; k++)
-        //    {
-        //        string[] array3 = Regex.Split(Custom.ValidateSpacedDelimiter(array2[k], ":"), ": ");
-        //        if (array3.Length == 2)
-        //        {
-        //            list5.Add(array3);
-        //        }
-        //    }
-        //    for (int l = 0; l < list5.Count; l++)
-        //    {
-        //        if (list5[l][0] == "PlacedObjects")
-        //        {
-        //            string[] array4 = Regex.Split(Custom.ValidateSpacedDelimiter(list5[l][1], ","), ", ");
-        //            for (int m = 0; m < array4.Length; m++)
-        //            {
-        //                string[] array5 = Regex.Split(array4[m].Trim(), "><");
-        //                string fileName2 = Path.GetFileName(list[j].Substring(0, list[j].ToLowerInvariant().IndexOf("_settings")));
-        //                if (array5.Length > 1)
-        //                {
-        //                    // The important bit
-        //                    PlacedObject placedObject = new PlacedObject(PlacedObject.Type.None, null);
-        //                    if (placedObject.type == Enums.PlacedObjectType.DreamerSpot)
-        //                    {
-        //                        int spawnIdentifier = (placedObject.data as SpinningTopData).spawnIdentifier;
-        //                        string destRoom = (placedObject.data as SpinningTopData).destRoom;
-        //                        string item = string.Concat(new string[]
-        //                        {
-        //                            fileName2,
-        //                            ":",
-        //                            spawnIdentifier.ToString(),
-        //                            ":",
-        //                            (destRoom == null) ? "NULL" : destRoom
-        //                        });
-        //                        if (!regionDreamerRooms[fileName].Contains(item))
-        //                        {
-        //                            regionDreamerRooms[fileName].Add(item);
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        }
-        //    }
-        //}
-    }
+    //    string[] array = AssetManager.ListDirectory("World" + Path.DirectorySeparatorChar.ToString() + region + "-Rooms", false, false, false);
+    //    List<string> list = new List<string>();
+    //    List<string> list2 = new List<string>();
+    //    for (int i = 0; i < array.Length; i++)
+    //    {
+    //        string fileName3 = Path.GetFileName(array[i]);
+    //        if (fileName3.Contains("settings"))
+    //        {
+    //            list.Add(array[i]);
+    //            if (fileName3.Contains("settings-"))
+    //            {
+    //                list2.Add(array[i]);
+    //            }
+    //        }
+    //    }
+    //    for (int j = 0; j < list.Count; j++)
+    //    {
+    //        string[] array2 = File.ReadAllLines(list[j]);
+    //        List<string[]> list5 = new List<string[]>();
+    //        for (int k = 0; k < array2.Length; k++)
+    //        {
+    //            string[] array3 = Regex.Split(Custom.ValidateSpacedDelimiter(array2[k], ":"), ": ");
+    //            if (array3.Length == 2)
+    //            {
+    //                list5.Add(array3);
+    //            }
+    //        }
+    //        for (int l = 0; l < list5.Count; l++)
+    //        {
+    //            if (list5[l][0] == "PlacedObjects")
+    //            {
+    //                string[] array4 = Regex.Split(Custom.ValidateSpacedDelimiter(list5[l][1], ","), ", ");
+    //                for (int m = 0; m < array4.Length; m++)
+    //                {
+    //                    string[] array5 = Regex.Split(array4[m].Trim(), "><");
+    //                    string fileName2 = Path.GetFileName(list[j].Substring(0, list[j].ToLowerInvariant().IndexOf("_settings")));
+    //                    if (array5.Length > 1)
+    //                    {
+    //                        // The important bit
+    //                        PlacedObject placedObject = new PlacedObject(PlacedObject.Type.None, null);
+    //                        if (placedObject.type == Enums.PlacedObjectType.DreamerSpot)
+    //                        {
+    //                            if (!regionDreamerRooms[fileName].Contains(fileName2))
+    //                            {
+    //                                regionDreamerRooms[fileName].Add(fileName2);
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //                break;
+    //            }
+    //        }
+    //    }
+    //}
 
     /// <summary>
     /// Load any resources

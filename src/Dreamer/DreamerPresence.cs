@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 namespace PitchBlack;
 public class DreamerPresence : World.IMigrationInfluence
 {
-    public DreamerPresence(World world, AbstractRoom dreamerRoom)
+    public DreamerPresence(World world, AbstractRoom dreamerRoom, int id)
     {
         this.world = world;
         this.dreamerRoom = dreamerRoom;
+        this.id = id;
     }
 
     #region Relations
@@ -42,6 +43,7 @@ public class DreamerPresence : World.IMigrationInfluence
     }
     #endregion
 
+    int id;
     public World world;
     public AbstractRoom dreamerRoom;
     public List<AbstractRoom> presenceRooms = new List<AbstractRoom>();

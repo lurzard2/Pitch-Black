@@ -114,7 +114,7 @@ public class DreamerData : PlacedObject.Data
         warpPointData.panelPos = panelPos;
         warpPointData.deathPersistentWarpPoint = true;
         warpPointData.rippleWarp = rippleWarp;
-        warpPointData.oneWay = (rippleWarp || Region.IsWatcherVanillaRegion(room.world.name) || Region.IsVanillaSentientRotRegion(room.world.name));
+        warpPointData.oneWay = rippleWarp;
         if (warpPointData.oneWay)
         {
             warpPointData.oneWayEntrance = true;
@@ -131,7 +131,7 @@ public class DreamerData : PlacedObject.Data
     public Vector2 panelPos;
     public Vector2? destPos;
     public SlugcatStats.Timeline destTimeline;
-    private string destRegion;
+    public string destRegion;
     public string destRoom;
     public int spawnIdentifier;
     public bool rippleWarp;

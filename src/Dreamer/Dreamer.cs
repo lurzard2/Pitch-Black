@@ -89,6 +89,14 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     }
     #endregion
 
+    public DreamerData DreamerData
+    {
+        get
+        {
+            return placedObject.data as DreamerData;
+        }
+    }
+
     public Dreamer(Room room, PlacedObject placedObject)
     {
         this.placedObject = placedObject;
@@ -507,6 +515,29 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         {
             return;
         }
+
+        if (!slatedForDeletetion)
+        {
+            for (int i = 0; i < room.warpPoints.Count; i++)
+            {
+                CosmeticRipple ripple = room.warpPoints[i].ripple;
+                if (ripple != null)
+                {
+                    ripple.RemoveFromRoom();
+                }
+                WarpTear warpTear = room.warpPoints[i].warpTear;
+                if (warpTear != null)
+                {
+                    warpTear.RemoveFromRoom();
+                }
+                WarpPoint warpPoint = room.warpPoints[i];
+                if (warpPoint != null)
+                {
+                    warpPoint.RemoveFromRoom();
+                }
+            }
+        }
+
         rags.Update();
         chains.Update();
 
@@ -526,23 +557,63 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
             }
         }
 
+        // Certain encounters spawn warps
+        if (DreamerData.spawnIdentifier == 1)
+        {
+            dreamerSpawnsWarp = true;
+        }
+        else
+        {
+            dreamerSpawnsWarp = false;
+        }
+
+        // Behavior
         if (OnScreen())
         {
             onScreenCounter.Tick();
         }
         else
         {
+            if (conversation != null)
+            {
+                DreamerConversation conversation2 = conversation;
+                if (conversation2 != null)
+                {
+                    conversation2.Destroy();
+                }
+                convoActive = false;
+                conversation = null;
+            }
             onScreenCounter.Reset();
         }
-
-        if (onScreenCounter.isFinished && conversation == null && room.game.cameras[0].hud != null)
+        if (onScreenCounter.isFinished && room.game.cameras[0].hud != null)
         {
-            StartConversation();
+            if (conversation == null)
+            {
+                convoActive = true;
+                StartConversation();
+            }
+            else if (conversation.slatedForDeletion)
+            {
+                convoFinished = true;
+            }
         }
-
         if (conversation != null && convoActive)
         {
             conversation.Update();
+        }
+        if (convoFinished)
+        {
+            convoActive = false;
+            MarkEncountered();
+        }
+        if (encounterFinished)
+        {
+            if (dreamerSpawnsWarp)
+            {
+                SpawnWarp();
+            }
+            Despawn();
         }
 
             sinBob += 1f / Mathf.Lerp(140f, 210f, UnityEngine.Random.value);
@@ -1063,54 +1134,82 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     }
     #endregion
 
-    #region Removing
-    public void StartDeactivate()
+    #region WarpPoints
+    private void SpawnWarp()
     {
-        room.PlaySound(WatcherEnums.WatcherSoundID.Ripple_Creature_Swap_Dimensions, pos);
-        if (fadeOutCounter == 0)
+        DreamerData data = DreamerData;
+        if (data == null)
         {
-            fadeOutCounter = 1;
+            return;
+        }
+
+        PlacedObject placedObject = new PlacedObject(PlacedObject.Type.WarpPoint, data.CreateWarpPointData(room));
+        placedObject.pos = pos;
+        WarpPoint warpPoint = room.TrySpawnWarpPoint(placedObject, true);
+
+        if (warpPoint != null)
+        {
+            warpPoint.triggerTime = (float)((int)(warpPoint.triggerActivationTime - 1f));
+            warpPoint.strongPull = true;
+            warpPoint.guaranteeTrigger = true;
         }
     }
 
-    public void DeactivateDreamer()
+    public static void SpawnBackupWarpPoint(Room room, PlacedObject o)
     {
-        DeactivateDreamerPresence(room.world);
+        WarpPoint.WarpPointData warpPointData = (o.data as DreamerData).CreateWarpPointData(room);
+        PlacedObject placedObject = new PlacedObject(PlacedObject.Type.WarpPoint, warpPointData);
+        placedObject.pos = o.pos;
+        bool flag = false;
+        foreach (WarpPoint warpPoint in room.warpPoints)
+        {
+            if (warpPoint.Data.destRoom == warpPointData.destRoom && Vector2.Distance(warpPoint.pos, placedObject.pos) < 10f)
+            {
+                flag = true;
+                break;
+            }
+        }
+        if (!flag)
+        {
+            room.TrySpawnWarpPoint(placedObject, true);
+        }
+    }
+    #endregion
+
+    #region Presence and Removing
+    private void MarkEncountered()
+    {
+        if (encounterFinished)
+        {
+            return;
+        }
+        DreamerData data = DreamerData;
+        if (data == null)
+        {
+            return;
+        }
+        var state = room.game.GetStorySession.saveState;
+        int i = BeaconSaveData.GetDreamerEncountersNumber(state);
+        BeaconSaveData.SetDreamerEncountersNumber(state, i++);
+        if (!BeaconSaveData.GetDreamerEncountersRoom(state).Contains(room.abstractRoom.name))
+        {
+            BeaconSaveData.GetDreamerEncountersRoom(state).Add(room.abstractRoom.name);
+        }
+        encounterFinished = true;
+    }
+
+    private void Despawn()
+    {
         if (!slatedForDeletetion)
         {
-            for (int i = 0; i < room.game.Players.Count; i++)
-            {
-                if (room.game.Players[i].realizedCreature != null)
-                {
-                    (room.game.Players[i].realizedCreature as Player).controller = null;
-                }
-            }
-            StoryGameSession storyGameSession = room.game.session as StoryGameSession;
-            var state = storyGameSession.saveState;
-            var dreamerRooms = BeaconSaveData.GetDreamerEncountersRoom(state);
-            if (storyGameSession != null && !dreamerRooms.Contains(room.abstractRoom.name))
-            {
-                // Add room string to the saved list of encounter rooms, then increase the encounter int
-                dreamerRooms.Add(room.abstractRoom.name);
-                int i = BeaconSaveData.GetDreamerEncountersNumber(state);
-                BeaconSaveData.SetDreamerEncountersNumber(state, i++);
-            }
-            room.game.cameras[0].ExitCutsceneMode();
-            room.PlaySound(WatcherEnums.WatcherSoundID.Void_Weaver_Vanish);
-            Destroy();
+            slatedForDeletetion = true;
+            DevToolsHooks.spawnedDreamer = false;
         }
-    }
-
-    public static DreamerPresence dreamerPresence;
-    public void DeactivateDreamerPresence(World world)
-    {
-        dreamerPresence = null;
     }
 
     #endregion
 
     public Vector2 targetPos;
-    public Vector2 targetDir;
     public readonly int totalSprites;
     public readonly int lightSprite;
     public readonly int behindBodySprites;
@@ -1128,9 +1227,11 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     private float flipTo;
     private float defaultFlip;
 
-    private int fadeOutCounter;
     private Counter onScreenCounter = new Counter(120, 0, true);
     private bool convoActive;
+    private bool convoFinished;
+    private bool encounterFinished;
+    private bool dreamerSpawnsWarp;
 
     private PositionedSoundEmitter voice;
     private float talking;
