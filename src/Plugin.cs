@@ -31,10 +31,6 @@ class  Plugin : BaseUnityPlugin
 
     private bool init = false;
     public static ManualLogSource logger;
-
-    // Thanatosis values to be moved to savedata
-    //public static float testingThanatosisRequirement = 1f;
-    //public static bool testingThanatosis = true;
     
     // CWTs
     public static readonly ConditionalWeakTable<Player, ScugCWT> scugCWT = new();
@@ -55,7 +51,7 @@ class  Plugin : BaseUnityPlugin
     public static readonly PlayerFeature<float> FlipBoost = PlayerFloat("pb/flip_boost");
     
     // Rotund World stuff -WW
-    internal static bool RotundWorldEnabled => _rotundWorldEnabled; // For a single check in BeaconHooks' Player.Update hook
+    internal static bool RotundWorldEnabled => _rotundWorldEnabled;
     private static bool _rotundWorldEnabled;
     public static bool individualFoodEnabled;
     
@@ -79,7 +75,8 @@ class  Plugin : BaseUnityPlugin
             if (Futile.atlasManager.DoesContainAtlas("lmllspr"))
                 Futile.atlasManager.UnloadAtlas("lmllspr");
         };
-        
+        On.SaveState.LoadGame += SaveState_LoadGame;
+
         WorldHooks.Apply();
         DevToolsHooks.Apply();
         PBSlugBaseFeatures.Apply();
@@ -90,6 +87,20 @@ class  Plugin : BaseUnityPlugin
         FlareBombHooks.Apply();
         
         logger.LogDebug("PitchBlack's hooks successfully applied!");
+    }
+
+    private void SaveState_LoadGame(On.SaveState.orig_LoadGame orig, SaveState self, string str, RainWorldGame game)
+    {
+        orig(self, str, game);
+        if (self.saveStateNumber == Enums.SlugcatStatsName.Beacon && self.cycleNumber == 0)
+        {
+            BeaconSaveData.GetDreamerEncountersRoom(self).Clear();
+            BeaconSaveData.SetDreamerEncountersNumber(self, 0);
+            BeaconSaveData.SetCanUseThanatosis(self, false);
+            BeaconSaveData.SetSpiralLevel(self, 0);
+            BeaconSaveData.SetMaxSpiralLevel(self, 0);
+            BeaconSaveData.SetMinSpiralLevel(self, 0);
+        }
     }
 
     //private void RainWorld_BuildTokenCache(On.RainWorld.orig_BuildTokenCache orig, RainWorld self, bool modded, string region)
@@ -165,8 +176,6 @@ class  Plugin : BaseUnityPlugin
         if (!init)
         {
             Enums.SoundID.RegisterValues();
-
-            //BeaconSaveData.Initialize(self);
             MenuSceneHooks.Apply();
 
             try

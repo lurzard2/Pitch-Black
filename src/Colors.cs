@@ -9,12 +9,12 @@ public static class Colors
     
     // #1a1041
     public static readonly Color BeaconDefaultColor = new(26f/255f, 16f/255f, 65f/255f);
-    public static readonly Color BeaconStarveColor = Color.Lerp(BeaconDefaultColor, Color.gray, 0.4f);
+    public static readonly Color BeaconStarveColor = Color.Lerp(Color.Lerp(BeaconDefaultColor, BeaconFullColor, .25f), Color.gray, .4f);
     // #3300ff
     public static readonly Color BeaconFullColor = new(.2f, 0f, 1f); 
     // Not readonly because it is assigned to the palette black color.
-    public static Color playerPaletteBlack;
-    public static readonly Color BeaconEyeColor = Color.Lerp(playerPaletteBlack, Color.white, .87f);
+    public static Color PlayerPaletteBlack;
+    public static readonly Color BeaconEyeColor = Color.Lerp(PlayerPaletteBlack, Color.white, .87f);
     
     // #d31c4a
     public static readonly Color NightmareColor = new (0.82745098039f, 0.10980392156f, 0.29019607843f);

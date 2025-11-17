@@ -25,18 +25,16 @@ public static class MiscUtils
     {
         return room != null && !room.abstractRoom.shelter && !room.abstractRoom.gate;
     }
-    
+
     // Regions that make Beacon squint regardless of room darkness
-    public static bool RegionBlindsBeacon(Room room)
+    public static bool RegionMakesBeaconCloseEyes(Room room)
     {
         string regionName = room.world.region.name;
         string roomName = room.abstractRoom.name;
-        if (regionName == "VV")
+        bool vhosCondition = regionName == "VV";
+        if (vhosCondition)
         {
-            if (roomName != "VV_E01")
-            {
-                return true;
-            }
+            return true;
         }
         // then add more conditions for the echo rooms later.
         return false;
