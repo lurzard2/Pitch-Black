@@ -18,32 +18,6 @@ public static class ScugHooks
     {
         ThanatosisUpdate(self);
 
-        // For debugging pre-Dreamer implementation
-        bool dev = true;
-        if (dev)
-        {
-            // Max: <=1f cant move in thanatosis
-            // Max: >=2f rot apearance
-            // Whole numbers will represent # of revives
-            var state = (self.room.game.session as StoryGameSession).saveState;
-            if (!BeaconSaveData.GetCanUseThanatosis(state))
-            {
-                BeaconSaveData.SetCanUseThanatosis(state, true);
-            }
-            if (BeaconSaveData.GetMinSpiralLevel(state) == 0f)
-            {
-                BeaconSaveData.SetMinSpiralLevel(state, 1f);
-            }
-            if (BeaconSaveData.GetSpiralLevel(state) == 0f)
-            {
-                BeaconSaveData.SetSpiralLevel(state, 2f);
-            }
-            if (BeaconSaveData.GetMaxSpiralLevel(state) == 0f)
-            {
-                BeaconSaveData.SetMaxSpiralLevel(state, 2f);
-            }
-        }
-
         // Check here if it's Beacon
         if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
         {
@@ -128,7 +102,7 @@ public static class ScugHooks
                 case true:
                     InThanatosis(self);
                     break;
-                case false:
+                default:
                     OutsideThanatosis(self);
                     break;
             }
@@ -156,7 +130,6 @@ public static class ScugHooks
                             : Enums.SoundID.Player_Deactivated_Thanatosis, self.mainBodyChunk);
                 }
             }
-
         }
     }
 
@@ -165,6 +138,11 @@ public static class ScugHooks
         var GotCWTData = scugCWT.TryGetValue(self, out ScugCWT c);
         if (GotCWTData && c is BeaconCWT cwt)
         {
+            //if (BeaconSaveData.GetMaxSpiralLevel(self.room.world.game.GetStorySession.saveState) < 1f)
+            //{
+            //    self.SetMalnourished(true, false);
+            //}
+
             // Spawn a DreamSpawn
             if (!cwt.spawnLeftBody)
             {
@@ -197,6 +175,11 @@ public static class ScugHooks
         var GotCWTData = scugCWT.TryGetValue(self, out ScugCWT c);
         if (GotCWTData && c is BeaconCWT cwt)
         {
+            //if (BeaconSaveData.GetMaxSpiralLevel(self.room.world.game.GetStorySession.saveState) < 1f)
+            //{
+            //    self.SetMalnourished(false, false);
+            //}
+
             cwt.graspsNeedToBeReleased = false;
             cwt.spawnLeftBody = false;
             if (cwt.thanatosisCounter > 0)
@@ -271,7 +254,7 @@ public static class ScugHooks
         On.Player.ctor += Player_ctor;
         On.Player.Update += Player_Update;
         On.SlugcatHand.EngageInMovement += SlugcatHand_EngageInMovement;
-        IL.Player.checkInput += IL_Player_checkInput;
+        //IL.Player.checkInput += IL_Player_checkInput;
     }
 
     private static void IL_Player_checkInput(ILContext il)
