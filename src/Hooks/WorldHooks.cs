@@ -7,46 +7,23 @@ namespace PitchBlack;
 
 public static class WorldHooks
 {
-    public static void UpdateDreamerMode(Room room, int newCamPos, RoomCamera rCam)
-    {
-        if (room == null)
-        {
-            return;
-        }
-        if (!DevToolsHooks.spawnedDreamer)
-        {
-            dreamerInRoomMode = false;
-            return;
-        }
-        dreamerInRoomMode = true;
-    }
-
-    public static void RemoveDreamerRoomEffects(RoomCamera self)
-    {
-        bool activeDreamer = targetDreamIntensity > 0f && self.ghostMode > 0f;
-        if (activeDreamer)
-        {
-            targetDreamIntensity -= 0.005f;
-            self.ghostMode -= 0.005f;
-            self.ghostMode = Mathf.Lerp(self.ghostMode, targetDreamIntensity, 0.06f);
-        }
-    }
-
-    public static bool dreamerInRoomMode;
     public static float targetDreamIntensity;
+    public static float lastGhostMode;
 
     public static void Apply()
     {
         On.Region.ctor_string_int_int_RainWorldGame_Timeline += Region_ctor_string_int_int_RainWorldGame_Timeline;
-        //On.RoomCamera.Update += RoomCamera_Update;
-        On.RoomCamera.ApplyPositionChange += RoomCamera_ApplyPositionChange;
+        On.RoomCamera.Update += RoomCamera_Update;
+        On.RoomCamera.UpdateGhostMode += RoomCamera_UpdateGhostMode;
     }
 
-    // Update dreamer's room effects
-    private static void RoomCamera_ApplyPositionChange(On.RoomCamera.orig_ApplyPositionChange orig, RoomCamera self)
+    private static void RoomCamera_UpdateGhostMode(On.RoomCamera.orig_UpdateGhostMode orig, RoomCamera self, Room newRoom, int newCamPos)
     {
-        orig(self);
-        UpdateDreamerMode(self.room, self.currentCameraPosition, self);
+        orig(self, newRoom, newCamPos);
+        if (DevToolsHooks.spawnedDreamer)
+        {
+            lastGhostMode = self.ghostMode;
+        }
     }
 
     // Adding effects to rooms, using SpinningTop's radial effect
@@ -57,7 +34,7 @@ public static class WorldHooks
         Creature creature = (self.followAbstractCreature != null) ? self.followAbstractCreature.realizedCreature : null;
         if (self.room != null && creature != null && creature is Player)
         {
-            if (dreamerInRoomMode)
+            if (DevToolsHooks.spawnedDreamer)
             {
                 // SpinningTop's radial room effect is executed like this for Watcher
                 int i = 0;
@@ -79,11 +56,16 @@ public static class WorldHooks
                         i++;
                     }
                 }
-                self.ghostMode = Mathf.Lerp(self.ghostMode, targetDreamIntensity, 0.06f);
+                lastGhostMode = self.ghostMode;
+                self.ghostMode = Mathf.Lerp(lastGhostMode, targetDreamIntensity, 0.06f);
             }
             else
             {
-                RemoveDreamerRoomEffects(self);
+                if (self.ghostMode > 0f && targetDreamIntensity > 0f)
+                {
+                    self.ghostMode -= 0.005f;
+                    targetDreamIntensity -= 0.5f;
+                }
             }
         }
     }

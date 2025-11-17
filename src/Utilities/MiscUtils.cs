@@ -3,7 +3,6 @@
 public static class MiscUtils
 {
     #region Beacon Checks
-    
     public static bool IsBeacon(GameSession session)
     {
         return (session is StoryGameSession s) && IsBeacon(s.saveStateNumber);
@@ -16,7 +15,6 @@ public static class MiscUtils
     {
         return name != null && name == Enums.SlugcatStatsName.Beacon;
     }
-    
     #endregion
     
     public static bool IsNightTerror(this CreatureTemplate creatureTemplate) => creatureTemplate.type == Enums.CreatureTemplateType.NightTerror;
@@ -31,7 +29,7 @@ public static class MiscUtils
     {
         string regionName = room.world.region.name;
         string roomName = room.abstractRoom.name;
-        bool vhosCondition = regionName == "VV";
+        bool vhosCondition = regionName == "vv" && roomName != "vv_e01";
         if (vhosCondition)
         {
             return true;

@@ -819,7 +819,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         Vector2 vector = Vector2.Lerp(spine[spine.Length - 1].lastPos, spine[spine.Length - 1].pos, timeStacker);
         Vector2 vector2 = Custom.DirVec(Vector2.Lerp(spine[spine.Length - 2].lastPos, spine[spine.Length - 2].pos, timeStacker), vector);
         vector += vector2 * 5f * scale;
-        float headLength = 40f;
+        float headLength = 50f;
         Vector2 vector3 = vector + vector2 * headLength * scale + Custom.PerpendicularVector(vector2) * 40f * scale * num;
         Vector2 vector4 = Vector2.Lerp(spine[0].lastPos, spine[0].pos, timeStacker);
         vector4 += Custom.DirVec(Vector2.Lerp(spine[1].lastPos, spine[1].pos, timeStacker), vector4);
@@ -854,7 +854,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         vector7.x = Mathf.Pow(Mathf.Abs(vector7.x), 8f) * Mathf.Sign(vector7.x);
         vector7 *= 40f * scale;
         vector7.y -= 7f * scale;
-        Vector2 vector8 = (base.pos + new Vector2(0f, -170f) + vector + vector7 + Vector2.Lerp(spine[5].lastPos, spine[5].pos, timeStacker)) / 3f;
+        Vector2 vector8 = (base.pos + new Vector2(0f, -50f) + vector + vector7 + Vector2.Lerp(spine[5].lastPos, spine[5].pos, timeStacker)) / 3f;
         sLeaser.sprites[DistortionSprite].x = vector8.x - camPos.x;
         sLeaser.sprites[DistortionSprite].y = vector8.y - camPos.y;
         sLeaser.sprites[DistortionSprite].scale = 933f * scale / 16f;
@@ -876,7 +876,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
             }
             else
             {
-                vector9 = Custom.Bezier(vector, vector + vector2 * 60f * scale, vector3, vector + vector2 * 150f * scale, Mathf.InverseLerp((float)spineSegments, (float)(spineSegments + snoutSegments - 1), (float)j));
+                vector9 = Custom.Bezier(vector, vector + vector2 * 50f * scale, vector3, vector + vector2 * 50f * scale, Mathf.InverseLerp((float)spineSegments, (float)(spineSegments + snoutSegments - 1), (float)j));
             }
             vector9 += vector7;
             if (j == spineBendPoint)
@@ -920,7 +920,8 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         for (int k = 0; k < (sLeaser.sprites[HeadMeshSprite] as TriangleMesh).verticeColors.Length; k++)
         {
             float num12 = (float)k / (float)((sLeaser.sprites[HeadMeshSprite] as TriangleMesh).verticeColors.Length - 1);
-            num12 *= 0.75f;
+            // space teture takes to fade
+            num12 *= 0.5f;
             float num13;
             float num14;
             if (num12 < 0.15f)
@@ -1163,7 +1164,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     }
     #endregion
 
-    #region Presence and Removing
+    #region Encountering and Removing
     private void MarkEncountered()
     {
         if (encounterFinished)
@@ -1176,13 +1177,27 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
             return;
         }
         var state = room.game.GetStorySession.saveState;
-        int i = BeaconSaveData.GetDreamerEncountersNumber(state);
-        BeaconSaveData.SetDreamerEncountersNumber(state, i++);
+        IncreaseSpiralLevel(state);
         if (!BeaconSaveData.GetDreamerEncountersRoom(state).Contains(room.abstractRoom.name))
         {
             BeaconSaveData.GetDreamerEncountersRoom(state).Add(room.abstractRoom.name);
         }
         encounterFinished = true;
+    }
+
+    private void IncreaseSpiralLevel(SaveState state)
+    {
+        var maxLevel = BeaconSaveData.GetMaxSpiralLevel(state);
+        float increment = 0f;
+        if (maxLevel >= 0.5f)
+        {
+            increment = 0.5f;
+        }
+        else
+        {
+            increment = 0.25f;
+        }
+        BeaconSaveData.SetMaxSpiralLevel(state, maxLevel += increment);
     }
 
     private void Despawn()
@@ -1226,7 +1241,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     public float scale;
     public float lightSpriteScale = 0.3f;
     public int spineSegments = 11;
-    public int snoutSegments = 4;
+    public int snoutSegments = 2;
     public int spineBendPoint = 7;
     public int thighSegments = 7;
     public int lowerLegSegments = 17;
