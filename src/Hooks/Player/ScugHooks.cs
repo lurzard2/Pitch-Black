@@ -56,7 +56,7 @@ public static class ScugHooks
             // A little bit of the code for squinting is also in Player\Graphics\ScugGraphics.cs -Lur
             if (self.room != null)
             {
-                if (self.room.Darkness(self.mainBodyChunk.pos) < 0.15f || MiscUtils.RegionBlindsBeacon(self.room))
+                if (self.room.Darkness(self.mainBodyChunk.pos) < 0.15f || MiscUtils.RegionMakesBeaconCloseEyes(self.room))
                 {
                     if (cwt.brightSquint == 0)
                     {
@@ -352,7 +352,6 @@ public static class ScugHooks
             }
 
         }
-
 
         return orig(self);
     }
