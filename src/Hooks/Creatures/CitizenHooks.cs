@@ -18,10 +18,21 @@ public static class CitizenHooks
         On.ScavengerGraphics.DrawSprites += ScavengerGraphics_DrawSprites;
         On.ScavengerGraphics.GenerateColors += ScavengerGraphics_GenerateColors;
         On.ScavengerGraphics.AddToContainer += ScavengerGraphics_AddToContainer;
+
+        On.Watcher.WarpPoint.ctor += WarpPoint_ctor;
     }
-    
+
+    private static void WarpPoint_ctor(On.Watcher.WarpPoint.orig_ctor orig, Watcher.WarpPoint self, Room room, PlacedObject placedObject)
+    {
+        orig(self, room, placedObject);
+        if (!self.blackListedCreatureTypes.Contains(Enums.CreatureTemplateType.Citizen))
+        {
+            self.blackListedCreatureTypes.Add(Enums.CreatureTemplateType.Citizen);
+        }
+    }
+
     #region Collision disabling hooks
-    
+
     private static void ScavengerAbstractAI_InitGearUp(On.ScavengerAbstractAI.orig_InitGearUp orig, ScavengerAbstractAI self)
     {
         if (self.parent.creatureTemplate.type == citizen)
