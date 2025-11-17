@@ -541,8 +541,6 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         rags.Update();
         chains.Update();
 
-        //<Removing warp visuals>
-
         // Makes them looked at by player when present
         foreach (AbstractCreature abstractCreature in room.game.Players)
         {
@@ -557,17 +555,6 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
             }
         }
 
-        // Certain encounters spawn warps
-        if (DreamerData.spawnIdentifier == 1)
-        {
-            dreamerSpawnsWarp = true;
-        }
-        else
-        {
-            dreamerSpawnsWarp = false;
-        }
-
-        // Behavior
         if (OnScreen())
         {
             onScreenCounter.Tick();
@@ -609,14 +596,11 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         }
         if (encounterFinished)
         {
-            if (dreamerSpawnsWarp)
-            {
-                SpawnWarp();
-            }
+            SpawnWarp();
             Despawn();
         }
 
-            sinBob += 1f / Mathf.Lerp(140f, 210f, UnityEngine.Random.value);
+        sinBob += 1f / Mathf.Lerp(140f, 210f, UnityEngine.Random.value);
         pos = placedObject.pos + new Vector2(0f, Mathf.Sin(sinBob * 3.1415927f * 2f) * 18f * scale);
         flipProg = Mathf.Min(1f, flipProg + flipSpeed);
         flip = Mathf.Lerp(flipFrom, flipTo, Custom.SCurve(flipProg, 0.7f));
@@ -835,7 +819,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         Vector2 vector = Vector2.Lerp(spine[spine.Length - 1].lastPos, spine[spine.Length - 1].pos, timeStacker);
         Vector2 vector2 = Custom.DirVec(Vector2.Lerp(spine[spine.Length - 2].lastPos, spine[spine.Length - 2].pos, timeStacker), vector);
         vector += vector2 * 5f * scale;
-        float headLength = 100f;
+        float headLength = 40f;
         Vector2 vector3 = vector + vector2 * headLength * scale + Custom.PerpendicularVector(vector2) * 40f * scale * num;
         Vector2 vector4 = Vector2.Lerp(spine[0].lastPos, spine[0].pos, timeStacker);
         vector4 += Custom.DirVec(Vector2.Lerp(spine[1].lastPos, spine[1].pos, timeStacker), vector4);
@@ -936,7 +920,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         for (int k = 0; k < (sLeaser.sprites[HeadMeshSprite] as TriangleMesh).verticeColors.Length; k++)
         {
             float num12 = (float)k / (float)((sLeaser.sprites[HeadMeshSprite] as TriangleMesh).verticeColors.Length - 1);
-            num12 *= 0.5f;
+            num12 *= 0.75f;
             float num13;
             float num14;
             if (num12 < 0.15f)
@@ -1142,7 +1126,10 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         {
             return;
         }
-
+        if (data.spawnIdentifier != 1)
+        {
+            return;
+        }
         PlacedObject placedObject = new PlacedObject(PlacedObject.Type.WarpPoint, data.CreateWarpPointData(room));
         placedObject.pos = pos;
         WarpPoint warpPoint = room.TrySpawnWarpPoint(placedObject, true);
@@ -1202,8 +1189,8 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     {
         if (!slatedForDeletetion)
         {
-            slatedForDeletetion = true;
             DevToolsHooks.spawnedDreamer = false;
+            slatedForDeletetion = true;
         }
     }
 
@@ -1231,7 +1218,6 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     private bool convoActive;
     private bool convoFinished;
     private bool encounterFinished;
-    private bool dreamerSpawnsWarp;
 
     private PositionedSoundEmitter voice;
     private float talking;
@@ -1240,7 +1226,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     public float scale;
     public float lightSpriteScale = 0.3f;
     public int spineSegments = 11;
-    public int snoutSegments = 6;
+    public int snoutSegments = 4;
     public int spineBendPoint = 7;
     public int thighSegments = 7;
     public int lowerLegSegments = 17;

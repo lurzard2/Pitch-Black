@@ -9,22 +9,27 @@ public static class WorldHooks
 {
     public static void UpdateDreamerMode(Room room, int newCamPos, RoomCamera rCam)
     {
-        if (room != null)
+        if (room == null)
         {
-            if (DevToolsHooks.spawnedDreamer)
-            {
-                dreamerInRoomMode = true;
-            }
-            else if (BeaconSaveData.GetDreamerEncountersRoom(room.world.game.GetStorySession.saveState).Contains(room.abstractRoom.name))
-            {
-                dreamerInRoomMode = false;
-            }
-            else
-            {
-                dreamerInRoomMode = false;
-            }
+            return;
         }
+        if (!DevToolsHooks.spawnedDreamer)
+        {
+            dreamerInRoomMode = false;
+            return;
+        }
+        dreamerInRoomMode = true;
+    }
 
+    public static void RemoveDreamerRoomEffects(RoomCamera self)
+    {
+        bool activeDreamer = targetDreamIntensity > 0f && self.ghostMode > 0f;
+        if (activeDreamer)
+        {
+            targetDreamIntensity -= 0.005f;
+            self.ghostMode -= 0.005f;
+            self.ghostMode = Mathf.Lerp(self.ghostMode, targetDreamIntensity, 0.06f);
+        }
     }
 
     public static bool dreamerInRoomMode;
@@ -33,7 +38,7 @@ public static class WorldHooks
     public static void Apply()
     {
         On.Region.ctor_string_int_int_RainWorldGame_Timeline += Region_ctor_string_int_int_RainWorldGame_Timeline;
-        On.RoomCamera.Update += RoomCamera_Update;
+        //On.RoomCamera.Update += RoomCamera_Update;
         On.RoomCamera.ApplyPositionChange += RoomCamera_ApplyPositionChange;
     }
 
@@ -54,13 +59,14 @@ public static class WorldHooks
         {
             if (dreamerInRoomMode)
             {
+                // SpinningTop's radial room effect is executed like this for Watcher
                 int i = 0;
                 while (i < self.room.updateList.Count)
                 {
                     if (self.room.updateList[i] is Dreamer)
                     {
-                        float value = Vector2.Distance((self.room.updateList[i] as Dreamer).placedObject.pos, creature.mainBodyChunk.pos);
-                        targetDreamIntensity = Mathf.Lerp(0.11f, 1f, Mathf.InverseLerp(1500f, 0f, value));
+                        float distanceFromDreamer = Vector2.Distance((self.room.updateList[i] as Dreamer).placedObject.pos, creature.mainBodyChunk.pos);
+                        targetDreamIntensity = Mathf.Lerp(0.11f, 1f, Mathf.InverseLerp(1500f, 0f, distanceFromDreamer));
                         if ((self.room.updateList[i] as Dreamer).conversation != null)
                         {
                             targetDreamIntensity = 1f;
@@ -74,24 +80,15 @@ public static class WorldHooks
                     }
                 }
                 self.ghostMode = Mathf.Lerp(self.ghostMode, targetDreamIntensity, 0.06f);
-                //self.lightBloomAlpha = self.ghostMode * 0.8f;
             }
             else
             {
-                if (targetDreamIntensity > 0f && self.ghostMode > 0f)
-                {
-                    targetDreamIntensity -= 0.005f;
-                    self.ghostMode -= 0.005f;
-                    self.ghostMode = Mathf.Lerp(self.ghostMode, targetDreamIntensity, 0.06f);
-                }
+                RemoveDreamerRoomEffects(self);
             }
         }
     }
 
-    /// <summary>
-    /// Replace rot eye+effect color for Beacon
-    /// </summary>
-    /// <param name="timelineIndex">1.10 Slugcat timeline</param>
+    // Replace rot eye+effect color for Beacon
     private static void Region_ctor_string_int_int_RainWorldGame_Timeline(On.Region.orig_ctor_string_int_int_RainWorldGame_Timeline orig, Region self, string name, int firstRoomIndex, int regionNumber, RainWorldGame game, SlugcatStats.Timeline timelineIndex)
     {
         orig(self, name, firstRoomIndex, regionNumber, game, timelineIndex);

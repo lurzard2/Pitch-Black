@@ -46,18 +46,18 @@ public class DevToolsHooks
             if (self.roomSettings.placedObjects[objects].type == Enums.PlacedObjectType.DreamerSpot
                 && self.game.IsStorySession)
             {
+                var dreamerData = self.roomSettings.placedObjects[objects].data as DreamerData;
                 if (dreamerPresence == null)
                 {
-                    dreamerPresence = new DreamerPresence(self.world, self.abstractRoom, (self.roomSettings.placedObjects[objects].data as DreamerData).spawnIdentifier);
+                    dreamerPresence = new DreamerPresence(self.world, self.abstractRoom, dreamerData.spawnIdentifier);
                 }
                 var dreamerRooms = BeaconSaveData.GetDreamerEncountersRoom(self.world.game.GetStorySession.saveState);
-                // We have to ASSIGN this to a room so it isn't null: See World.SpawnGhost(), World.InitiateGeneralWeaverHintTrail(), World.InitiateWeaverPresence()
                 if (!dreamerRooms.Contains(self.abstractRoom.name) && dreamerPresence.dreamerRoom == self.abstractRoom)
                 {
                     spawnedDreamer = true;
                     self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[objects]));
                 }
-                else
+                else if (dreamerData.spawnIdentifier == 1)
                 {
                     Dreamer.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
                 }
