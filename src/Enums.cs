@@ -168,6 +168,9 @@ public static class Enums
         public static global::SoundID Player_Died_From_Thanatosis;
         public static global::SoundID Player_Revived;
         public static global::SoundID Thanatosis_Drowning_LOOP;
+        public static global::SoundID Dreamer_Voice;
+        public static global::SoundID Beacon_Voice;
+        public static global::SoundID Beacon_Hybrid_Voice;
         public static void RegisterValues()
         {
             Player_Activated_Thanatosis = new global::SoundID("Player_Activated_Thanatosis", true);
@@ -176,6 +179,9 @@ public static class Enums
             Player_Died_From_Thanatosis = new global::SoundID("Player_Died_From_Thanatosis", true);
             Player_Revived = new global::SoundID("Player_Revived", true);
             Thanatosis_Drowning_LOOP = new global::SoundID("Drowning_Thanatosis_LOOP", true);
+            Dreamer_Voice = new global::SoundID("Dreamer_Voice", true);
+            Beacon_Voice = new global::SoundID("Beacon_Voice", true);
+            Beacon_Hybrid_Voice = new global::SoundID("Beacon_Hybrid_Voice", true);
         }
         public static void UnregisterValues()
         {
@@ -208,6 +214,21 @@ public static class Enums
             {
                 Thanatosis_Drowning_LOOP.Unregister();
                 Thanatosis_Drowning_LOOP = null;
+            }
+            if (Dreamer_Voice != null)
+            {
+                Dreamer_Voice.Unregister();
+                Dreamer_Voice = null;
+            }
+            if (Beacon_Voice != null)
+            {
+                Beacon_Voice.Unregister();
+                Beacon_Voice = null;
+            }
+            if (Beacon_Hybrid_Voice != null)
+            {
+                Beacon_Hybrid_Voice.Unregister();
+                Beacon_Hybrid_Voice = null;
             }
         }
     }

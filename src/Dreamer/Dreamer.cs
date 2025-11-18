@@ -585,10 +585,10 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
                 convoFinished = true;
             }
         }
-        if (conversation != null && convoActive)
-        {
-            conversation.Update();
-        }
+        //if (conversation != null && convoActive)
+        //{
+        //    conversation.Update();
+        //}
         if (convoFinished)
         {
             convoActive = false;
@@ -729,7 +729,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         {
             requireActiveUpkeep = true
         };
-        room.PlaySound(line, voice, false, 1f, 1f, false);
+        room.PlaySound(line, voice, false, 1f, UnityEngine.Random.Range(0.75f, 1.25f), false);
     }
 
     public void StopSpeaking()
@@ -1127,7 +1127,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         {
             return;
         }
-        if (data.spawnIdentifier != 1)
+        if (data.destRoom == null)
         {
             return;
         }

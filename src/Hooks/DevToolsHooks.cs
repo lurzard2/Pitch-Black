@@ -57,7 +57,7 @@ public class DevToolsHooks
                     spawnedDreamer = true;
                     self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[objects]));
                 }
-                else if (dreamerData.spawnIdentifier == 1)
+                else if (dreamerData.destRoom != null)
                 {
                     Dreamer.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
                 }
