@@ -585,10 +585,10 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
                 convoFinished = true;
             }
         }
-        //if (conversation != null && convoActive)
-        //{
-        //    conversation.Update();
-        //}
+        if (conversation != null && convoActive)
+        {
+            conversation.Update();
+        }
         if (convoFinished)
         {
             convoActive = false;
