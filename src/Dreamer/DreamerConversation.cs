@@ -11,6 +11,14 @@ namespace PitchBlack;
 
 public class DreamerConversation : Conversation
 {
+    public bool VoiceSwitched
+    {
+        get
+        {
+            return switchVoiceEvents > 0;
+        }
+    }
+
     public DreamerConversation(Dreamer dreamer, ID id, DialogBox dialogBox) : base(dreamer, id, dialogBox)
     {
         this.dreamer = dreamer;
@@ -28,8 +36,9 @@ public class DreamerConversation : Conversation
 
         if (ConditionToSpeak() && eventsCount != events.Count)
         {
-            if (timeSinceLastSound > 1 && switchVoice)
+            if (timeSinceLastSound > 1 && VoiceSwitched)
             {
+                switchVoiceEvents--;
                 timeSinceLastSound.Finish();
             }
             if (timeSinceLastSound.isFinished && (events[0] as TextEvent).text != "...")
@@ -53,19 +62,19 @@ public class DreamerConversation : Conversation
     public void Speak()
     {
         // Assign default values to then be overriden
-        float volRange = Random.Range(0.65f, 1f);
+        float volRange = Random.Range(0.85f, 1f);
         float pitchRange = Random.Range(0.90f, 1.20f);
-        if (switchVoice)
+        if (VoiceSwitched)
         {
-            volRange = Random.Range(0.25f, 0.45f);
-            pitchRange = Random.Range(0.75f, 1.35f);
+            volRange = Random.Range(0.75f, 1f);
+            pitchRange = Random.Range(0.80f, 1.25f);
         }
         dreamer.room.PlaySound(VoiceID(), Random.Range(0f, 1f), volRange, pitchRange);
     }
 
     public SoundID VoiceID()
     {
-        if (switchVoice)
+        if (VoiceSwitched)
         {
             if (BeaconSaveData.GetMaxSpiralLevel(dreamer.room.game.GetStorySession.saveState) > 4f)
             {
@@ -95,7 +104,6 @@ public class DreamerConversation : Conversation
             s = "Sound asleep...";
             events.Add(new TextEvent(this, 0, s, 0));
             s = "Yet wide awake!";
-            switchVoice = true;
             events.Add(new TextEvent(this, 0, s, 0));
             s = "But the dream lingers...";
             events.Add(new TextEvent(this, 0, s, 10));
@@ -106,7 +114,6 @@ public class DreamerConversation : Conversation
             s = "A will to percieve and act";
             events.Add(new TextEvent(this, 0, s, 0));
             s = "A dream of a web. A tangle, strangled!";
-            switchVoice = false;
             events.Add(new TextEvent(this, 0, s, 10));
             s = "A strangle in selves";
             events.Add(new TextEvent(this, 0, s, 0));
@@ -125,5 +132,5 @@ public class DreamerConversation : Conversation
     private Dreamer dreamer;
     private Counter timeSinceLastSound = new Counter(120, 0, true);
     private string s = "";
-    private bool switchVoice;
+    private int switchVoiceEvents = 0;
 }

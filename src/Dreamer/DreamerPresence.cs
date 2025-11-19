@@ -14,7 +14,25 @@ public class DreamerPresence : World.IMigrationInfluence
         this.id = id;
     }
 
-    #region Relations
+    //public float DreamMode(AbstractRoom abstractRoom)
+    //{
+    //    if (abstractRoom == dreamerRoom)
+    //    {
+    //        return 1f;
+    //    }
+
+    //    for (int i = 0; i > abstractRoom.connections.Length; i++)
+    //    {
+    //        if (abstractRoom.connections[i] > 0 && abstractRoom.world.GetAbstractRoom(abstractRoom.connections[i]) == dreamerRoom)
+    //        {
+    //            return 1f;
+    //        }
+    //    }
+
+    //    return 0f;
+    //}
+
+    #region Room Attraction
     public float AttractionValueForCreature(AbstractRoom room, CreatureTemplate.Type tp, float defValue)
     {
         if (room == dreamerRoom)
@@ -43,7 +61,7 @@ public class DreamerPresence : World.IMigrationInfluence
     }
     #endregion
 
-    int id;
+    public int id;
     public World world;
     public AbstractRoom dreamerRoom;
     public List<AbstractRoom> presenceRooms = new List<AbstractRoom>();

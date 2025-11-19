@@ -31,6 +31,9 @@ class  Plugin : BaseUnityPlugin
 
     private bool init = false;
     public static ManualLogSource logger;
+
+    // Dev bool for testing and/or hardcoding values
+    public static bool devMode = true;
     
     // CWTs
     public static readonly ConditionalWeakTable<Player, ScugCWT> scugCWT = new();
@@ -38,6 +41,8 @@ class  Plugin : BaseUnityPlugin
     public static readonly ConditionalWeakTable<AbstractCreature, StrongBox<int>> KILLIT = new();
     public static readonly ConditionalWeakTable<RainWorldGame, List<NTTracker>> pursuerTracker = new();
     public static readonly ConditionalWeakTable<MouseGraphics, RotData> rotRatData = new();
+    public static readonly ConditionalWeakTable<World, List<AbstractRoom>> roomsWithDreamer = new();
+    public static readonly ConditionalWeakTable<World, List<DreamerPresence>> dreamerPresence = new();
 
     // Colors moved to Colors.cs after I saw Alduris set up his codespace that way -Lur 
 
@@ -96,73 +101,12 @@ class  Plugin : BaseUnityPlugin
         {
             BeaconSaveData.GetDreamerEncountersRoom(self).Clear();
             BeaconSaveData.SetDreamerEncountersNumber(self, 0);
-            BeaconSaveData.SetCanUseThanatosis(self, false);
-            BeaconSaveData.SetSpiralLevel(self, 0);
-            BeaconSaveData.SetMaxSpiralLevel(self, 0);
+            BeaconSaveData.SetCanUseThanatosis(self, devMode ? true : false);
+            BeaconSaveData.SetSpiralLevel(self, devMode ? 5f : 0f);
+            BeaconSaveData.SetMaxSpiralLevel(self, devMode ? 5f : 0);
             BeaconSaveData.SetMinSpiralLevel(self, 0);
         }
     }
-
-    //private void RainWorld_BuildTokenCache(On.RainWorld.orig_BuildTokenCache orig, RainWorld self, bool modded, string region)
-    //{
-    //    orig(self, modded, region);
-    //    string fileName = region.ToLowerInvariant();
-    //    regionDreamerRooms[fileName] = new List<string>();
-
-    //    string[] array = AssetManager.ListDirectory("World" + Path.DirectorySeparatorChar.ToString() + region + "-Rooms", false, false, false);
-    //    List<string> list = new List<string>();
-    //    List<string> list2 = new List<string>();
-    //    for (int i = 0; i < array.Length; i++)
-    //    {
-    //        string fileName3 = Path.GetFileName(array[i]);
-    //        if (fileName3.Contains("settings"))
-    //        {
-    //            list.Add(array[i]);
-    //            if (fileName3.Contains("settings-"))
-    //            {
-    //                list2.Add(array[i]);
-    //            }
-    //        }
-    //    }
-    //    for (int j = 0; j < list.Count; j++)
-    //    {
-    //        string[] array2 = File.ReadAllLines(list[j]);
-    //        List<string[]> list5 = new List<string[]>();
-    //        for (int k = 0; k < array2.Length; k++)
-    //        {
-    //            string[] array3 = Regex.Split(Custom.ValidateSpacedDelimiter(array2[k], ":"), ": ");
-    //            if (array3.Length == 2)
-    //            {
-    //                list5.Add(array3);
-    //            }
-    //        }
-    //        for (int l = 0; l < list5.Count; l++)
-    //        {
-    //            if (list5[l][0] == "PlacedObjects")
-    //            {
-    //                string[] array4 = Regex.Split(Custom.ValidateSpacedDelimiter(list5[l][1], ","), ", ");
-    //                for (int m = 0; m < array4.Length; m++)
-    //                {
-    //                    string[] array5 = Regex.Split(array4[m].Trim(), "><");
-    //                    string fileName2 = Path.GetFileName(list[j].Substring(0, list[j].ToLowerInvariant().IndexOf("_settings")));
-    //                    if (array5.Length > 1)
-    //                    {
-    //                        // The important bit
-    //                        PlacedObject placedObject = new PlacedObject(PlacedObject.Type.None, null);
-    //                        if (placedObject.type == Enums.PlacedObjectType.DreamerSpot)
-    //                        {
-    //                            if (!regionDreamerRooms[fileName].Contains(fileName2))
-    //                            {
-    //                                regionDreamerRooms[fileName].Add(fileName2);
-    //                            }
-    //                        }
-    //                    }
-    //                }
-    //                break;
-    //            }
-    //        }
-    //    }
-    //}
 
     /// <summary>
     /// Load any resources

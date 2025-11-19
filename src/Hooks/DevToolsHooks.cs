@@ -15,9 +15,6 @@ public class DevToolsHooks
     /// - RoomSettingsPage.DevEffectGetCategoryFromEffectType to add to correct catagory
     /// </summary> -Lur
 
-    public static bool spawnedDreamer;
-    public static DreamerPresence dreamerPresence = null;
-
     public static void Apply()
     {
         On.Room.NowViewed += Room_NowViewed;
@@ -47,20 +44,9 @@ public class DevToolsHooks
                 && self.game.IsStorySession)
             {
                 var dreamerData = self.roomSettings.placedObjects[objects].data as DreamerData;
-                if (dreamerPresence == null)
-                {
-                    dreamerPresence = new DreamerPresence(self.world, self.abstractRoom, dreamerData.spawnIdentifier);
-                }
                 var dreamerRooms = BeaconSaveData.GetDreamerEncountersRoom(self.world.game.GetStorySession.saveState);
-                if (!dreamerRooms.Contains(self.abstractRoom.name) && dreamerPresence.dreamerRoom == self.abstractRoom)
-                {
-                    spawnedDreamer = true;
-                    self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[objects]));
-                }
-                else if (dreamerData.destRoom != null)
-                {
-                    Dreamer.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
-                }
+                // We need this in WorldHooks more than it being embedded in here, everything relevant is there anyway
+                WorldHooks.LoadDreamer(self, objects, dreamerData, dreamerRooms);
             }
         }
     }

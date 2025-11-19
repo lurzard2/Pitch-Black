@@ -1204,7 +1204,6 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     {
         if (!slatedForDeletetion)
         {
-            DevToolsHooks.spawnedDreamer = false;
             slatedForDeletetion = true;
         }
     }
