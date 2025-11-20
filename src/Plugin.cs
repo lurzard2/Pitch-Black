@@ -97,14 +97,15 @@ class  Plugin : BaseUnityPlugin
     private void SaveState_LoadGame(On.SaveState.orig_LoadGame orig, SaveState self, string str, RainWorldGame game)
     {
         orig(self, str, game);
-        if (self.saveStateNumber == Enums.SlugcatStatsName.Beacon && self.cycleNumber == 0)
+        if (self.saveStateNumber == Enums.SlugcatStatsName.Beacon && self.cycleNumber < 1)
         {
-            BeaconSaveData.GetDreamerEncountersRoom(self).Clear();
-            BeaconSaveData.SetDreamerEncountersNumber(self, 0);
-            BeaconSaveData.SetCanUseThanatosis(self, devMode ? true : false);
-            BeaconSaveData.SetSpiralLevel(self, devMode ? 5f : 0f);
-            BeaconSaveData.SetMaxSpiralLevel(self, devMode ? 5f : 0);
-            BeaconSaveData.SetMinSpiralLevel(self, 0);
+            logger.LogDebug("Loading PitchBlack campaign");
+            //BeaconSaveData.GetDreamerEncountersRoom(self).Clear();
+            //BeaconSaveData.SetDreamerEncountersNumber(self, 0);
+            //BeaconSaveData.SetCanUseThanatosis(self, devMode ? true : false);
+            //BeaconSaveData.SetSpiralLevel(self, devMode ? 5f : 0f);
+            //BeaconSaveData.SetMaxSpiralLevel(self, devMode ? 5f : 0);
+            //BeaconSaveData.SetMinSpiralLevel(self, 0);
         }
     }
 

@@ -11,11 +11,19 @@ namespace PitchBlack;
 
 public class DreamerConversation : Conversation
 {
-    public bool VoiceSwitched
+    public bool SpeakerSwitched
     {
         get
         {
-            return switchVoiceEvents > 0;
+            return switchSpeakerEvents > 0;
+        }
+    }
+
+    public string CurrentTextEvent
+    {
+        get
+        {
+            return (events[0] as TextEvent).text;
         }
     }
 
@@ -34,14 +42,38 @@ public class DreamerConversation : Conversation
 
         base.Update();
 
+        // Check for switch event strings to then add to the amount of events
+        for (int i = 0; i < switchSpeakerStrings.Count; i++)
+        {
+            if (switchSpeakerStrings.Contains(CurrentTextEvent))
+            {
+                switchSpeakerEvents++;
+                wasVoiceSwitched = true;
+                break;
+            }
+        }
+
         if (ConditionToSpeak() && eventsCount != events.Count)
         {
-            if (timeSinceLastSound > 1 && VoiceSwitched)
+            // Accomodate for sound needing to play when voice is switched, to distinct text
+            if (timeSinceLastSound > 1 && SpeakerSwitched)
             {
-                switchVoiceEvents--;
-                timeSinceLastSound.Finish();
+                switchSpeakerEvents--;
+                RemoveSwitchString();
+                // Forcefully distinct the first event
+                if (switchSpeakerEvents == 1)
+                {
+                    timeSinceLastSound.Finish();
+                }
             }
-            if (timeSinceLastSound.isFinished && (events[0] as TextEvent).text != "...")
+            // Accomodate because Dreamer's voice might not play because the voice is on cooldown
+            if (!SpeakerSwitched && wasVoiceSwitched)
+            {
+                timeSinceLastSound.Finish();
+                wasVoiceSwitched = false;
+            }
+            // Now: we check to play a sound
+            if (timeSinceLastSound.isFinished && CurrentTextEvent != "...")
             {
                 Speak();
                 timeSinceLastSound.Reset();
@@ -49,10 +81,29 @@ public class DreamerConversation : Conversation
         }
     }
 
+    // Call in AddEvents() to add a switch speaker event
+    public void AddSwitchString(string s)
+    {
+        if (!switchSpeakerStrings.Contains(s))
+        {
+            switchSpeakerStrings.Add(s);
+        }
+    }
+
+    // This must be called specifically in Update(), when strings are intended to be cleared correctly!
+    public void RemoveSwitchString()
+    {
+        if (switchSpeakerStrings.Contains(CurrentTextEvent))
+        {
+            switchSpeakerStrings.Remove(CurrentTextEvent);
+        }
+    }
+
+    #region Speaking
     public bool ConditionToSpeak()
     {
         // Conter done, didnt already speak, events greater than 0, text event checks, lastEvent check for current event
-        if (events.Count > 0 && events[0] is TextEvent textEvent)
+        if (events.Count > 0 && events[0] is TextEvent)
         {
             return true;
         }
@@ -62,19 +113,19 @@ public class DreamerConversation : Conversation
     public void Speak()
     {
         // Assign default values to then be overriden
-        float volRange = Random.Range(0.85f, 1f);
-        float pitchRange = Random.Range(0.90f, 1.20f);
-        if (VoiceSwitched)
+        float volume = Random.Range(0.85f, 1f);
+        float pitch = 1;
+        if (SpeakerSwitched)
         {
-            volRange = Random.Range(0.75f, 1f);
-            pitchRange = Random.Range(0.80f, 1.25f);
+            volume = Random.Range(0.75f, 1f);
+            pitch = Random.Range(0.80f, 1.25f);
         }
-        dreamer.room.PlaySound(VoiceID(), Random.Range(0f, 1f), volRange, pitchRange);
+        dreamer.room.PlaySound(VoiceID(), -1f, volume, pitch);
     }
 
     public SoundID VoiceID()
     {
-        if (VoiceSwitched)
+        if (SpeakerSwitched)
         {
             if (BeaconSaveData.GetMaxSpiralLevel(dreamer.room.game.GetStorySession.saveState) > 4f)
             {
@@ -84,6 +135,7 @@ public class DreamerConversation : Conversation
         }
         return Enums.SoundID.Dreamer_Voice;
     }
+    #endregion
 
     public override void AddEvents()
     {
@@ -132,5 +184,7 @@ public class DreamerConversation : Conversation
     private Dreamer dreamer;
     private Counter timeSinceLastSound = new Counter(120, 0, true);
     private string s = "";
-    private int switchVoiceEvents = 0;
+    private int switchSpeakerEvents = 0;
+    private bool wasVoiceSwitched;
+    private List<string> switchSpeakerStrings = new List<string>();
 }
