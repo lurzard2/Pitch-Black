@@ -120,7 +120,7 @@ public class DreamerConversation : Conversation
             volume = Random.Range(0.75f, 1f);
             pitch = Random.Range(0.80f, 1.25f);
         }
-        dreamer.room.PlaySound(VoiceID(), -1f, volume, pitch);
+        dreamer.room.PlaySound(VoiceID(), 0.5f, volume, pitch);
     }
 
     public SoundID VoiceID()
