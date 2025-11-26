@@ -21,6 +21,7 @@ using static SlugBase.Features.FeatureTypes;
 #pragma warning restore CS0618 // Type or member is obsolete
 
 namespace PitchBlack;
+
 [BepInPlugin(MOD_ID, MOD_NAME, MOD_VERSION)]
 
 class  Plugin : BaseUnityPlugin
@@ -41,7 +42,7 @@ class  Plugin : BaseUnityPlugin
     public static readonly ConditionalWeakTable<AbstractCreature, StrongBox<int>> KILLIT = new();
     public static readonly ConditionalWeakTable<RainWorldGame, List<NTTracker>> pursuerTracker = new();
     public static readonly ConditionalWeakTable<MouseGraphics, RotData> rotRatData = new();
-    public static readonly ConditionalWeakTable<World, List<AbstractRoom>> roomsWithDreamer = new();
+    public static readonly ConditionalWeakTable<World, List<AbstractRoom>> roomsWithDreamerSpot = new();
     public static readonly ConditionalWeakTable<World, List<DreamerPresence>> dreamerPresence = new();
 
     // Colors moved to Colors.cs after I saw Alduris set up his codespace that way -Lur 
@@ -66,62 +67,46 @@ class  Plugin : BaseUnityPlugin
     public void OnEnable()
     {
         logger = Logger;
-        
         logger.LogDebug("Applying PitchBlack hooks...");
-        On.RainWorld.OnModsInit += OnModsInit;
+
+        On.RainWorld.OnModsInit += EnableMod;
         On.RainWorld.OnModsDisabled += DisableMod;
         On.RainWorld.PostModsInit += RainWorld_PostModsInit;
-        //On.RainWorld.BuildTokenCache += RainWorld_BuildTokenCache;
-        On.RainWorldGame.ctor += RainWorldGame_ctor;
-        On.RainWorldGame.Update += RainWorldGame_Update;
         On.RainWorld.UnloadResources += (orig, self) =>
         {
             orig(self);
             if (Futile.atlasManager.DoesContainAtlas("lmllspr"))
                 Futile.atlasManager.UnloadAtlas("lmllspr");
         };
-        On.SaveState.LoadGame += SaveState_LoadGame;
+        On.RainWorldGame.ctor += RainWorldGame_ctor;
+        On.RainWorldGame.Update += RainWorldGame_Update;
 
-        WorldHooks.Apply();
+        MenuSceneHooks.Apply();
         DevToolsHooks.Apply();
+        WorldHooks.Apply();
         PBSlugBaseFeatures.Apply();
         ScugHooks.Apply();
         ScugGraphics.Apply();
         FlareStorage.Apply();
         Crafting.Apply();
         FlareBombHooks.Apply();
-        
-        logger.LogDebug("PitchBlack's hooks successfully applied!");
-    }
 
-    private void SaveState_LoadGame(On.SaveState.orig_LoadGame orig, SaveState self, string str, RainWorldGame game)
-    {
-        orig(self, str, game);
-        if (self.saveStateNumber == Enums.SlugcatStatsName.Beacon && self.cycleNumber < 1)
-        {
-            logger.LogDebug("Loading PitchBlack campaign");
-            //BeaconSaveData.GetDreamerEncountersRoom(self).Clear();
-            //BeaconSaveData.SetDreamerEncountersNumber(self, 0);
-            //BeaconSaveData.SetCanUseThanatosis(self, devMode ? true : false);
-            //BeaconSaveData.SetSpiralLevel(self, devMode ? 5f : 0f);
-            //BeaconSaveData.SetMaxSpiralLevel(self, devMode ? 5f : 0);
-            //BeaconSaveData.SetMinSpiralLevel(self, 0);
-        }
+        logger.LogDebug("PitchBlack's hooks successfully applied!");
     }
 
     /// <summary>
     /// Load any resources
     /// Enum Registering
     /// </summary>
-    private void OnModsInit(On.RainWorld.orig_OnModsInit orig, RainWorld self)
+    private void EnableMod(On.RainWorld.orig_OnModsInit orig, RainWorld self)
     {
         orig(self);
 
         MachineConnector.SetRegisteredOI(MOD_ID, ModOptions.Instance);
+
         if (!init)
         {
             Enums.SoundID.RegisterValues();
-            MenuSceneHooks.Apply();
 
             try
             {
@@ -152,15 +137,14 @@ class  Plugin : BaseUnityPlugin
             }
             catch (Exception err)
             {
-                logger.LogDebug($"PitchBlack error\n{err}");
+                logger.LogDebug($"PitchBlack error in Critob registry\n{err}");
             }
-            
+
             Futile.atlasManager.LoadAtlas("atlases/PBHat");
             if (!Futile.atlasManager.DoesContainAtlas("lmllspr"))
                 Futile.atlasManager.LoadAtlas("atlases/lmllspr");
             Futile.atlasManager.LoadAtlas("atlases/nightTerroratlas");
 
-            // Dreamer
             self.Shaders["DreamerRag"] = FShader.CreateShader("dreamerrag", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerrag")).LoadAsset<Shader>("Assets/Shaders/DreamerRag.shader"), new string[]
             {
                 "ripple_both_sides"
@@ -173,9 +157,6 @@ class  Plugin : BaseUnityPlugin
             {
                 "ripple_both_sides"
             });
-            //self.Shaders["DreamerRagRipple"] = FShader.CreateShader("dreamerrag", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerrag")).LoadAsset<Shader>("Assets/Shaders/DreamerRag.shader"), [other]);
-            //self.Shaders["DreamerSkinRipple"] = FShader.CreateShader("dreamerskin", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerskin")).LoadAsset<Shader>("Assets/Shaders/DreamerSkin.shader"), [other]);
-            //self.Shaders["DreamerDistortionRipple"] = FShader.CreateShader("dreamerdistortion", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerdistortion")).LoadAsset<Shader>("Assets/Shaders/DreamerDistortion.shader"), [other]);
 
             init = true;
         }

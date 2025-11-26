@@ -2,19 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static PitchBlack.Plugin;
 
 namespace PitchBlack;
 
-public static class WorldHooks
+public static class DreamerHooks
 {
-    public static float targetDreamIntensity;
-    public static float lastGhostMode;
+    // New Dreamer Presence Thing
+    // > Assign presence somewhere outside the actual room itself is being loaded, so presence is global to the loaded region
+    // > for each room in region that includes a dreamerspot, create a presence with dreamer's room being that room
+    // > Have a list of these presences then attach it to the plugin value that stores presences
+    // > for each presence, and the room is the dreamer room, and they havent been encountered, spawn dreamer
+    // > if already encountered, and can, spawn warp
 
-    #region Dreamer stuff
     /// <summary>
     /// For DevToolsHooks.RoomLoaded
     /// </summary>
-    public static void LoadDreamer(Room self, int objects, DreamerData dreamerData, List<string> dreamerRooms)
+    public static void LegacyDreamerSetup(Room self, int objects, DreamerData dreamerData, List<string> dreamerRooms)
     {
         // CWT setup
         if (!Plugin.dreamerPresence.TryGetValue(self.world, out var _))
@@ -23,7 +27,7 @@ public static class WorldHooks
         }
 
         var GotDreamerPresence = Plugin.dreamerPresence.TryGetValue(self.world, out var dreamerPresences);
-        var GotRoomsWithDreamer = Plugin.roomsWithDreamer.TryGetValue(self.world, out var abstractRoomsWithDreamer);
+        var GotRoomsWithDreamer = Plugin.roomsWithDreamerSpot.TryGetValue(self.world, out var abstractRoomsWithDreamer);
         if (!GotRoomsWithDreamer && !GotDreamerPresence)
         {
             return;
@@ -73,51 +77,14 @@ public static class WorldHooks
             Dreamer.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
         }
     }
-    #endregion
 
-    /// <summary>
-    /// We can use this to add rooms to a list for tracking if they have something we want to track in them!
-    /// </summary>
-    private static void LogRooms(WorldLoader self)
+    public static float targetDreamIntensity;
+    public static float lastGhostMode;
+
+    public static void Inject()
     {
-        // List of rooms I store
-        List<AbstractRoom> listOfRoomsForDreamer = new List<AbstractRoom>();
-
-        // Checking rooms in the current world
-        for (int i = 0; i < self.abstractRooms.Count; i++)
-        {
-            // We need room to add RoomSettings here
-            Room room = new Room(null, self.world, self.abstractRooms[i], false);
-            RoomSettings roomSettings = new RoomSettings(room, WorldLoader.RoomNameManipulator(room.abstractRoom.FileName, self.game), self.world.region, false, false, self.game?.TimelinePoint, self.game);
-            // Actually check the objects in those rooms, to then add rooms with our object to a list
-            for (int j = 0; j < roomSettings.placedObjects.Count; j++)
-            {
-                if (roomSettings.placedObjects[j].type == Enums.PlacedObjectType.DreamerSpot)
-                {
-                    listOfRoomsForDreamer.Add(self.abstractRooms[i]);
-                    break;
-                }
-            }
-        }
-        // Once the loop is finished, add every room from the list to the CWT
-        Plugin.roomsWithDreamer.Add(self.world, listOfRoomsForDreamer);
-    }
-
-    public static void Apply()
-    {
-        On.Region.ctor_string_int_int_RainWorldGame_Timeline += Region_ctor_string_int_int_RainWorldGame_Timeline;
         On.RoomCamera.Update += RoomCamera_Update;
         On.RoomCamera.UpdateGhostMode += RoomCamera_UpdateGhostMode;
-        On.WorldLoader.CreatingWorld += WorldLoader_CreatingWorld;
-    }
-
-    /// <summary>
-    /// Tracking Dreamer presence rooms dynamically based on if the roomsettings of a room contains their placed object type
-    /// </summary>
-    private static void WorldLoader_CreatingWorld(On.WorldLoader.orig_CreatingWorld orig, WorldLoader self)
-    {
-        orig(self);
-        LogRooms(self);
     }
 
     private static void RoomCamera_UpdateGhostMode(On.RoomCamera.orig_UpdateGhostMode orig, RoomCamera self, Room newRoom, int newCamPos)
@@ -177,9 +144,55 @@ public static class WorldHooks
             }
         }
     }
+}
+
+public static class WorldHooks
+{
+    private static void LogRooms(WorldLoader self)
+    {
+        // List of rooms I store
+        List<AbstractRoom> listOfRoomsForDreamer = new List<AbstractRoom>();
+
+        // Checking rooms in the current world
+        for (int i = 0; i < self.abstractRooms.Count; i++)
+        {
+            // We need room to add RoomSettings here
+            Room room = new Room(null, self.world, self.abstractRooms[i], false);
+            RoomSettings roomSettings = new RoomSettings(room, WorldLoader.RoomNameManipulator(room.abstractRoom.FileName, self.game), self.world.region, false, false, self.game?.TimelinePoint, self.game);
+            // Actually check the objects in those rooms, to then add rooms with our object to a list
+            for (int j = 0; j < roomSettings.placedObjects.Count; j++)
+            {
+                if (roomSettings.placedObjects[j].type == Enums.PlacedObjectType.DreamerSpot)
+                {
+                    listOfRoomsForDreamer.Add(self.abstractRooms[i]);
+                    break;
+                }
+            }
+        }
+        // Once the loop is finished, add every room from the list to the CWT
+        roomsWithDreamerSpot.Add(self.world, listOfRoomsForDreamer);
+        logger.LogDebug($"Dreamer rooms in world: " + roomsWithDreamerSpot);
+    }
+
+    public static void Apply()
+    {
+        DreamerHooks.Inject();
+
+        On.WorldLoader.CreatingWorld += WorldLoader_CreatingWorld;
+        On.Region.ctor_string_int_int_RainWorldGame_Timeline += ModifyRegionProperties;
+    }
+
+    /// <summary>
+    /// Tracking Dreamer presence rooms dynamically based on if the roomsettings of a room contains their placed object type
+    /// </summary>
+    private static void WorldLoader_CreatingWorld(On.WorldLoader.orig_CreatingWorld orig, WorldLoader self)
+    {
+        orig(self);
+        LogRooms(self);
+    }
 
     // Replace rot eye+effect color for Beacon
-    private static void Region_ctor_string_int_int_RainWorldGame_Timeline(On.Region.orig_ctor_string_int_int_RainWorldGame_Timeline orig, Region self, string name, int firstRoomIndex, int regionNumber, RainWorldGame game, SlugcatStats.Timeline timelineIndex)
+    private static void ModifyRegionProperties(On.Region.orig_ctor_string_int_int_RainWorldGame_Timeline orig, Region self, string name, int firstRoomIndex, int regionNumber, RainWorldGame game, SlugcatStats.Timeline timelineIndex)
     {
         orig(self, name, firstRoomIndex, regionNumber, game, timelineIndex);
 

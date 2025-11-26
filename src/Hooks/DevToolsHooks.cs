@@ -6,53 +6,35 @@ using UnityEngine;
 
 namespace PitchBlack;
 
-public class DevToolsHooks
-{
-    /// <summary>
-    /// Effects and such need to be added to the 3 hooks
-    /// - Room.Loaded to add the object
-    /// - Room.NowViewed for backgrounds to apply a fix
-    /// - RoomSettingsPage.DevEffectGetCategoryFromEffectType to add to correct catagory
-    /// </summary> -Lur
+/// <summary>
+/// Effects and such need to be added to the 3 hooks
+/// - Room.Loaded to add the object
+/// - Room.NowViewed for backgrounds to apply a fix
+/// - RoomSettingsPage.DevEffectGetCategoryFromEffectType to add to correct catagory
+/// </summary> -Lur
 
-    public static void Apply()
+public static class DevEffectHooks
+{
+    public static void Inject()
     {
+        On.DevInterface.RoomSettingsPage.DevEffectGetCategoryFromEffectType += AddToDevEffectCatagory;
         On.Room.NowViewed += Room_NowViewed;
-        On.Room.Loaded += Room_Loaded;
-        On.DevInterface.RoomSettingsPage.DevEffectGetCategoryFromEffectType += RoomSettingsPage_DevEffectGetCategoryFromEffectType;
-        On.DevInterface.ObjectsPage.DevObjectGetCategoryFromPlacedType += ObjectsPage_DevObjectGetCategoryFromPlacedType;
-        On.PlacedObject.GenerateEmptyData += PlacedObject_GenerateEmptyData;
-        On.DevInterface.ObjectsPage.CreateObjRep += ObjectsPage_CreateObjRep;
     }
 
-    // Actually adds our effects' objects -Lur
-    private static void Room_Loaded(On.Room.orig_Loaded orig, Room self)
+    // Background shader fix, seems mandatory for some things.
+    private static void Room_NowViewed(On.Room.orig_NowViewed orig, Room self)
     {
         orig(self);
-
-        for (int effects = 0; effects < self.roomSettings.effects.Count; effects++)
+        for (int i = 0; i < self.roomSettings.effects.Count; i++)
         {
-            if (self.roomSettings.effects[effects].type == Enums.RoomEffectType.ElsehowView)
+            if (self.roomSettings.effects[i].type == Enums.RoomEffectType.ElsehowView)
             {
-                self.AddObject(new ElsehowView(self, self.roomSettings.effects[effects]));
-            }
-        }
-
-        for (int objects = 0; objects < self.roomSettings.placedObjects.Count; objects++)
-        {
-            if (self.roomSettings.placedObjects[objects].type == Enums.PlacedObjectType.DreamerSpot
-                && self.game.IsStorySession)
-            {
-                var dreamerData = self.roomSettings.placedObjects[objects].data as DreamerData;
-                var dreamerRooms = BeaconSaveData.GetDreamerEncountersRoom(self.world.game.GetStorySession.saveState);
-                // We need this in WorldHooks more than it being embedded in here, everything relevant is there anyway
-                WorldHooks.LoadDreamer(self, objects, dreamerData, dreamerRooms);
+                Shader.SetGlobalFloat(RainWorld.ShadPropRimFix, 1f);
             }
         }
     }
 
-    #region Catagories
-    private static RoomSettingsPage.DevEffectsCategories RoomSettingsPage_DevEffectGetCategoryFromEffectType(On.DevInterface.RoomSettingsPage.orig_DevEffectGetCategoryFromEffectType orig, RoomSettingsPage self, RoomSettings.RoomEffect.Type type)
+    private static RoomSettingsPage.DevEffectsCategories AddToDevEffectCatagory(On.DevInterface.RoomSettingsPage.orig_DevEffectGetCategoryFromEffectType orig, RoomSettingsPage self, RoomSettings.RoomEffect.Type type)
     {
         RoomSettingsPage.DevEffectsCategories res = orig(self, type);
         if (type == Enums.RoomEffectType.ElsehowView)
@@ -61,16 +43,17 @@ public class DevToolsHooks
         }
         return res;
     }
-    private static ObjectsPage.DevObjectCategories ObjectsPage_DevObjectGetCategoryFromPlacedType(On.DevInterface.ObjectsPage.orig_DevObjectGetCategoryFromPlacedType orig, ObjectsPage self, PlacedObject.Type type)
+}
+
+public static class DevObjectHooks
+{
+    public static void Inject()
     {
-        ObjectsPage.DevObjectCategories res = orig(self, type);
-        if (type == Enums.PlacedObjectType.DreamerSpot)
-        {
-            res = Enums.PlacedObjectType.PitchBlackCatagory;
-        }
-        return res;
+        On.DevInterface.ObjectsPage.DevObjectGetCategoryFromPlacedType += AddToDevObjectCatagory;
+
+        On.PlacedObject.GenerateEmptyData += PlacedObject_GenerateEmptyData;
+        On.DevInterface.ObjectsPage.CreateObjRep += ObjectsPage_CreateObjRep;
     }
-    #endregion
 
     private static void ObjectsPage_CreateObjRep(On.DevInterface.ObjectsPage.orig_CreateObjRep orig, ObjectsPage self, PlacedObject.Type tp, PlacedObject pObj)
     {
@@ -107,18 +90,60 @@ public class DevToolsHooks
         }
     }
 
-    // Background shader fix, seems mandatory for some things.
-    private static void Room_NowViewed(On.Room.orig_NowViewed orig, Room self)
+    private static ObjectsPage.DevObjectCategories AddToDevObjectCatagory(On.DevInterface.ObjectsPage.orig_DevObjectGetCategoryFromPlacedType orig, ObjectsPage self, PlacedObject.Type type)
+    {
+        ObjectsPage.DevObjectCategories res = orig(self, type);
+        if (type == Enums.PlacedObjectType.DreamerSpot)
+        {
+            res = Enums.PlacedObjectType.PitchBlackCatagory;
+        }
+        return res;
+    }
+}
+
+public class DevToolsHooks
+{
+
+    public static void Apply()
+    {
+        DevEffectHooks.Inject(); 
+        DevObjectHooks.Inject();
+
+        On.Room.Loaded += Room_Loaded;
+    }
+
+    // Actually adds our effects and objects -Lur
+    private static void Room_Loaded(On.Room.orig_Loaded orig, Room self)
     {
         orig(self);
-        for (int i = 0; i < self.roomSettings.effects.Count; i++)
+        LoadEffects(self);
+        LoadObjects(self);
+    }
+
+    private static void LoadEffects(Room self)
+    {
+        for (int effects = 0; effects < self.roomSettings.effects.Count; effects++)
         {
-            if (self.roomSettings.effects[i].type == Enums.RoomEffectType.ElsehowView)
+            var type = self.roomSettings.effects[effects].type;
+            if (type == Enums.RoomEffectType.ElsehowView)
             {
-                Shader.SetGlobalFloat(RainWorld.ShadPropRimFix, 1f);
+                self.AddObject(new ElsehowView(self, self.roomSettings.effects[effects]));
             }
         }
     }
-    
-    
+
+    private static void LoadObjects(Room self)
+    {
+        for (int objects = 0; objects < self.roomSettings.placedObjects.Count; objects++)
+        {
+            if (self.roomSettings.placedObjects[objects].type == Enums.PlacedObjectType.DreamerSpot
+                && self.game.IsStorySession)
+            {
+                var dreamerData = self.roomSettings.placedObjects[objects].data as DreamerData;
+                var dreamerRooms = BeaconSaveData.GetDreamerEncountersRoom(self.world.game.GetStorySession.saveState);
+                // We need this in WorldHooks more than it being embedded in here, everything relevant is there anyway
+                DreamerHooks.LegacyDreamerSetup(self, objects, dreamerData, dreamerRooms);
+            }
+        }
+    }
 }
