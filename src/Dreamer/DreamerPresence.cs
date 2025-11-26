@@ -7,11 +7,19 @@ using System.Threading.Tasks;
 namespace PitchBlack;
 public class DreamerPresence : World.IMigrationInfluence
 {
-    public DreamerPresence(World world, AbstractRoom dreamerRoom, int id)
+    public bool RoomOutsideVV
+    {
+        get
+        {
+            return world.region.name != "VV";
+        }
+    }
+
+    public DreamerPresence(World world, AbstractRoom dreamerRoom)
     {
         this.world = world;
         this.dreamerRoom = dreamerRoom;
-        this.id = id;
+        int id = this.id;
     }
 
     //public float DreamMode(AbstractRoom abstractRoom)
@@ -35,7 +43,7 @@ public class DreamerPresence : World.IMigrationInfluence
     #region Room Attraction
     public float AttractionValueForCreature(AbstractRoom room, CreatureTemplate.Type tp, float defValue)
     {
-        if (room == dreamerRoom)
+        if (room == dreamerRoom && RoomOutsideVV)
         {
             return 0f;
         }
@@ -44,7 +52,7 @@ public class DreamerPresence : World.IMigrationInfluence
 
     public float AttractionValueForCreature(AbstractRoom room, string namedAttr, float defValue)
     {
-        if (room == dreamerRoom)
+        if (room == dreamerRoom && RoomOutsideVV)
         {
             return 0f;
         }
@@ -53,7 +61,7 @@ public class DreamerPresence : World.IMigrationInfluence
 
     public float AttractionValueForCreature(AbstractRoom room, AbstractCreature creature, float defValue)
     {
-        if (room == dreamerRoom)
+        if (room == dreamerRoom && RoomOutsideVV)
         {
             return 0f;
         }
@@ -65,4 +73,7 @@ public class DreamerPresence : World.IMigrationInfluence
     public World world;
     public AbstractRoom dreamerRoom;
     public List<AbstractRoom> presenceRooms = new List<AbstractRoom>();
+
+    public bool presenceSpawned;
+    public bool dreamerSpawned;
 }

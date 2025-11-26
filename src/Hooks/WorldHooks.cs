@@ -15,8 +15,71 @@ public static class DreamerHooks
     // > for each presence, and the room is the dreamer room, and they havent been encountered, spawn dreamer
     // > if already encountered, and can, spawn warp
 
+    // TODO: These have to go in Player.Update() somewhere (properly) to be assigned outside of the dreamer room
+
+    public static void InitDreamerRoomsToPresences(Room self)
+    {
+        // Open room cwt
+        if (Plugin.roomsWithDreamerSpot.TryGetValue(self.world, out  var roomsForDreamer))
+        {
+            // Queue of dummy presences
+            List<DreamerPresence> presencesToAdd = new List<DreamerPresence>();
+            for (int i = 0; i < roomsForDreamer.Count; i++)
+            {
+                // Assign an individual dummy class, its values, then assign that to the queue each loop
+                DreamerPresence dummyPresence = null;
+                AbstractRoom currentRoom = self.abstractRoom;
+                string encounterRoomName = roomsForDreamer[i].name;
+                bool encountered = BeaconSaveData.GetDreamerEncountersRoom(self.world.game.GetStorySession.saveState).Contains(encounterRoomName);
+                if (!encountered)
+                {
+                    dummyPresence = new DreamerPresence(self.world, roomsForDreamer[i]);
+                    dummyPresence.presenceSpawned = true;
+                }
+                presencesToAdd.Add(dummyPresence);
+            }
+            // Open our dreamer presence cwt, but still be able to access presencesToAdd
+            if (Plugin.dreamerPresence.TryGetValue(self.world, out var dreamerPresences))
+            {
+                for (int i = 0; i < presencesToAdd.Count; i++)
+                {
+                    // Assigning presences from the queue to the presence cwt
+                    dreamerPresences.Add(presencesToAdd[i]);
+                }
+            }
+        }
+    }
+
+    public static void DeactivateDreamerPresence(Room self)
+    {
+        if (Plugin.dreamerPresence.TryGetValue(self.world, out var dreamerPresences))
+        {
+            for (int i = 0; i < dreamerPresences.Count; i++)
+            {
+                if (dreamerPresences[i].presenceSpawned && dreamerPresences[i].dreamerRoom == self.abstractRoom)
+                {
+                    self.world.migrationInfluences.Remove(dreamerPresences[i]);
+                    dreamerPresences[i] = null;
+                }
+            }
+        }
+    }
+
+    public static void SpawnDreamer(Room self, int objects)
+    {
+        self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[objects]));
+    }
+
+    public static void SpawnWarpInstead(Room self, int objects, DreamerData dreamerData)
+    {
+        if (dreamerData.destRoom != null)
+        {
+            Dreamer.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
+        }
+    }
+
     /// <summary>
-    /// For DevToolsHooks.RoomLoaded
+    /// OUTDATED spawning of Dreamer, placeholder logic
     /// </summary>
     public static void LegacyDreamerSetup(Room self, int objects, DreamerData dreamerData, List<string> dreamerRooms)
     {
@@ -49,7 +112,7 @@ public static class DreamerHooks
         {
             bool checkForValidRoom = abstractRoomsWithDreamer.Contains(self.abstractRoom);
             AbstractRoom dreamersRoom = checkForValidRoom ? self.abstractRoom : null;
-            dummyDreamerPresence = new DreamerPresence(self.world, dreamersRoom, dreamerData.spawnIdentifier);
+            dummyDreamerPresence = new DreamerPresence(self.world, dreamersRoom);
             if (!dreamerRooms.Contains(self.abstractRoom.name))
             {
                 dreamerPresences.Add(dummyDreamerPresence);
@@ -63,18 +126,7 @@ public static class DreamerHooks
         // Spawning a warp instead, if you've already met them
         else
         {
-            AddWarpInstead(self, objects, dreamerData);
-        }
-    }
-
-    /// <summary>
-    /// Adds a warp to the room if Dreamer is intended to spawn one
-    /// </summary>
-    private static void AddWarpInstead(Room self, int objects, DreamerData dreamerData)
-    {
-        if (dreamerData.destRoom != null)
-        {
-            Dreamer.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
+            SpawnWarpInstead(self, objects, dreamerData);
         }
     }
 

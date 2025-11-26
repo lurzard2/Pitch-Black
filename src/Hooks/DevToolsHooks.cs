@@ -143,6 +143,26 @@ public class DevToolsHooks
                 var dreamerRooms = BeaconSaveData.GetDreamerEncountersRoom(self.world.game.GetStorySession.saveState);
                 // We need this in WorldHooks more than it being embedded in here, everything relevant is there anyway
                 DreamerHooks.LegacyDreamerSetup(self, objects, dreamerData, dreamerRooms);
+
+                // PUTTING THIS HERE (for now)
+                return;
+
+                if (Plugin.dreamerPresence.TryGetValue(self.world, out var presences))
+                {
+                    for (int i = 0; i < presences.Count; i++)
+                    {
+                        if (presences[i] != null && presences[i].dreamerRoom == self.abstractRoom)
+                        {
+                            DreamerHooks.SpawnDreamer(self, objects);
+                            break;
+                        }
+                        else
+                        {
+                            DreamerHooks.SpawnWarpInstead(self, objects, dreamerData);
+                            break;
+                        }
+                    }
+                }
             }
         }
     }
