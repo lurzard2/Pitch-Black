@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DevInterface;
 using RWCustom;
 using UnityEngine;
+using static PitchBlack.Plugin;
 
 namespace PitchBlack;
 
@@ -102,6 +103,7 @@ public static class DevObjectHooks
 }
 
 public class DevToolsHooks
+
 {
 
     public static void Apply()
@@ -116,6 +118,10 @@ public class DevToolsHooks
     private static void Room_Loaded(On.Room.orig_Loaded orig, Room self)
     {
         orig(self);
+        if (DreamersHooks.timesToAssignDreamerPresence > 0)
+        {
+            DreamersHooks.InitDreamerRoomsToPresences(self);
+        }
         LoadEffects(self);
         LoadObjects(self);
     }
@@ -139,26 +145,31 @@ public class DevToolsHooks
             if (self.roomSettings.placedObjects[objects].type == Enums.PlacedObjectType.DreamerSpot
                 && self.game.IsStorySession)
             {
+                logger.LogDebug($"DreamerSpot: Found PlacedObject in room");
                 var dreamerData = self.roomSettings.placedObjects[objects].data as DreamerData;
-                var dreamerRooms = BeaconSaveData.GetDreamerEncountersRoom(self.world.game.GetStorySession.saveState);
-                // We need this in WorldHooks more than it being embedded in here, everything relevant is there anyway
-                DreamerHooks.LegacyDreamerSetup(self, objects, dreamerData, dreamerRooms);
+                var dreamerRooms = BeaconSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState);
+                //// We need this in WorldHooks more than it being embedded in here, everything relevant is there anyway
+                //DreamerHooks.LegacyDreamerSetup(self, objects, dreamerData, dreamerRooms);
 
-                // PUTTING THIS HERE (for now)
-                return;
-
-                if (Plugin.dreamerPresence.TryGetValue(self.world, out var presences))
+                if (dreamerPresence.TryGetValue(self.world, out var presences))
                 {
-                    for (int i = 0; i < presences.Count; i++)
+                    foreach (var presence in presences)
                     {
-                        if (presences[i] != null && presences[i].dreamerRoom == self.abstractRoom)
+                        if (presence.presenceSpawned && presence.dreamerRoom == self.abstractRoom)
                         {
-                            DreamerHooks.SpawnDreamer(self, objects);
+                            logger.LogDebug($"DreamerSpot: Adding Dreamer to room since presence exists and this is their room");
+                            self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[objects]));
+                            presence.dreamerSpawned = true;
+                            logger.LogDebug($"DreamerPresence: Dreamer active - {presence.dreamerSpawned}");
                             break;
                         }
                         else
                         {
-                            DreamerHooks.SpawnWarpInstead(self, objects, dreamerData);
+                            if (dreamerData.destRoom != null)
+                            {
+                                Dreamer.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
+                                logger.LogDebug($"DreamerSpot: You've encountered this Dreamer, placing a backup warp");
+                            }
                             break;
                         }
                     }

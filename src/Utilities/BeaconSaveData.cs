@@ -5,13 +5,25 @@ using System.Collections.Generic;
 namespace PitchBlack;
 public static class BeaconSaveData
 {
-    // Dreamer needs this to spawn
     public static string dreamerEncountersNumber = "DreamerEncountersNumber";
     public static int GetDreamerEncountersNumber(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(dreamerEncountersNumber, out int encounters) ? encounters : 0;
     public static void SetDreamerEncountersNumber(this SaveState save, int value) => save.deathPersistentSaveData.GetSlugBaseData().Set(dreamerEncountersNumber, value);
 
     public static string dreamerEncountersRoom = "DreamerEncountersRoom";
-    public static List<string> GetDreamerEncountersRoom(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(dreamerEncountersRoom, out List<string> encounters) ? encounters : new List<string>();
+    public static List<string> GetDreamerEncounteredRooms(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(dreamerEncountersRoom, out List<string> encounters) ? encounters : new List<string>();
+    public static void SetDreamerEncounteredRooms(this SaveState save, string value)
+    {
+        if (!save.deathPersistentSaveData.GetSlugBaseData().TryGet(dreamerEncountersRoom, out List<string> encounters))
+        {
+            encounters = new List<string>();
+            save.deathPersistentSaveData.GetSlugBaseData().Set(dreamerEncountersRoom, encounters);
+        }
+        bool hasEncounter = encounters.Contains(value);
+        if (!hasEncounter)
+        {
+            encounters.Add(value);
+        }
+    }
 
     // ThanatosisUpdate() ability check
     public static string canUseThanatosis = "CanUseThanatosis";

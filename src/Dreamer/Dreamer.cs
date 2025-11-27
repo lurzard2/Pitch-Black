@@ -1176,12 +1176,13 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         {
             return;
         }
+        Plugin.logger.LogDebug($"Dreamer: I have finished my encounter!");
         var state = room.game.GetStorySession.saveState;
+        DreamersHooks.DeactivateDreamerPresence(room);
+        BeaconSaveData.SetDreamerEncounteredRooms(state, room.abstractRoom.name);
+        string joinedString = String.Join(",", BeaconSaveData.GetDreamerEncounteredRooms(state));
+        Plugin.logger.LogDebug($"Dreamer: Set encountered rooms - {joinedString}");
         IncreaseSpiralLevel(state);
-        if (!BeaconSaveData.GetDreamerEncountersRoom(state).Contains(room.abstractRoom.name))
-        {
-            BeaconSaveData.GetDreamerEncountersRoom(state).Add(room.abstractRoom.name);
-        }
         encounterFinished = true;
     }
 
@@ -1198,6 +1199,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
             increment = 0.25f;
         }
         BeaconSaveData.SetMaxSpiralLevel(state, maxLevel += increment);
+        Plugin.logger.LogDebug($"Dreamer: Increased your level by {increment}, level is {maxLevel}");
     }
 
     private void Despawn()

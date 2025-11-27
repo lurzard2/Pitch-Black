@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RWCustom;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -6,7 +7,7 @@ using static PitchBlack.Plugin;
 
 namespace PitchBlack;
 
-public static class DreamerHooks
+public static class DreamersHooks
 {
     // New Dreamer Presence Thing
     // > Assign presence somewhere outside the actual room itself is being loaded, so presence is global to the loaded region
@@ -15,121 +16,84 @@ public static class DreamerHooks
     // > for each presence, and the room is the dreamer room, and they havent been encountered, spawn dreamer
     // > if already encountered, and can, spawn warp
 
-    // TODO: These have to go in Player.Update() somewhere (properly) to be assigned outside of the dreamer room
-
     public static void InitDreamerRoomsToPresences(Room self)
     {
-        // Open room cwt
-        if (Plugin.roomsWithDreamerSpot.TryGetValue(self.world, out  var roomsForDreamer))
+        List<DreamerPresence> presencesToAdd = new List<DreamerPresence>();
+
+        // Queue of dummy presences
+        if (roomsWithDreamerSpot.TryGetValue(self.world, out var roomsForDreamer))
         {
-            // Queue of dummy presences
-            List<DreamerPresence> presencesToAdd = new List<DreamerPresence>();
-            for (int i = 0; i < roomsForDreamer.Count; i++)
+            foreach (var abstractRoom in roomsForDreamer)
             {
-                // Assign an individual dummy class, its values, then assign that to the queue each loop
+                logger.LogDebug($"DreamerRooms: Room in list's name is " + abstractRoom.name);
                 DreamerPresence dummyPresence = null;
                 AbstractRoom currentRoom = self.abstractRoom;
-                string encounterRoomName = roomsForDreamer[i].name;
-                bool encountered = BeaconSaveData.GetDreamerEncountersRoom(self.world.game.GetStorySession.saveState).Contains(encounterRoomName);
-                if (!encountered)
-                {
-                    dummyPresence = new DreamerPresence(self.world, roomsForDreamer[i]);
-                    dummyPresence.presenceSpawned = true;
-                }
+                //string encounterRoomName = abstractRoom.name;
+                logger.LogDebug("DreamerRooms: Assigned dummy presence");
+                logger.LogDebug("DreamerRooms: Not an encounter room, moving forward with presence");
+                dummyPresence = new DreamerPresence(self.world, abstractRoom);
                 presencesToAdd.Add(dummyPresence);
-            }
-            // Open our dreamer presence cwt, but still be able to access presencesToAdd
-            if (Plugin.dreamerPresence.TryGetValue(self.world, out var dreamerPresences))
-            {
-                for (int i = 0; i < presencesToAdd.Count; i++)
-                {
-                    // Assigning presences from the queue to the presence cwt
-                    dreamerPresences.Add(presencesToAdd[i]);
-                }
+                logger.LogDebug($"DreamerRooms: Added dummy presence to the presence list queue");
             }
         }
+
+        // Assigning presences from the queue to the presence cwt
+        if (dreamerPresence.TryGetValue(self.world, out var dreamerPresences))
+        {
+            for (int i = 0; i < presencesToAdd.Count; i++)
+            {
+                bool didIEncouonterThisDreamer = BeaconSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState).Contains(presencesToAdd[i].dreamerRoom.name);
+                if (!didIEncouonterThisDreamer)
+                {
+                    logger.LogDebug("DreamerPresence: Spawning");
+                    presencesToAdd[i].presenceSpawned = true;
+                }
+                else
+                {
+                    logger.LogDebug("DreamerPresence: This Dreamer was encountered, aborting process!");
+                    return;
+                }
+
+                dreamerPresences.Add(presencesToAdd[i]);
+                self.world.migrationInfluences.Add(dreamerPresences[i]);
+                logger.LogDebug($"DreamerPresence: Added queue of presences to the presence CWT");
+                logger.LogDebug($"DreamerPresence Contains:");
+                logger.LogDebug($"> Dreamer's room - {presencesToAdd[i].dreamerRoom.name}");
+                logger.LogDebug($"> Presence active - {presencesToAdd[i].presenceSpawned}");
+                logger.LogDebug($"> Dreamer active - {presencesToAdd[i].dreamerSpawned}");
+                timesToAssignDreamerPresence--;
+            }
+        }
+
+        // Create the list otherwise NOTHING works
+        else
+        {
+            dreamerPresence.Add(self.world, new List<DreamerPresence>());
+        }
+
+        return;
     }
 
     public static void DeactivateDreamerPresence(Room self)
     {
-        if (Plugin.dreamerPresence.TryGetValue(self.world, out var dreamerPresences))
+        if (dreamerPresence.TryGetValue(self.world, out var presence))
         {
-            for (int i = 0; i < dreamerPresences.Count; i++)
+            for (int i = 0; i < presence.Count; i++)
             {
-                if (dreamerPresences[i].presenceSpawned && dreamerPresences[i].dreamerRoom == self.abstractRoom)
+                if (presence[i].presenceSpawned && presence[i].dreamerRoom == self.abstractRoom)
                 {
-                    self.world.migrationInfluences.Remove(dreamerPresences[i]);
-                    dreamerPresences[i] = null;
+                    self.world.migrationInfluences.Remove(presence[i]);
+                    presence[i].dreamerRoom = null;
+                    presence[i].presenceSpawned = false;
+                    presence[i].dreamerSpawned = false;
+                    presence.Remove(presence[i]);
+                    logger.LogDebug($"DreamerPresence: Removed DreamerPresence from CWT");
                 }
-            }
+            } 
         }
     }
 
-    public static void SpawnDreamer(Room self, int objects)
-    {
-        self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[objects]));
-    }
-
-    public static void SpawnWarpInstead(Room self, int objects, DreamerData dreamerData)
-    {
-        if (dreamerData.destRoom != null)
-        {
-            Dreamer.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
-        }
-    }
-
-    /// <summary>
-    /// OUTDATED spawning of Dreamer, placeholder logic
-    /// </summary>
-    public static void LegacyDreamerSetup(Room self, int objects, DreamerData dreamerData, List<string> dreamerRooms)
-    {
-        // CWT setup
-        if (!Plugin.dreamerPresence.TryGetValue(self.world, out var _))
-        {
-            Plugin.dreamerPresence.Add(self.world, new List<DreamerPresence>());
-        }
-
-        var GotDreamerPresence = Plugin.dreamerPresence.TryGetValue(self.world, out var dreamerPresences);
-        var GotRoomsWithDreamer = Plugin.roomsWithDreamerSpot.TryGetValue(self.world, out var abstractRoomsWithDreamer);
-        if (!GotRoomsWithDreamer && !GotDreamerPresence)
-        {
-            return;
-        }
-
-        // using a "dummy" instance of the presence class we can then assign the CWT to what we assign to it
-        DreamerPresence dummyDreamerPresence = null;
-        for (int i = 0; i < dreamerPresences.Count; i++)
-        {
-            // Assign the current presence if it already exists
-            if (dreamerPresences[i].dreamerRoom == self.abstractRoom)
-            {
-                dummyDreamerPresence = dreamerPresences[i];
-                break;
-            }
-        }
-        // Assigning DreamerPresence
-        if (dummyDreamerPresence == null)
-        {
-            bool checkForValidRoom = abstractRoomsWithDreamer.Contains(self.abstractRoom);
-            AbstractRoom dreamersRoom = checkForValidRoom ? self.abstractRoom : null;
-            dummyDreamerPresence = new DreamerPresence(self.world, dreamersRoom);
-            if (!dreamerRooms.Contains(self.abstractRoom.name))
-            {
-                dreamerPresences.Add(dummyDreamerPresence);
-            }
-        }
-        // Adding Dreamer to the room
-        if (!dreamerRooms.Contains(self.abstractRoom.name))
-        {
-            self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[objects]));
-        }
-        // Spawning a warp instead, if you've already met them
-        else
-        {
-            SpawnWarpInstead(self, objects, dreamerData);
-        }
-    }
-
+    public static int timesToAssignDreamerPresence;
     public static float targetDreamIntensity;
     public static float lastGhostMode;
 
@@ -198,12 +162,13 @@ public static class DreamerHooks
     }
 }
 
-public static class WorldHooks
+public static class WorldLoaderHooks
 {
     private static void LogRooms(WorldLoader self)
     {
         // List of rooms I store
         List<AbstractRoom> listOfRoomsForDreamer = new List<AbstractRoom>();
+        List<string> listOfRoomNames = new List<string>();
 
         // Checking rooms in the current world
         for (int i = 0; i < self.abstractRooms.Count; i++)
@@ -217,21 +182,21 @@ public static class WorldHooks
                 if (roomSettings.placedObjects[j].type == Enums.PlacedObjectType.DreamerSpot)
                 {
                     listOfRoomsForDreamer.Add(self.abstractRooms[i]);
+                    listOfRoomNames.Add(self.abstractRooms[i].name);
                     break;
                 }
             }
         }
         // Once the loop is finished, add every room from the list to the CWT
         roomsWithDreamerSpot.Add(self.world, listOfRoomsForDreamer);
-        logger.LogDebug($"Dreamer rooms in world: " + roomsWithDreamerSpot);
+        DreamersHooks.timesToAssignDreamerPresence = listOfRoomsForDreamer.Count;
+        string joinedRoomNameString = String.Join(",", listOfRoomNames);
+        logger.LogDebug($"DreamerRooms: DreamerSpot rooms in world - {joinedRoomNameString}");
     }
 
-    public static void Apply()
+    public static void Inject()
     {
-        DreamerHooks.Inject();
-
         On.WorldLoader.CreatingWorld += WorldLoader_CreatingWorld;
-        On.Region.ctor_string_int_int_RainWorldGame_Timeline += ModifyRegionProperties;
     }
 
     /// <summary>
@@ -241,6 +206,18 @@ public static class WorldHooks
     {
         orig(self);
         LogRooms(self);
+    }
+}
+
+public static class WorldHooks
+{
+
+    public static void Apply()
+    {
+        WorldLoaderHooks.Inject();
+        DreamersHooks.Inject();
+        
+        On.Region.ctor_string_int_int_RainWorldGame_Timeline += ModifyRegionProperties;
     }
 
     // Replace rot eye+effect color for Beacon
