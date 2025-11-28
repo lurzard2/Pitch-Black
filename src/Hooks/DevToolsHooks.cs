@@ -142,39 +142,49 @@ public class DevToolsHooks
     {
         for (int objects = 0; objects < self.roomSettings.placedObjects.Count; objects++)
         {
-            if (self.roomSettings.placedObjects[objects].type == Enums.PlacedObjectType.DreamerSpot
-                && self.game.IsStorySession)
+            if (self.roomSettings.placedObjects[objects].type == Enums.PlacedObjectType.DreamerSpot && self.game.IsStorySession)
             {
-                logger.LogDebug($"DreamerSpot: Found PlacedObject in room");
-                var dreamerData = self.roomSettings.placedObjects[objects].data as DreamerData;
-                var dreamerRooms = BeaconSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState);
-                //// We need this in WorldHooks more than it being embedded in here, everything relevant is there anyway
-                //DreamerHooks.LegacyDreamerSetup(self, objects, dreamerData, dreamerRooms);
-
-                if (dreamerPresence.TryGetValue(self.world, out var presences))
+                // I didn't know bool methods could do that??? peak???
+                bool flowControl = InitDreamerSpot(self, objects);
+                if (!flowControl)
                 {
-                    foreach (var presence in presences)
-                    {
-                        if (presence.presenceSpawned && presence.dreamerRoom == self.abstractRoom)
-                        {
-                            logger.LogDebug($"DreamerSpot: Adding Dreamer to room since presence exists and this is their room");
-                            self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[objects]));
-                            presence.dreamerSpawned = true;
-                            logger.LogDebug($"DreamerPresence: Dreamer active - {presence.dreamerSpawned}");
-                            break;
-                        }
-                        else
-                        {
-                            if (dreamerData.destRoom != null)
-                            {
-                                Dreamer.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
-                                logger.LogDebug($"DreamerSpot: You've encountered this Dreamer, placing a backup warp");
-                            }
-                            break;
-                        }
-                    }
+                    // Go to the next object
+                    continue;
                 }
             }
         }
+    }
+
+    private static bool InitDreamerSpot(Room self, int objects)
+    {
+        if (!dreamerPresence.TryGetValue(self.world, out var dreamerPresences))
+        {
+            // Go back to LoadObjects() when we return false
+            return false;
+        }
+
+        logger.LogDebug($"DreamerSpot: Found PlacedObject in room");
+        var dreamerData = self.roomSettings.placedObjects[objects].data as DreamerData;
+
+        foreach (var presence in dreamerPresences)
+        {
+            if (presence.presenceSpawned && presence.dreamerRoom == self.abstractRoom)
+            {
+                logger.LogDebug($"DreamerSpot: Adding Dreamer to room since presence exists and presence room is loaded");
+                self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[objects]));
+                presence.dreamerSpawned = true;
+                logger.LogDebug($"DreamerPresence: Dreamer active - {presence.dreamerSpawned}");
+                return false;
+            }
+            else if (dreamerData.destRoom != null)
+            {
+                logger.LogDebug($"DreamerSpot: Dreamer already encountered and can spawn warp - Placing warp");
+                Dreamer.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
+                return false;
+            }
+        }
+
+        // Bool has to return a value, why not be true
+        return true;
     }
 }

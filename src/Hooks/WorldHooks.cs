@@ -28,7 +28,13 @@ public static class DreamersHooks
                 logger.LogDebug($"DreamerRooms: Room in list's name is " + abstractRoom.name);
                 DreamerPresence dummyPresence = null;
                 AbstractRoom currentRoom = self.abstractRoom;
-                //string encounterRoomName = abstractRoom.name;
+                string encounterRoomName = abstractRoom.name;
+                bool roomMarkedEncountered = BeaconSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState).Contains(encounterRoomName);
+                if (roomMarkedEncountered)
+                {
+                    logger.LogDebug("DreamerPresence: Dreamer was marked encountered in this room, aborting process!");
+                    return;
+                }
                 logger.LogDebug("DreamerRooms: Assigned dummy presence");
                 logger.LogDebug("DreamerRooms: Not an encounter room, moving forward with presence");
                 dummyPresence = new DreamerPresence(self.world, abstractRoom);
@@ -42,18 +48,8 @@ public static class DreamersHooks
         {
             for (int i = 0; i < presencesToAdd.Count; i++)
             {
-                bool didIEncouonterThisDreamer = BeaconSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState).Contains(presencesToAdd[i].dreamerRoom.name);
-                if (!didIEncouonterThisDreamer)
-                {
-                    logger.LogDebug("DreamerPresence: Spawning");
-                    presencesToAdd[i].presenceSpawned = true;
-                }
-                else
-                {
-                    logger.LogDebug("DreamerPresence: This Dreamer was encountered, aborting process!");
-                    return;
-                }
-
+                logger.LogDebug("DreamerPresence: Spawning");
+                presencesToAdd[i].presenceSpawned = true;
                 dreamerPresences.Add(presencesToAdd[i]);
                 self.world.migrationInfluences.Add(dreamerPresences[i]);
                 logger.LogDebug($"DreamerPresence: Added queue of presences to the presence CWT");
@@ -65,7 +61,7 @@ public static class DreamersHooks
             }
         }
 
-        // Create the list otherwise NOTHING works
+        // Create the list first otherwise NOTHING works
         else
         {
             dreamerPresence.Add(self.world, new List<DreamerPresence>());
