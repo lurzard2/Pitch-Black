@@ -89,72 +89,127 @@ public static class DreamersHooks
         }
     }
 
+    public static void DreamerGhostModeUpdate(RoomCamera self)
+    {
+        // Exiting
+        Creature creature = self.followAbstractCreature?.realizedCreature;
+        if (!dreamerPresence.TryGetValue(self.room.world, out var dreamerPresences))
+        {
+            return;
+        }
+        if (creature is not Player || creature is null)
+        {
+            return;
+        }
+
+        foreach (var presence in dreamerPresences)
+        {
+            if (presence.presenceSpawned)
+            {
+                // Set value to be greater than 0 so ghostMode can be modified by us
+                if (self.ghostMode == 0)
+                {
+                    self.ghostMode = 0.001f;
+                }
+
+                // Room is Dreamer's room
+                if (presence.dreamerSpawned && self.room.abstractRoom == presence.dreamerRoom)
+                {
+                    // Checking for conversation to set correctly
+                    if (targetDreamIntensity < 0.75f)
+                    {
+                        targetDreamIntensity = 0.25f;
+                    }
+                    self.ghostMode = lastGhostMode;
+                    DreamerInRoomMode(self, creature);
+                    break;
+                }
+
+                // Adjacent or other rooms in region effects
+                ForConnectionsMode(self, presence);
+                break;
+            }
+        }
+
+        // Modifying effect intensity if it exists
+        if (self.ghostMode > 0f)
+        {
+            self.ghostMode = Mathf.Lerp(lastGhostMode, targetDreamIntensity, 0.06f);
+            self.lightBloomAlpha = lastGhostMode * 0.8f;
+            lastGhostMode = self.ghostMode;
+        }
+    }
+
+    private static void ForConnectionsMode(RoomCamera self, DreamerPresence presence)
+    {
+        for (int i = 0; i < self.room.abstractRoom.connections.Length; i++)
+        {
+            if (self.room.abstractRoom.connections[i] >= 0 && self.room.world.GetAbstractRoom(self.room.abstractRoom.connections[i]) == presence.dreamerRoom)
+            {
+                targetDreamIntensity = 0.25f;
+            }
+            // Isnt a connection to dreamer's room
+            else
+            {
+                if (targetDreamIntensity > 0.005f)
+                {
+                    targetDreamIntensity -= 0.002f;
+                }
+            }
+        }
+    }
+
+    private static void DreamerInRoomMode(RoomCamera self, Creature creature)
+    {
+        int i = 0;
+        while (i < self.room.updateList.Count)
+        {
+            if (self.room.updateList[i] is Dreamer)
+            {
+                float distanceFromDreamer = Vector2.Distance((self.room.updateList[i] as Dreamer).placedObject.pos, creature.mainBodyChunk.pos);
+                targetDreamIntensity = Mathf.Lerp(0.11f, 1f, Mathf.InverseLerp(1500f, 0f, distanceFromDreamer));
+                // Talking
+                if ((self.room.updateList[i] as Dreamer).conversation != null)
+                {
+                    targetDreamIntensity = 0.75f;
+                    break;
+                }
+                // Done
+                if ((self.room.updateList[i] as Dreamer).convoFinished)
+                {
+                    targetDreamIntensity = 1f;
+                    break;
+                }
+                break;
+            }
+            else
+            {
+                i++;
+            }
+        }
+    }
+
+    // Tracking presences to assign so we have no duplicates
     public static int timesToAssignDreamerPresence;
+    // Highest ghostMode should be
     public static float targetDreamIntensity;
+    // tracking ghostMode
     public static float lastGhostMode;
 
     public static void Inject()
     {
         On.RoomCamera.Update += RoomCamera_Update;
-        On.RoomCamera.UpdateGhostMode += RoomCamera_UpdateGhostMode;
-    }
-
-    private static void RoomCamera_UpdateGhostMode(On.RoomCamera.orig_UpdateGhostMode orig, RoomCamera self, Room newRoom, int newCamPos)
-    {
-        orig(self, newRoom, newCamPos);
-        if (Plugin.dreamerPresence.TryGetValue(self.room.world, out _))
-        {
-            lastGhostMode = self.ghostMode;
-        }
     }
 
     // Adding effects to rooms, using SpinningTop's radial effect
     private static void RoomCamera_Update(On.RoomCamera.orig_Update orig, RoomCamera self)
     {
         orig(self);
-
-        Creature creature = (self.followAbstractCreature != null) ? self.followAbstractCreature.realizedCreature : null;
-        if (self.room != null && creature != null && creature is Player)
-        {
-            if (Plugin.dreamerPresence.TryGetValue(self.room.world, out _))
-            {
-                // SpinningTop's radial room effect is executed like this for Watcher
-                int i = 0;
-                while (i < self.room.updateList.Count)
-                {
-                    if (self.room.updateList[i] is Dreamer)
-                    {
-                        float distanceFromDreamer = Vector2.Distance((self.room.updateList[i] as Dreamer).placedObject.pos, creature.mainBodyChunk.pos);
-                        targetDreamIntensity = Mathf.Lerp(0.11f, 1f, Mathf.InverseLerp(1500f, 0f, distanceFromDreamer));
-                        if ((self.room.updateList[i] as Dreamer).conversation != null)
-                        {
-                            targetDreamIntensity = 1f;
-                            break;
-                        }
-                        break;
-                    }
-                    else
-                    {
-                        i++;
-                    }
-                }
-                lastGhostMode = self.ghostMode;
-                self.ghostMode = Mathf.Lerp(lastGhostMode, targetDreamIntensity, 0.06f);
-            }
-            else
-            {
-                if (self.ghostMode > 0f && targetDreamIntensity > 0f)
-                {
-                    self.ghostMode -= 0.005f;
-                    targetDreamIntensity -= 0.5f;
-                }
-                else
-                {
-                    self.ghostMode = 0f;
-                    targetDreamIntensity = 0f;
-                }
-            }
-        }
+        DreamerGhostModeUpdate(self);
+        //if (self.ghostMode > 0f)
+        //{
+        //    logger.LogDebug($"{self.ghostMode}");
+        //}
     }
 }
 

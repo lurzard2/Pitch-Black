@@ -1178,8 +1178,9 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         }
         Plugin.logger.LogDebug($"Dreamer: I have finished my encounter!");
         var state = room.game.GetStorySession.saveState;
+        string currentRoomName = room.abstractRoom.name;
         DreamersHooks.DeactivateDreamerPresence(room);
-        BeaconSaveData.SetDreamerEncounteredRooms(state, room.abstractRoom.name);
+        BeaconSaveData.SetDreamerEncounteredRooms(state, currentRoomName);
         string joinedString = String.Join(",", BeaconSaveData.GetDreamerEncounteredRooms(state));
         Plugin.logger.LogDebug($"Dreamer: Set encountered rooms - {joinedString}");
         IncreaseSpiralLevel(state);
@@ -1232,8 +1233,8 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
 
     private Counter onScreenCounter = new Counter(120, 0, true);
     private bool convoActive;
-    private bool convoFinished;
-    private bool encounterFinished;
+    public bool convoFinished;
+    public bool encounterFinished;
 
     private PositionedSoundEmitter voice;
     private float talking;
