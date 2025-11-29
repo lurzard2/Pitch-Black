@@ -25,7 +25,7 @@ public static class BeaconSaveData
         }
     }
 
-    // ThanatosisUpdate() ability check
+    // ThanatosisUpdate() ability check, true if your max spiral is 0.5, don't check if you want to track the float though
     public static string canUseThanatosis = "CanUseThanatosis";
     public static bool GetCanUseThanatosis(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(canUseThanatosis, out bool thanatosis) && thanatosis;
     public static void SetCanUseThanatosis(this SaveState save, bool value) => save.deathPersistentSaveData.GetSlugBaseData().Set(canUseThanatosis, value);
