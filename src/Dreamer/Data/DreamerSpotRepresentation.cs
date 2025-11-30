@@ -16,13 +16,17 @@ public class DreamerSpotRepresentation : PlacedObjectRepresentation
         controlPanel.pos = (pObj.data as DreamerData).panelPos;
     }
 
+    public override void Refresh()
+    {
+        base.Refresh();
+        (pObj.data as DreamerData).panelPos = (subNodes[subNodes.Count - 1] as Panel).pos;
+    }
+
     private DreamerPanel controlPanel;
 }
 
 public class DreamerPanel : Panel, IDevUISignals
 {
-    // Token: 0x170006D3 RID: 1747
-    // (get) Token: 0x0600272A RID: 10026 RVA: 0x002F577A File Offset: 0x002F397A
     public DreamerData Data
     {
         get
@@ -31,7 +35,6 @@ public class DreamerPanel : Panel, IDevUISignals
         }
     }
 
-    // Token: 0x0600272B RID: 10027 RVA: 0x002F5798 File Offset: 0x002F3998
     public DreamerPanel(DevUI owner, DevUINode parentNode, Vector2 pos) : base(owner, "Dreamer_Panel", parentNode, pos, new Vector2(250f, 125f), "Dreamer Spot")
     {
         this.subNodes.Add(new Button(owner, "Select_Timeline_Panel_Button", this, new Vector2(5f, 105f), 240f, "Timeline : "));
@@ -44,7 +47,6 @@ public class DreamerPanel : Panel, IDevUISignals
         this.RefreshLabels();
     }
 
-    // Token: 0x0600272C RID: 10028 RVA: 0x002F590C File Offset: 0x002F3B0C
     public override void Update()
     {
         base.Update();
@@ -56,14 +58,12 @@ public class DreamerPanel : Panel, IDevUISignals
         }
     }
 
-    // Token: 0x0600272D RID: 10029 RVA: 0x002F5985 File Offset: 0x002F3B85
     public override void Refresh()
     {
         base.Refresh();
         this.rippleWarpButton.Text = string.Format("Ripple Warp: {0}", this.Data.rippleWarp);
     }
 
-    // Token: 0x0600272E RID: 10030 RVA: 0x002F59B4 File Offset: 0x002F3BB4
     public void Signal(DevUISignalType type, DevUINode sender, string message)
     {
         if (sender.IDstring == "ripple_warp_button")
@@ -209,7 +209,6 @@ public class DreamerPanel : Panel, IDevUISignals
         }
     }
 
-    // Token: 0x0600272F RID: 10031 RVA: 0x002F5E60 File Offset: 0x002F4060
     public void RefreshLabels()
     {
         string text = this.Data.RegionString;
@@ -264,7 +263,6 @@ public class DreamerPanel : Panel, IDevUISignals
         }
     }
 
-    // Token: 0x06002730 RID: 10032 RVA: 0x002F606D File Offset: 0x002F426D
     public void HideRegionSelectPanel()
     {
         if (this.regionSelectPanel != null)
@@ -275,7 +273,6 @@ public class DreamerPanel : Panel, IDevUISignals
         }
     }
 
-    // Token: 0x06002731 RID: 10033 RVA: 0x002F609B File Offset: 0x002F429B
     public void HideRoomSelectPanel()
     {
         if (this.roomSelectPanel != null)
@@ -286,7 +283,6 @@ public class DreamerPanel : Panel, IDevUISignals
         }
     }
 
-    // Token: 0x06002732 RID: 10034 RVA: 0x002F60C9 File Offset: 0x002F42C9
     public void HideTimelineSelectPanel()
     {
         if (this.timelineSelectPanel != null)
@@ -297,7 +293,6 @@ public class DreamerPanel : Panel, IDevUISignals
         }
     }
 
-    // Token: 0x06002733 RID: 10035 RVA: 0x002F60F7 File Offset: 0x002F42F7
     public void HideRoomPositionPanel()
     {
         if (this.roomPositionPanel != null)
@@ -308,37 +303,23 @@ public class DreamerPanel : Panel, IDevUISignals
         }
     }
 
-    // Token: 0x04002444 RID: 9284
     public CustomDecalRepresentation.SelectDecalPanel regionSelectPanel;
-
-    // Token: 0x04002445 RID: 9285
     public CustomDecalRepresentation.SelectDecalPanel roomSelectPanel;
-
-    // Token: 0x04002446 RID: 9286
     public CustomDecalRepresentation.SelectDecalPanel timelineSelectPanel;
-
-    // Token: 0x04002447 RID: 9287
     public RoomPositionPanel roomPositionPanel;
-
-    // Token: 0x04002448 RID: 9288
     public Button rippleWarpButton;
-
-    // Token: 0x020009F0 RID: 2544
     public class SpawnIdentifierController : IntegerControl
     {
-        // Token: 0x0600535D RID: 21341 RVA: 0x00593A68 File Offset: 0x00591C68
         public SpawnIdentifierController(DevUI owner, string IDstring, DevUINode parentNode, Vector2 pos, string title) : base(owner, IDstring, parentNode, pos, title)
         {
         }
 
-        // Token: 0x0600535E RID: 21342 RVA: 0x00593A77 File Offset: 0x00591C77
         public override void Refresh()
         {
             base.NumberLabelText = (this.parentNode as DreamerPanel).Data.spawnIdentifier.ToString();
             base.Refresh();
         }
 
-        // Token: 0x0600535F RID: 21343 RVA: 0x00593A9F File Offset: 0x00591C9F
         public override void Increment(int change)
         {
             (this.parentNode as DreamerPanel).Data.spawnIdentifier = Mathf.Max(0, (this.parentNode as DreamerPanel).Data.spawnIdentifier + change);

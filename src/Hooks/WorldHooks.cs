@@ -276,7 +276,7 @@ public static class WorldHooks
     {
         orig(self, name, firstRoomIndex, regionNumber, game, timelineIndex);
 
-        if (timelineIndex != null && timelineIndex == Enums.Timeline.Beacon)
+        if (MiscUtils.IsBeacon(timelineIndex))
         {
             self.regionParams.corruptionEffectColor = RainWorld.RippleColor;
             self.regionParams.corruptionEyeColor = RainWorld.RippleColor;
