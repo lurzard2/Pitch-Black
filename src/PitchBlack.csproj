@@ -42,6 +42,7 @@
 		
         <Delete Files="@(RemovePlugins)" />
         <Copy SourceFiles="@(CopyPlugins)" DestinationFolder="../pitchblack/newest/plugins/" />
+		<Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="../pitchblack/newest/plugins/" />
     </Target>
     
 </Project>

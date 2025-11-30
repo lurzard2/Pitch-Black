@@ -722,20 +722,6 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         }
         return result;
     }
-
-    public void Speak(SoundID line)
-    {
-        voice = new PositionedSoundEmitter(pos, 1f, 1f)
-        {
-            requireActiveUpkeep = true
-        };
-        room.PlaySound(line, voice, false, 1f, UnityEngine.Random.Range(0.75f, 1.25f), false);
-    }
-
-    public void StopSpeaking()
-    {
-        voice = null;
-    }
     #endregion
 
     #region Graphics
@@ -1210,7 +1196,6 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
             slatedForDeletetion = true;
         }
     }
-
     #endregion
 
     public Vector2 targetPos;
@@ -1235,10 +1220,6 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     private bool convoActive;
     public bool convoFinished;
     public bool encounterFinished;
-
-    private PositionedSoundEmitter voice;
-    private float talking;
-    private float lastTalking;
 
     public float scale;
     public float lightSpriteScale = 0.3f;
