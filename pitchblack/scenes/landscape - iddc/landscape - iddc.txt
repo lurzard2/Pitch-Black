@@ -1,0 +1,8 @@
+iddc_landscape - 3 : 2
+iddc_landscape - 2 : 2
+iddc_landscape - 1 : 1
+blurMax : 3
+blurMin : 0
+idleDepths : 3
+idleDepths : 1
+idleDepths : 0
