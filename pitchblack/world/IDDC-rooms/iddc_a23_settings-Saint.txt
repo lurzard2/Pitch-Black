@@ -1,0 +1,12 @@
+DangerType: Blizzard
+CeilingDrips: 0
+WaveSpeed: 0.6588847
+WaveLength: 0.9205576
+WaveAmplitude: 8.633173E-07
+SecondWaveLength: 1
+SecondWaveAmplitude: 0.0001
+PlacedObjects: SnowSource><454.996><384.0663><Radial~-104.0001~95.20001~50~86.60254~0.6115948~1, SnowSource><383.4268><173.2453><Radial~0~100~50~86.60254~0.3623186~0.2898553, 
+AmbientSounds: OMNI><am_ind-warehouse02.ogg><297.4339><100.9821><0.5><1, SPOT><SO_IND-Turbine.ogg><737.4457><21.02534><0.5><1><652.6458><322.3586><-35.35534><-35.35534><0><0.3782614, SPOT><SO_IND-MechHum02.ogg><747.5944><371.0079><0.5><1><132.1277><224.8746><-35.35534><-35.35534><0><0.4130442, 
+FadePalette: 543218, 0.2840578
+WetTerrain: OFF
+MorePalette0: 0, 0.2608696

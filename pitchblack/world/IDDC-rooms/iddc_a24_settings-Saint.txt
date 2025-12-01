@@ -1,0 +1,12 @@
+DangerType: Blizzard
+CeilingDrips: 0
+WaveSpeed: 0.2497019
+WaveLength: 0.8748509
+WaveAmplitude: 1.215732E-07
+SecondWaveLength: 1
+SecondWaveAmplitude: 0.0001
+Grime: 0.6913044
+PlacedObjects: MudPit><-201.8716><122.1923><200.5333~146.8~61.4, MudPit><944.9203><156.3206><214.4001~111.0667~56.06665, DataPearl><420.1149><96.45459><0~0~40~50~Misc~0, SnowSource><483.7241><314.0542><Radial~-229.8667~215.2~50~86.60254~0.4956539~0.6695656, 
+AmbientSounds: SPOT><so_wat-lightflow.ogg><254.994><11.46117><0.517391><1><571.7939><162.9278><-168.6887><-40.15533><0><0.2855072, SPOT><am_ind-electrichum01.ogg><490.2885><11.63684><0.5><1><443.8885><474.0369><-35.35534><-35.35534><0><0.3086959, SPOT><am_ind-utility03.ogg><671.4454><29.14319><0.5><1><281.5786><399.8099><-35.35534><-35.35534><0><0.4130435, 
+FadePalette: 543218, 0.3014493
+WetTerrain: OFF

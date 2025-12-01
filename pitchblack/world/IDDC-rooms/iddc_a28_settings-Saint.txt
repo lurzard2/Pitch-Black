@@ -1,0 +1,10 @@
+DangerType: Blizzard
+CeilingDrips: 0
+WaveSpeed: 0.5008273
+WaveLength: 0.7495863
+WaveAmplitude: 0.04998339
+SecondWaveLength: 1
+SecondWaveAmplitude: 0.0001
+AmbientSounds: OMNI><so_wat-moredrips.ogg><217.8664><4.981934><0.5><1, SPOT><so_ind-mechhum01.ogg><466.2723><-4.358421><0.4072458><1><426.8057><319.9082><-35.35534><-35.35534><0><0.4594202, SPOT><am_ind-electrichum01.ogg><727.0626><207.6697><0.2739138><1><429.4626><321.2697><-35.35534><-35.35534><0><0.494203, OMNI><RWTW_AmbWarehouse.ogg><760.6546><260.4424><0.482609><1.052174, 
+FadePalette: 543218, 0.289855
+WetTerrain: OFF

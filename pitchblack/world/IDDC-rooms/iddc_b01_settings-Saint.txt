@@ -1,0 +1,12 @@
+DangerType: Blizzard
+CeilingDrips: 0
+WaveSpeed: 0.4843827
+WaveLength: 0.9921914
+WaveAmplitude: 0.0004778845
+SecondWaveLength: 1
+SecondWaveAmplitude: 0.0001
+WaterReflectionAlpha: 0.5014489
+Effects: WaterGlowworm-0.4376813-20-20, 
+PlacedObjects: MudPit><-202.3175><265.6639><200~30~56.6, MudPit><1955.892><270.4653><235.2001~32.66669~36.86658, 
+FadePalette: 543218, 0.2318842, 0.2376812
+WetTerrain: OFF
