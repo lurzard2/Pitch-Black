@@ -137,7 +137,7 @@ class  Plugin : BaseUnityPlugin
             }
             catch (Exception err)
             {
-                logger.LogDebug($"PitchBlack error in Critob registry\n{err}");
+                logger.LogDebug($"Error in Critob registry\n{err}");
             }
 
             Futile.atlasManager.LoadAtlas("atlases/PBHat");

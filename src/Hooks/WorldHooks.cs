@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Watcher;
 using static PitchBlack.Plugin;
 
 namespace PitchBlack;
@@ -248,6 +249,57 @@ public static class WorldLoaderHooks
     public static void Inject()
     {
         On.WorldLoader.CreatingWorld += WorldLoader_CreatingWorld;
+        On.Room.TrySpawnWarpPoint_PlacedObject_bool += CheckSpawnWarpForDreamer;
+    }
+
+    private static WarpPoint CheckSpawnWarpForDreamer(On.Room.orig_TrySpawnWarpPoint_PlacedObject_bool orig, Room self, PlacedObject po, bool saveInRegionState)
+    {
+        WarpPoint.WarpPointData warpPointData = po.data as WarpPoint.WarpPointData;
+        string text = WarpPoint.IdentifyingString(self.game, warpPointData, self.abstractRoom);
+        foreach (WarpPoint warpPoint in self.warpPoints)
+        {
+            if (warpPoint.MyIdentifyingString() == text && warpPoint.Data.destRoom?.ToLowerInvariant() == warpPointData.destRoom?.ToLowerInvariant())
+            {
+                return warpPoint;
+            }
+
+            if (warpPoint.Data.destRoom?.ToLowerInvariant() == warpPointData.destRoom?.ToLowerInvariant())
+            {
+                return warpPoint;
+            }
+        }
+
+        if ((warpPointData.nonDynamicWarpPoint || warpPointData.wasNonDynamicWarpBeforeWeaverTriggered) && warpPointData.destRoom != null && !warpPointData.rippleWarp && !warpPointData.oneWayExit && !warpPointData.UpToDateWithIndexMaps(self.abstractRoom.name))
+        {
+            bool flag = false;
+            for (int i = 0; i < self.roomSettings.placedObjects.Count; i++)
+            {
+                if (self.roomSettings.placedObjects[i].type == PlacedObject.Type.WarpPoint && (self.roomSettings.placedObjects[i].data as WarpPoint.WarpPointData).destRoom == warpPointData.destRoom)
+                {
+                    flag = true;
+                    break;
+                }
+
+                if (self.roomSettings.placedObjects[i].type == WatcherEnums.PlacedObjectType.SpinningTopSpot && (self.roomSettings.placedObjects[i].data as SpinningTopData).destRoom == warpPointData.destRoom)
+                {
+                    flag = true;
+                    break;
+                }
+                // Inject DreamerSpot check
+                bool isDreamerSpot = self.roomSettings.placedObjects[i].type == Enums.PlacedObjectType.DreamerSpot && (self.roomSettings.placedObjects[i].data as DreamerData).destRoom == warpPointData?.destRoom;
+                if (isDreamerSpot)
+                {
+                    flag = true;
+                }
+            }
+
+            if (!flag)
+            {
+                return null;
+            }
+        }
+
+        return self.ForceSpawnWarpPoint(po, saveInRegionState);
     }
 
     /// <summary>
