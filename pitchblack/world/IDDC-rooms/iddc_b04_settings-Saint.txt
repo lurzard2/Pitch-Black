@@ -1,0 +1,12 @@
+Template: iddc_settingstemplate_cistern
+DangerType: Blizzard
+CeilingDrips: 0
+WaveSpeed: 0.5226296
+WaveLength: 0.9886853
+WaveAmplitude: 0.0009270522
+SecondWaveLength: 1
+SecondWaveAmplitude: 0.0001
+WaterReflectionAlpha: 0.7971016
+PlacedObjects: MudPit><-190.1561><131.516><175.4667~137.2~58.2, MudPit><1971.826><144.9784><220.8002~96.66666~93.40002, CustomDecal><831.7993><714.8673><1141.333~-45.8667~1125.867~-746.1333~-103.4667~-764.2667~-252.2667~-372.2667~0~1~0~bluerust2~0.2449275~1~0.2449275~1~0.2449275~1~0.2449275~1, CustomDecal><1354.055><-32.52198><-1331.2~62.4~-1150.933~810.6667~246.4~762.1334~-661.3334~-4.266651~0~1~0~bluerust3~0.337681~1~0.1521752~1~0.3376823~1~0.3376823~1, DeadHazer><477.0529><326.4792><0~0~7~10, 
+FadePalette: 543218, 0, 0
+WetTerrain: OFF

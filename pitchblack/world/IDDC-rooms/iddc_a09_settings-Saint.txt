@@ -1,0 +1,14 @@
+Template: iddc_settingstemplate_cistern
+DangerType: Blizzard
+CeilingDrips: 0
+WaveSpeed: 0.5250375
+WaveLength: 0.9874812
+WaveAmplitude: 0.0001109605
+SecondWaveLength: 1
+SecondWaveAmplitude: 0.0001
+Effects: Fog-0.7043478-19.33334-0, 
+PlacedObjects: CustomDecal><52.84904><28.06665><-4.266678~556.2667~884.8~707.2~904.0001~-33.6~-272.5334~6.933273~0~1~0~bluerust1~0.2971014~1~0.2971014~1~0.2971014~1~0.2971014~1, CustomDecal><-37.70956><401.3206><-90.66668~-435.2~1083.733~-436.2667~1010.133~253.8666~0~0~0~1~1~bluerust2~0.3434783~1~0.3434783~1~0.3434783~1~0.3434783~1, InsectGroup><616.572><445.1336><-106.6667~129.3333~0~0~Moth~0.2507245, MudPit><-201.2411><54.62195><157.3333~297.2~48.06667, MudPit><1026.435><32.53406><142.3999~227.3333~60.8667, 
+AmbientSounds: OMNI><so_wat-openflow.ogg><1.746811><55.43898><0.4072463><1, DIR><so_wat-tapwater.ogg><750.4938><293.0049><0.4014488><1><180><0, DIR><so_wat-tubwater.ogg><710.6428><278.453><0.5><1><180><0, 
+Triggers: Spot<tA>event<tB>MusicEvent<eA>songName<eB>depression in concrete<eA>vol<eB>0.3<eA>prio<eB>0.5<eA>mxThrt<eB>1<eA>loop<eB>0<eA>droneTol<eB>0<eA>rooms<eB>-1<eA>rest<eB>5<eA>fadeIn<eB>0<eA>oneSongPerCycle<eB>0<eA>stopAtDeath<eB>0<eA>stopAtGate<eB>0<tA>multiUse<tB>0<tA>toCycle<tB>-1<tA>fromCycle<tB>0<tA>delay<tB>0<tA>panPos<tB>845.3037<tB>428.7289<tA>fireChance<tB>0.9072465<tA>entrance<tB>-1<tA>karma<tB>0<tA>slugcats<tB><tA>pos<tB>503.1703<tB>348.9956<tA>handlePos<tB>-248.6887<tB>-12.95534, 
+FadePalette: 543218, 0
+WetTerrain: OFF

@@ -1,0 +1,6 @@
+Clouds: 1
+Grime: 0.5985506
+PlacedObjects: MudPit><1027.01><193.0017><182.4~147.3334~51.2666, MudPit><-205.5558><203.5332><187.7334~110.5334~73.66666, CustomDecal><483.423><98.76723><-72.53333~380.2667~363.1999~390.4~289.6~-128.5333~-358.9333~24.53331~0~1~1~rust1~0.5~1~0.5~1~0.5~1~0.5~1, 
+AmbientSounds: SPOT><so_wat-openflow.ogg><1.660736><196.158><0.3434786><1><642.7275><330.558><-128.6887><-74.82202><0><0.2159417, SPOT><so_wat-pour.ogg><14.78304><319.211><0.5><1><629.7164><141.0777><-79.62201><-45.48868><0><0.2565215, SPOT><so_wat-splashes.ogg><-10.36101><413.2249><0.5><1><638.1723><206.2915><-104.6887><-58.82201><0><0.4130435, SPOT><so_wat-tubwater.ogg><-13.21193><515.6434><0.5><1><400.6547><-1.689865><-211.3553><-57.75537><0><0.2565215, 
+Triggers: Spot<tA>event<tB>MusicEvent<eA>songName<eB>trickle of water<eA>vol<eB>0.3<eA>prio<eB>0.5<eA>mxThrt<eB>1<eA>loop<eB>0<eA>droneTol<eB>0<eA>rooms<eB>-1<eA>rest<eB>5<eA>fadeIn<eB>0<eA>oneSongPerCycle<eB>0<eA>stopAtDeath<eB>0<eA>stopAtGate<eB>0<tA>multiUse<tB>0<tA>toCycle<tB>-1<tA>fromCycle<tB>0<tA>delay<tB>0<tA>panPos<tB>130.143<tB>403.2626<tA>fireChance<tB>1<tA>entrance<tB>-1<tA>karma<tB>0<tA>slugcats<tB><tA>pos<tB>649.0764<tB>310.9959<tA>handlePos<tB>-227.8887<tB>13.17795, 
+FadePalette: 543218, 0.4985507

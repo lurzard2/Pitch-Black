@@ -1,0 +1,15 @@
+Template: iddc_settingstemplate_cistern
+DangerType: Blizzard
+CeilingDrips: 0
+WaveSpeed: 0.527483
+WaveLength: 0.9862585
+WaveAmplitude: 4.349259E-05
+SecondWaveLength: 1
+SecondWaveAmplitude: 0.0001
+Grime: 0.6043479
+WaterReflectionAlpha: 0.4550725
+Effects: LightRain-0.6376811-30-30, 
+PlacedObjects: MudPit><-192.4037><179.8073><204.8~58.8~108.8667, CustomDecal><925.9517><173.4925><195.2~516.2667~1059.733~517.8667~329.0667~-211.2~-401.6~14.9333~0~1~0~bluerust1~0.2739128~1~0.2739128~1~0.2739128~1~0.2739128~1, CustomDecal><1795.817><-30.77643><-1136~23.46666~-1122.667~974.4~459.2001~767.4667~0~0~0~1~0~bluerust2~0.2797102~1~0.2797102~1~0.2797102~1~0.2797102~1, CustomDecal><277.2031><-31.92776><-469.3333~769.0667~881.5999~769.0667~667.2~0.5333334~0~0~0~1~0~bluerust1~0.2275364~1~0.2275364~1~0.2275364~1~0.2275364~1, MudPit><1966.776><128.0527><234.6667~118.5333~41.13342, CustomDangleFruit><1445.443><439.5241><100~50~17ADFF~forth_customfruit~3~2, CustomDangleFruit><1570.828><419.9668><100~50~17ADFF~forth_customfruit~3~2, 
+AmbientSounds: DIR><AM_WAT-Lakeside.ogg><614.1771><24.12341><0.5><1><180><0, DIR><so_wat-splashes.ogg><447.1927><31.54837><0.5><1><180><0, DIR><so_wat-tubwater.ogg><818.5858><25.75133><0.3666667><1><180><0, SPOT><so_wat-tapwater.ogg><723.4324><291.518><0.5><1><1070.632><545.3846><-35.35534><-35.35534><0><0.4710149, SPOT><so_wat-tapwater.ogg><723.0895><291.7193><0.5><1><766.8229><529.5859><-35.35534><-35.35534><0><0.482609, 
+FadePalette: 543218, 0, 0
+WetTerrain: OFF

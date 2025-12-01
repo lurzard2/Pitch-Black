@@ -1,0 +1,12 @@
+DangerType: Blizzard
+CeilingDrips: 0
+WaveSpeed: 0.3552724
+WaveLength: 0.9276362
+WaveAmplitude: 0.00168635
+SecondWaveLength: 1
+SecondWaveAmplitude: 0.0001
+PlacedObjects: MudPit><983.0337><171.8123><194.1333~63.59999~53.40002, MudPit><-205.3644><140.993><256.5333~90.79999~51.26666, 
+AmbientSounds: SPOT><AM_IND-ElectricHum01.ogg><254.511><0.3135986><0.5><1><686.5111><300.5803><-35.35534><-35.35534><0><0.2971019, SPOT><AM_ENV-WallHum.ogg><493.0187><-9.374397><0.4362322><1><505.8188><122.8923><-97.22198><-35.35533><0><0.3028989, SPOT><AM_IND-Utility01.ogg><8.566132><365.9326><0.5><1><297.6329><527.5326><-59.88867><-62.55537><0><0.2275364, OMNI><so_wat-moredrips.ogg><727.8392><400.065><0.5><1, 
+Triggers: RegionBump<tA>event<tB>MusicEvent<eA>songName<eB>bm_iddc_gate<eA>vol<eB>0.3<eA>prio<eB>0.5<eA>mxThrt<eB>1<eA>loop<eB>0<eA>droneTol<eB>0<eA>rooms<eB>-1<eA>rest<eB>5<eA>fadeIn<eB>0<eA>oneSongPerCycle<eB>0<eA>stopAtDeath<eB>0<eA>stopAtGate<eB>0<tA>multiUse<tB>0<tA>toCycle<tB>-1<tA>fromCycle<tB>0<tA>delay<tB>0<tA>panPos<tB>788.8108<tB>464.2989<tA>fireChance<tB>1<tA>entrance<tB>2<tA>karma<tB>0<tA>slugcats<tB>, 
+FadePalette: 543218, 0.3478261
+WetTerrain: OFF

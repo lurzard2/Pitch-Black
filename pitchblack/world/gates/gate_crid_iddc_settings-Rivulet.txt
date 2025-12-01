@@ -1,0 +1,5 @@
+Clouds: 1
+Palette: 1212121212
+PlacedObjects: ExitSymbolHidden><235.9085><111.9188><, ExitSymbolShelter><731.2423><106.7476><, 
+FadePalette: 54545454, 0.3043478
+MorePalette0: 8, 0.6028987

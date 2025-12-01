@@ -1,0 +1,13 @@
+DangerType: Blizzard
+CeilingDrips: 0
+WaveSpeed: 0.4439438
+WaveLength: 0.9719719
+WaveAmplitude: 0.0003237291
+SecondWaveLength: 1
+SecondWaveAmplitude: 0.0001
+Palette: 1212121212
+EffectColorB: 2
+PlacedObjects: ExitSymbolShelter><237.9389><114.7283><, 
+FadePalette: 8, 0.2898551
+WetTerrain: OFF
+MorePalette0: 14, 0.3043485

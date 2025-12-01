@@ -1,0 +1,4 @@
+Template: iddc_settingstemplate_cistern
+Clouds: 1
+PlacedObjects: CustomDecal><266.1634><461.8618><619.2~73.59998~664.5334~-377.6~-13.33333~-281.6~153.6~-245.8666~0~1~0~bluerust1~0.2739125~1~0.2739125~1~0.2739125~1~0.2739125~1, 
+FadePalette: 543218, 0.6086956

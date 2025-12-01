@@ -1,0 +1,10 @@
+WaveLength: 0.5115944
+WaveAmplitude: 0
+SecondWaveLength: 0.1666667
+SecondWaveAmplitude: 0
+Clouds: 1
+PlacedObjects: MudPit><932.468><299.1699><227.7334~211.8667~51.79993, MudPit><-200.0338><315.2524><192~145.2~15, WaterNut><676.3905><529.147><0~0~2~3, WaterNut><728.3016><509.0005><0~0~2~3, 
+AmbientSounds: SPOT><so_wat-tubwater.ogg><734.7379><284.1656><0.5><1><501.6712><514.5657><-65.75537><-94.02197><0><0.3434786, 
+Triggers: RegionBump<tA>event<tB>MusicEvent<eA>songName<eB>bm_iddc_gate<eA>vol<eB>0.3<eA>prio<eB>0.5<eA>mxThrt<eB>1<eA>loop<eB>0<eA>droneTol<eB>0<eA>rooms<eB>-1<eA>rest<eB>5<eA>fadeIn<eB>0<eA>oneSongPerCycle<eB>0<eA>stopAtDeath<eB>0<eA>stopAtGate<eB>0<tA>multiUse<tB>0<tA>toCycle<tB>-1<tA>fromCycle<tB>0<tA>delay<tB>0<tA>panPos<tB>733.831<tB>174.8852<tA>fireChance<tB>1<tA>entrance<tB>1<tA>karma<tB>0<tA>slugcats<tB>, 
+FadePalette: 543218, 0.6028985
+MorePalette0: 54545454, 0.06376847

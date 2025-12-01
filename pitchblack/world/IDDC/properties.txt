@@ -1,0 +1,28 @@
+Palette: 1212121212
+batDepleteCyclesMin: 2
+batDepleteCyclesMax: 7
+batDepleteCyclesMaxIfLessThanTwoLeft: 3
+batDepleteCyclesMaxIfLessThanFiveLeft: 4
+overseersSpawnChance: 0.5
+overseersMin: 1
+overseersMax: 6
+playerGuideOverseerSpawnChance: 0.7
+Room Setting Templates: inside, outside, Cistern
+Subregion: Cistern
+Subregion: Industrial Outflow
+kelpColor: 0.1, 0.5, 0.6
+Room_Attr: IDDC_D01: StandardGroundCreature-Avoid,Slugcat-Avoid,LizardTemplate-Avoid,PinkLizard-Avoid,GreenLizard-Avoid,BlueLizard-Avoid,YellowLizard-Avoid,WhiteLizard-Avoid,RedLizard-Avoid,BlackLizard-Avoid,Salamander-Avoid,CyanLizard-Avoid,Fly-Avoid,Leech-Avoid,SeaLeech-Avoid,Snail-Avoid,Vulture-Avoid,GarbageWorm-Avoid,LanternMouse-Avoid,CicadaA-Avoid,CicadaB-Avoid,Spider-Avoid,JetFish-Avoid,BigEel-Avoid,Deer-Avoid,TubeWorm-Avoid,DaddyLongLegs-Avoid,BrotherLongLegs-Avoid,TentaclePlant-Avoid,PoleMimic-Avoid,MirosBird-Avoid,TempleGuard-Avoid,Centipede-Avoid,RedCentipede-Avoid,Centiwing-Avoid,SmallCentipede-Avoid,Scavenger-Avoid,Overseer-Avoid,VultureGrub-Avoid,EggBug-Avoid,BigSpider-Avoid,SpitterSpider-Avoid,SmallNeedleWorm-Avoid,BigNeedleWorm-Avoid,DropBug-Avoid,KingVulture-Avoid,Hazer-Avoid,MirosVulture-Avoid,SpitLizard-Avoid,EelLizard-Avoid,MotherSpider-Avoid,TerrorLongLegs-Avoid,AquaCenti-Avoid,StowawayBug-Avoid,ScavengerElite-Avoid,Inspector-Avoid,Yeek-Avoid,BigJelly-Avoid,JungleLeech-Avoid,ZoopLizard-Avoid,HunterDaddy-Avoid,FireBug-Avoid,SlugNPC-Avoid,ScavengerKing-Avoid,TrainLizard-Avoid,
+Room_Attr: IDDC_C03: CicadaA-Like,CicadaB-Like,
+Room_Attr: IDDC_B04: CicadaA-Like,CicadaB-Like,
+Room_Attr: IDDC_A08: CicadaA-Like,CicadaB-Like,
+Room_Attr: IDDC_B06: CicadaA-Like,CicadaB-Like,
+Room_Attr: IDDC_A12: CicadaA-Like,CicadaB-Like,
+Room_Attr: IDDC_B15: CicadaA-Like,CicadaB-Like,
+Room_Attr: IDDC_B07: CicadaA-Like,CicadaB-Like,
+Room_Attr: IDDC_A09: CicadaA-Like,CicadaB-Like,
+Room_Attr: IDDC_A07: StandardGroundCreature-Avoid,Slugcat-Avoid,LizardTemplate-Avoid,PinkLizard-Avoid,GreenLizard-Avoid,BlueLizard-Avoid,YellowLizard-Avoid,WhiteLizard-Avoid,RedLizard-Avoid,BlackLizard-Avoid,Salamander-Avoid,CyanLizard-Avoid,Fly-Avoid,Leech-Avoid,SeaLeech-Avoid,Snail-Avoid,Vulture-Avoid,GarbageWorm-Avoid,LanternMouse-Avoid,CicadaA-Avoid,CicadaB-Avoid,Spider-Avoid,JetFish-Avoid,BigEel-Avoid,Deer-Avoid,TubeWorm-Avoid,DaddyLongLegs-Avoid,BrotherLongLegs-Avoid,TentaclePlant-Avoid,PoleMimic-Avoid,MirosBird-Avoid,TempleGuard-Avoid,Centipede-Avoid,RedCentipede-Avoid,Centiwing-Avoid,SmallCentipede-Avoid,Scavenger-Avoid,Overseer-Avoid,VultureGrub-Avoid,EggBug-Avoid,BigSpider-Avoid,SpitterSpider-Avoid,SmallNeedleWorm-Avoid,BigNeedleWorm-Avoid,DropBug-Avoid,KingVulture-Avoid,Hazer-Avoid,MirosVulture-Avoid,SpitLizard-Avoid,EelLizard-Avoid,MotherSpider-Avoid,TerrorLongLegs-Avoid,AquaCenti-Avoid,StowawayBug-Avoid,ScavengerElite-Avoid,Inspector-Avoid,Yeek-Avoid,BigJelly-Avoid,JungleLeech-Avoid,ZoopLizard-Avoid,HunterDaddy-Avoid,FireBug-Avoid,SlugNPC-Avoid,ScavengerKing-Avoid,TrainLizard-Avoid,
+Room_Attr: IDDC_A26: StandardGroundCreature-Avoid,Slugcat-Avoid,LizardTemplate-Avoid,PinkLizard-Avoid,GreenLizard-Avoid,BlueLizard-Avoid,YellowLizard-Avoid,WhiteLizard-Avoid,RedLizard-Avoid,BlackLizard-Avoid,Salamander-Avoid,CyanLizard-Avoid,Fly-Avoid,Leech-Avoid,SeaLeech-Avoid,Snail-Avoid,Vulture-Avoid,GarbageWorm-Avoid,LanternMouse-Avoid,CicadaA-Avoid,CicadaB-Avoid,Spider-Avoid,JetFish-Avoid,BigEel-Avoid,Deer-Avoid,TubeWorm-Avoid,DaddyLongLegs-Avoid,BrotherLongLegs-Avoid,TentaclePlant-Avoid,PoleMimic-Avoid,MirosBird-Avoid,TempleGuard-Avoid,Centipede-Avoid,RedCentipede-Avoid,Centiwing-Avoid,SmallCentipede-Avoid,Scavenger-Avoid,Overseer-Avoid,VultureGrub-Avoid,EggBug-Avoid,BigSpider-Avoid,SpitterSpider-Avoid,SmallNeedleWorm-Avoid,BigNeedleWorm-Avoid,DropBug-Avoid,KingVulture-Avoid,Hazer-Avoid,MirosVulture-Avoid,SpitLizard-Avoid,EelLizard-Avoid,MotherSpider-Avoid,TerrorLongLegs-Avoid,AquaCenti-Avoid,StowawayBug-Avoid,ScavengerElite-Avoid,Inspector-Avoid,Yeek-Avoid,BigJelly-Avoid,JungleLeech-Avoid,ZoopLizard-Avoid,HunterDaddy-Avoid,FireBug-Avoid,SlugNPC-Avoid,ScavengerKing-Avoid,TrainLizard-Avoid,
+Room_Attr: IDDC_B03: CicadaA-Like,CicadaB-Like,
+Room_Attr: IDDC_B16: CicadaA-Like,CicadaB-Like,
+Room_Attr: IDDC_B05: CicadaA-Like,CicadaB-Like,
+Room_Attr: IDDC_C04: CicadaA-Like,CicadaB-Like,

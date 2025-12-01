@@ -1,0 +1,10 @@
+DangerType: Blizzard
+CeilingDrips: 0
+WaveSpeed: 0.4924622
+WaveLength: 0.9962311
+WaveAmplitude: 0.008060156
+SecondWaveLength: 1
+SecondWaveAmplitude: 0.0001
+PlacedObjects: MudPit><-216.5832><126.6028><350.9333~231.0667~98.73333, MudPit><790.2725><219.795><374.4001~136.6667~58.7334, CustomDangleFruit><446.142><409.3957><100~50~17ADFF~forth_customfruit~3~2, CustomDangleFruit><515.6863><371.2275><100~50~149EED~forth_customfruit~3~2, DeadTokenStalk><519.3732><419.4909><-130.1334~-50.93329, DeadTokenStalk><549.9839><371.8807><76.79999~-75.46667, DeadTokenStalk><499.9533><321.0249><122.6667~-59.46667, LightSource><495.7012><373.4177><0.1999996~Environment~-46.40002~280.8~50~86.60254~1~0~None~0~0, LightSource><517.3179><413.5224><0.1304348~Environment~-274.1333~1.333344~50~86.60254~1~1~None~0~0, CustomDecal><341.2895><-33.70065><-56~665.0667~368~690.1334~272~2.666667~-312.5334~14.39996~0~1~0~rust3~0.5~1~0.5~1~0.5~1~0.5~1, 
+FadePalette: 543218, 0.4405798
+WetTerrain: OFF

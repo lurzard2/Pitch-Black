@@ -1,0 +1,2 @@
+AmbientSounds: DIR><AM_ENV-LightWind.ogg><723.8792><521.704><0.5><1><-6.079573><0, 
+FadePalette: 1212121212, 0.1594203
