@@ -1,0 +1,4 @@
+[ADD]GATE_CRID_CC : 3 : 3
+[ADD]GATE_CRID_GW : 2 : 2
+//[ADD]GATE_5W_SI : 4 : 4
+//[ADD]GATE_XX_XX : 5 : 5
