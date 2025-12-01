@@ -1,0 +1,3 @@
+﻿This pearl contains blueprints for the expansive network of pipes located under the industrial complex to the east of here
+It's purpose was to deal with waste water produced from the farm arrays and industrial complex<LINE>some of which could be reused in other processes like more acidic water in the farming
+I do wonder how it has held up over the cycles
