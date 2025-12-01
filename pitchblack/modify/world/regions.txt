@@ -1,3 +1,6 @@
 [ADD]UD
 [ADD]VV
+//Corroded Manufactory
 [ADD]CRID
+// Industrial Outflow
+[ADD]IDDC

@@ -1,1 +1,5 @@
+//CRID
 [ADD]CRID1 : Garbage-Hills, Manufactory
+//IDDC
+[ADD]IDDC1 : Cisternic
+[ADD]IDDC2 : Industrial Sewer
