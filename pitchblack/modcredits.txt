@@ -1,0 +1,52 @@
+RAIN WORLD: PITCH BLACK
+
+PITCH BLACK DEV TEAM
+Lurzard: Development Lead, Programmer, Menu Illustrations
+Tryn: Music, Sound Design
+"Tides of Twilight" Opey: Creature Spawns Design and Implementation
+Moon615: Creature Design, Programmer
+Ovidia: Level Design, Programmer
+Matvis: Music, Sound Design
+stormthecat: Art
+Nikki: Creature Programmer
+spinch: Programmer
+
+SPECIAL THANKS (This stuff is gonna be categorized later)
+Millisec "Brooke": Ideas and Design, Beta Thumbnail Art, Photomaniac
+Moon615: Ideas and Design, Main Coder on the team and Creature Programmer, Original "Rift" Object pre-Watcher
+Ovidia: Ideas and Design, Level design, Elsehow
+Matvis: Level Design, music tracks
+spinch: Slugcat Mechanics Programmer, Creature Programmer
+stormthecat: Mod Thumbnail Art
+URUFUDOGGO: Slugcat Mechanics Programmer
+WillowWisp: Beacon squinting, Night Terror fixing
+Nikki: Night Terror Creature
+LB: LMiniLongLegs Creature
+Leo: RotRat Creature
+Dutch: Level design, Industrial Outflow, Corroded Manufactory
+
+- REGIONS -
+---
+"VV - Elsehow"
+VVTA
+Ovidia: A03, A04 B01, B02, B04, B05, C01, E01
+Slithers: A05
+Detrax: A04
+Music-Songs
+Matvis: [VV_B01|PB_BM_01 - First Steps]
+---
+"SH - Shaded Citadel"
+New Music-Songs
+Matvis: [SH_A08|PB_BM_02 - Awakened]
+---
+"UD - ???"
+---
+"CRID - Corroded Manufactory"
+Dutch: All
+---
+"IDDC - Industrial Outflow"
+Dutch: All
+---
+- END REGIONS -
+
+TOdo: the rest of stuff latr
