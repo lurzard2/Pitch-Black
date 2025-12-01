@@ -1,0 +1,37 @@
+//Vanilla Spawns
+[FIND](White)HI_B15 : 2-Small Centipede-3, 3-Centipede-{0.5}
+[REPLACE](White)HI_B15 : 4-Small Centipede-4, 5-Centipede-{0.5}
+
+[FIND](Yellow)HI_B15 : 2-Small Centipede-3, 3-Centipede-{0.3}
+[REPLACE](Yellow)HI_B15 : 4-Small Centipede-3, 5-Centipede-{0.3}
+
+[FIND](Red)HI_B15 : 2-Small Centipede-2, 3-Centipede-{0.55}, 2-Centipede-{0.72}, 3-Centipede-{0.68}
+[REPLACE](Red)HI_B15 : 4-Small Centipede-2, 5-Centipede-{0.55}, 4-Centipede-{0.72}, 5-Centipede-{0.68}
+
+//MSC spawns
+
+[FIND](X-Yellow,Rivulet,Red,Artificer,Spear,Saint,Inv)HI_B15 : 2-Small Centipede-3, 3-Centipede-{0.5}
+[REPLACE](X-Yellow,Rivulet,Red,Artificer,Spear,Saint,Inv)HI_B15 : 4-Small Centipede-3, 5-Centipede-{0.5}
+
+[FIND](Rivulet)HI_B15 : 2-Centipede, 3-Centipede
+[REPLACE](Rivulet)HI_B15 : 4-Centipede, 5-Centipede
+
+[FIND](Artificer,Spear)HI_B15 : 2-Small Centipede-2, 3-Centipede-{0.55}, 2-Centipede-{0.72}, 3-Centipede-{0.68}
+[REPLACE](Artificer,Spear)HI_B15 : 4-Small Centipede-2, 5-Centipede-{0.55}, 4-Centipede-{0.72}, 5-Centipede-{0.68}
+
+[FIND](Saint)HI_B15 : 2-Centipede, 3-Centipede-3
+[REPLACE](Saint)HI_B15 : 4-Centipede, 5-Centipede-3
+
+[FIND](Inv)HI_B15 : 2-Small Centipede-2, 3-RedCentipede, 2-RedCentipede, 3-RedCentipede
+[REPLACE](Inv)HI_B15 : 4-Small Centipede-2, 5-RedCentipede, 5-RedCentipede, 5-RedCentipede
+
+[FINDLINE]HI_B15 : HI_C03, HI_A04, GATE_MT_HI
+[REPLACE]HI_B15 : HI_C03, HI_A04, DISCONNECTED, GATE_IDDC_HI
+[FINDLINE]HI_B15 : HI_C03, HI_A04
+[REPLACE]HI_B15 : HI_C03, HI_A04, GATE_IDDC_HI, GATE_MT_HI
+
+[MERGE]
+ROOMS
+GATE_IDDC_HI : HI_B15 : GATE
+END ROOMS
+[ENDMERGE]

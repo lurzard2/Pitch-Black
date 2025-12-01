@@ -1,0 +1,31 @@
+[FINDLINESTART]LF_E04 : LF_A03
+[REPLACE]LF_E04 : LF_A03, LF_IDDC1, LF_A04
+
+[FINDLINE](Red)LF_E04 : 3-Centipede
+[REPLACE](Red)LF_E04 : 4-Centipede
+
+[FINDLINE](Red)LINEAGE : LF_E04 : 5 : Pink-0.3, Pink-0.3, Red-0
+[REPLACE](Red)LINEAGE : LF_E04 : 6 : Pink-0.3, Pink-0.3, Red-0
+
+[FIND](Rivulet,Saint)LF_E04 : 5-Caramel
+[REPLACE](Rivulet,Saint)LF_E04 : 6-Caramel
+
+[FIND](Artificer,Spear)LF_E04 : 3-Centipede
+[REPLACE](Artificer,Spear)LF_E04 : 4-Centipede
+
+[FIND](Inv)LF_E04 : 3-RedCentipede
+[REPLACE](Inv)LF_E04 : 4-RedCentipede
+
+[FIND](Artificer,Spear)LINEAGE : LF_E04 : 5 : Pink-0.3, Pink-0.3, Red-0
+[REPLACE](Artificer,Spear)LINEAGE : LF_E04 : 6 : Pink-0.3, Pink-0.3, Red-0
+
+[FIND](Inv)LINEAGE : LF_E04 : 5 : Red-0
+[REPLACE](Inv)LINEAGE : LF_E04 : 6 : Red-0
+
+[MERGE]
+ROOMS
+GATE_IDDC_LF : DISCONNECTED, LF_IDDC1, LF_IDDCS01 : GATE
+LF_IDDC1 : LF_E04, GATE_IDDC_LF
+LF_IDDCS01 : GATE_IDDC_LF : SHELTER
+END ROOMS
+[ENDMERGE]
