@@ -1,0 +1,20 @@
+DenGroup - WATER - 8,9,10,11
+Dengroup - AIR - 6,7
+
+Creature - Cicada - Dens:AIR - Chance:0.8 - amount:3-4
+Creature - Cicada - Dens:AIR - Chance:0.2 - amount:1-2
+
+Creature - Polliwog - Dens:WATER - Chance:1 - Amount:1-2
+Creature - Polliwog - Dens:WATER - Chance:0.3 - Amount:1-2
+Creature - Polliwog - Dens:WATER - Chance:0.1 - Amount:1-2
+Creature - Polliwog - Dens:WATER - Chance:0.05 - Amount:1-2
+
+Creature - Salamander - Dens:WATER - Chance:0.5 - Amount:1-2
+Creature - Salamander - Dens:WATER - Chance:0.5 - Amount:1-2
+
+Creature - Leech - dens:8,8,10,11 - chance:0.5 - Amount:1-5
+Creature - Leech - dens:8,8,10,11 - chance:0.3 - Amount:1-5
+Creature - Leech - dens:8,8,10,11 - chance:0.3 - Amount:1-5
+Creature - Leech - dens:8,8,10,11 - chance:0.5 - Amount:5
+
+Creature - TentaclePlant - dens:7 - chance:0.1 - Amount:1 - RARE
