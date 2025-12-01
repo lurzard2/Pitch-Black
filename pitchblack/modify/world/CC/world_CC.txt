@@ -1,0 +1,20 @@
+[FINDLINESTART]CC_A15 : CC_C07, CC_C13, CC_B08
+[REPLACE]CC_A15 : CC_C07, CC_C13, CC_CRID1, CC_B08
+[FINDLINESTART]LINEAGE : CC_A15 : 3 : Mimic-{13}-0.5, Mimic-{16}-0.5, Mimic-{21}-0.5, TentaclePlant-0
+[REPLACE]LINEAGE : CC_A15 : 4 : Mimic-{13}-0.5, Mimic-{16}-0.5, Mimic-{21}-0.5, TentaclePlant-0
+[FINDLINESTART](X-Saint)LINEAGE : CC_A15 : 3 : Mimic-{13}-0.5, Mimic-{16}-0.5, Mimic-{21}-0.5, TentaclePlant-0
+[REPLACE](X-Saint)LINEAGE : CC_A15 : 4 : Mimic-{13}-0.5, Mimic-{16}-0.5, Mimic-{21}-0.5, TentaclePlant-0
+[FINDLINESTART](Red)CC_A15 : 4-Cyan-2
+[REPLACE](Red)CC_A15 : 5-Cyan-2
+[FINDLINESTART](Inv)CC_A15 : 4-Red-2
+[REPLACE](Inv)CC_A15 : 5-Red-2
+[FINDLINESTART](Artificer,Spear)CC_A15 : 4-Cyan-2
+[REPLACE](Artificer,Spear)CC_A15 : 5-Cyan-2
+[FINDLINESTART](Rivulet,Saint)CC_A15 : 3-Centiwing
+[REPLACE](Rivulet,Saint)CC_A15 : 4-Centiwing
+[MERGE]
+ROOMS
+GATE_CRID_CC : DISCONNECTED, CC_CRID1 : GATE
+CC_CRID1 : GATE_CRID_CC, CC_A15
+END ROOMS
+[END MERGE]
