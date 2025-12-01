@@ -1,0 +1,22 @@
+DangerType: Flood
+CeilingDrips: 0.5
+RainIntensity: 1
+RumbleIntensity: 1
+WaveSpeed: 0.4975408
+WaveLength: 0.7487704
+WaveAmplitude: 0.04940138
+SecondWaveLength: 0.1666667
+SecondWaveAmplitude: 0
+Clouds: 0.2318842
+Grime: 0.5
+BkgDroneVolume: 0.15
+BkgDroneNoThreatVolume: 1
+RandomItemDensity: 0.5
+RandomItemSpearChance: 0.2
+WaterReflectionAlpha: 1
+Palette: 54545454
+EffectColorA: 0
+EffectColorB: 13
+Effects: Beetle-0.1333335-20-20, RockFlea-0.07536216-30-30, 
+AmbientSounds: OMNI><SO_IND-MechHum01.ogg><832.3312><90.93463><0.3086966><1, OMNI><SO_WAT-LilDrips.ogg><836.2242><20.31065><0.2043477><1, 
+FadePalette: 4, 0

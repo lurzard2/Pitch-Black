@@ -1,0 +1,4 @@
+crid_landscape - 1 : 1
+
+blurMin : 0
+blurMax : 0.4

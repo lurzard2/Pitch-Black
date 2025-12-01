@@ -1,0 +1,4 @@
+Grime: 0.326087
+Palette: 6
+EffectColorB: 13
+FadePalette: 15, 0
