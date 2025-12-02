@@ -26,10 +26,18 @@ public class MenuSceneHooks
     private static MenuScene.SceneID GetSlugcatPageSceneID(SlugcatSelectMenu self, SlugcatStats.Name owner, PlayerProgression progression)
     {
         MenuScene.SceneID ph = Enums.MenuSceneID.Slugcat_Beacon;
+        // Evil parsing
         SaveState currentSaveState = progression.currentSaveState != null ? progression.currentSaveState : null;
-        bool conditionMaxSpiral = currentSaveState != null ? BeaconSaveData.GetMaxSpiralLevel(currentSaveState) == 5 : false;
-        bool conditionSpiralProgression = currentSaveState != null ? BeaconSaveData.GetMaxSpiralLevel(currentSaveState) >= 2.5 : false;
-        if (conditionMaxSpiral)
+        bool saveStateExists = currentSaveState != null ? true : false;
+
+        bool conditionMaxSpiralProgression = saveStateExists 
+            ? BeaconSaveData.GetMaxSpiralLevel(currentSaveState) == 5
+            : false;
+        bool conditionSpiralProgression = saveStateExists
+            ? BeaconSaveData.GetMaxSpiralLevel(currentSaveState) >= 2.5
+            : false;
+
+        if (conditionMaxSpiralProgression)
         {
             return ph;
         }
