@@ -506,7 +506,6 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         return room.VisibleInAnyCameraScreenBounds(pos);
     }
 
-    // WIP
     public override void Update(bool eu)
     {
 

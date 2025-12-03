@@ -28,7 +28,7 @@ public class VV_E01_IntroScript : PBRoomSpecificScript
 
                 if (RealizedPlayer != player && !alreadyTeleportedCoopPlayers)
                 {
-                    player.SuperHardSetPosition(new Vector2(xPos, 294));
+                    player.SuperHardSetPosition(new Vector2(xPos, 1000));
                 }
             }
             alreadyTeleportedCoopPlayers = true;
