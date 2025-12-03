@@ -1,4 +1,5 @@
 ﻿using BepInEx.Logging;
+using EffExt;
 using Menu;
 using RWCustom;
 using SlugBase.SaveData;
@@ -6,10 +7,145 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using Vector2 = UnityEngine.Vector2;
 
 namespace PitchBlack;
+
+public static class PBDreamScene
+{
+    // Adding a CrossFade to the list, required for timing crossfades
+    private static void AddCrossFadeToPlaylist(MenuScene self, MenuScene.SceneID id, int fadeNow, int fadeDuration = 20)
+    {
+        // To crossfade, illustraion MUST be a MenuDepthIllustration
+
+        if (self.menu is SlideShow slideShow && slideShow.playList.Count > 0)
+        {
+            foreach (SlideShow.Scene slideShowScene in slideShow.playList)
+            {
+                if (slideShowScene.sceneID == id)
+                {
+                    slideShowScene.AddCrossFade(fadeNow, fadeDuration);
+                }
+            }
+        }
+    }
+
+    private static void NewIllustration(MenuScene self, string path, string name, float depth, MenuDepthIllustration.MenuShader menuShader,
+        int type = 0,
+        int fadeNow = 10,
+        bool crispPixels = false)
+    {
+        Vector2 pos = new Vector2(0f, 0f);
+        var sceneID = self.sceneID;
+
+        // 0 - Depth
+        // 1 - Crossfade
+        // 2 - Flat
+        switch (type)
+        {
+            case 1:
+                var illustration = new MenuDepthIllustration(self.menu, self, path, name, pos, depth, menuShader)
+                {
+                    crossfadeMethod = MenuIllustration.CrossfadeType.Standard
+                };
+                self.AddCrossfade(illustration);
+                return;
+            case 2:
+                self.useFlatCrossfades = true;
+                self.AddIllustration(new MenuIllustration(self.menu, self, path, name, pos, crispPixels, true));
+                return;
+            default:
+                self.AddIllustration(new MenuDepthIllustration(self.menu, self, path, name, pos, depth, menuShader));
+                return;
+        }
+    }
+
+    // Fucky way of assigning a usable value from an enum with a similar value
+    private static int GetSceneIndex(MenuScene.SceneID id)
+    {
+        if (id == Enums.MenuSceneID.Dream_Birth_4)
+        {
+            return 4;
+        }
+        if (id == Enums.MenuSceneID.Dream_Birth_5)
+        {
+            return 5;
+        }
+        return 0;
+    }
+
+    // We work WITH Slugbase scenes, so we match a scene in the json's id to one in the code, (only ones we want to do crossfades for)
+    public static void MatchSlideshowIDToSlugbaseScene(MenuScene self)
+    {
+        int assignableIndex = 0;
+        string assignablePrefix = "";
+        if ((self.menu as SlideShow)?.slideShowID == Enums.SlideShowID.Dream_Birth)
+        {
+            assignableIndex = GetSceneIndex(self.sceneID);
+            self.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "dream - birth " + assignableIndex.ToString();
+            assignablePrefix = "dream birth " + assignableIndex.ToString() + " - ";
+            BuildDreamBirthScene(self, assignableIndex, self.sceneFolder, assignablePrefix);
+        }
+    }
+
+    public static void BuildDreamBirthScene(MenuScene self, int index, string path, string str)
+    {
+        if (self.flatMode)
+        {
+            return;
+        }
+        int fadeWhen = 0;
+        switch (index)
+        {
+            case 4:
+                fadeWhen = 34;
+                AddCrossFadeToPlaylist(self, self.sceneID, fadeWhen);
+
+                NewIllustration(self, path, str + "6 - egg", 1.6f, MenuDepthIllustration.MenuShader.Basic);
+                NewIllustration(self, path, str + "5 - beacon a", 2.5f, MenuDepthIllustration.MenuShader.Basic);
+                NewIllustration(self, path, str + "4 - beacon glow", 2.4f, MenuDepthIllustration.MenuShader.Basic);
+                // Eye
+                NewIllustration(self, path, "empty eye", 2.4f, MenuDepthIllustration.MenuShader.Basic);
+                NewIllustration(self, path, str + "3 - beacon eye a", 2.4f, MenuDepthIllustration.MenuShader.Basic, 1, fadeWhen);
+                // Membrane glow
+                NewIllustration(self, path, "empty highlight", 0.4f, MenuDepthIllustration.MenuShader.Basic);
+                NewIllustration(self, path, str + "1 - beacon membrane highlight", 0.4f, MenuDepthIllustration.MenuShader.Basic, 1, fadeWhen);
+                // Hand
+                NewIllustration(self, path, "empty hand", 0.2f, MenuDepthIllustration.MenuShader.Basic);
+                NewIllustration(self, path, str + "0 - beacon hand", 0.2f, MenuDepthIllustration.MenuShader.Basic, 1, fadeWhen);
+                break;
+            case 5:
+                fadeWhen = 45;
+                AddCrossFadeToPlaylist(self, self.sceneID, fadeWhen);
+
+                NewIllustration(self, path, str + "6 - egg", 1.6f, MenuDepthIllustration.MenuShader.Basic);
+
+                // Beacon
+                NewIllustration(self, path, str + "5 - beacon a", 2.5f, MenuDepthIllustration.MenuShader.Basic);
+                NewIllustration(self, path, str + "5 - beacon b", 2.7f, MenuDepthIllustration.MenuShader.Basic, 1, fadeWhen);
+                // Glow
+                NewIllustration(self, path, str + "4 - beacon glow", 1.6f, MenuDepthIllustration.MenuShader.Basic);
+                NewIllustration(self, path, "empty glow", 1.6f, MenuDepthIllustration.MenuShader.Basic, 1, fadeWhen);
+                // Eye b
+                NewIllustration(self, path, str + "3 - beacon eye b", 2.4f, MenuDepthIllustration.MenuShader.Basic);
+                NewIllustration(self, path, "empty eye", 1.6f, MenuDepthIllustration.MenuShader.Basic, 1, fadeWhen);
+                // Bubbles
+                NewIllustration(self, path, str + "2 - beacon albumen bubbles", 2.2f, MenuDepthIllustration.MenuShader.Basic);
+                NewIllustration(self, path, "empty bubbles", 2.2f, MenuDepthIllustration.MenuShader.Basic, 1, fadeWhen);
+
+                NewIllustration(self, path, str + "1 - beacon membrane highlight", 0.4f, MenuDepthIllustration.MenuShader.Basic);
+                NewIllustration(self, path, str + "0 - beacon hand", 0.2f, MenuDepthIllustration.MenuShader.Basic);
+                break;
+            default:
+                return;
+        }
+    }
+}
+
 public class MenuSceneHooks
 {
     private static MenuScene.SceneID EstablishSlugcatPageSceneID(SlugcatSelectMenu self, SlugcatStats.Name owner)
@@ -51,19 +187,20 @@ public class MenuSceneHooks
     public static void Apply()
     {
         On.Menu.MenuScene.BuildScene += MenuScene_BuildScene;
-        //IL.Menu.SlugcatSelectMenu.StartGame += SlugcatSelectMenu_StartGame;
-    }
-
-    private static void SlugcatSelectMenu_StartGame(MonoMod.Cil.ILContext il)
-    {
-        // Todo: inject Beacon conditional > self.manager.nextSlideShow = Enums.SlideshowID.DreamBirth; < before Yellow's check in the else
-
-        throw new NotImplementedException();
     }
 
     private static void MenuScene_BuildScene(On.Menu.MenuScene.orig_BuildScene orig, MenuScene self)
     {
         orig(self);
+
+        // Slideshows
+        if ((self.menu as SlideShow)?.slideShowID == Enums.SlideShowID.Dream_Birth)
+        {
+            PBDreamScene.MatchSlideshowIDToSlugbaseScene(self);
+            return;
+        }
+
+        // Slugcat Menu Scenes
         if (self.menu is SlugcatSelectMenu
             && self.sceneID != null
             && self.owner is SlugcatSelectMenu.SlugcatPage page)
@@ -83,83 +220,6 @@ public class MenuSceneHooks
                 markSquare?.RemoveFromContainer();
                 page.markSquare = null;
             }
-        }
-        //BuildPBScene(self);
-    }
-
-    // WIPstuff
-
-    // Needs ifs, dont try making a switch (I already did)
-    private static void BuildPBScene(MenuScene scene)
-    {
-        #region Dream - Birth
-        if (scene.sceneID == Enums.MenuSceneID.Dream_Birth_1)
-        {
-            BuildBeaconBirthScene(scene, 1);
-            return;
-        }
-        if (scene.sceneID == Enums.MenuSceneID.Dream_Birth_2)
-        {
-            BuildBeaconBirthScene(scene, 2);
-            return;
-        }
-        if (scene.sceneID == Enums.MenuSceneID.Dream_Birth_3)
-        {
-            BuildBeaconBirthScene(scene, 3);
-            return;
-        }
-        if (scene.sceneID == Enums.MenuSceneID.Dream_Birth_4)
-        {
-            BuildBeaconBirthScene(scene, 4);
-            return;
-        }
-        if (scene.sceneID == Enums.MenuSceneID.Dream_Birth_5)
-        {
-            BuildBeaconBirthScene(scene, 5);
-            return;
-        }
-        if (scene.sceneID == Enums.MenuSceneID.Dream_Birth_6)
-        {
-            BuildBeaconBirthScene(scene, 6);
-            return;
-        }
-        if (scene.sceneID == Enums.MenuSceneID.Dream_Birth_7)
-        {
-            BuildBeaconBirthScene(scene, 7);
-            return;
-        }
-        if (scene.sceneID == Enums.MenuSceneID.Dream_Birth_8)
-        {
-            BuildBeaconBirthScene(scene, 8);
-            return;
-        }
-        #endregion
-    }
-
-    private static void BuildBeaconBirthScene(MenuScene scene, int index)
-    {
-        scene.sceneFolder = "Scenes" + Path.DirectorySeparatorChar.ToString() + "dream - birth " + index.ToString();
-        string str = "dream birth " + index.ToString();
-
-        if (scene.flatMode)
-        {
-            scene.useFlatCrossfades = true;
-            // Todo: Add flat illustrations - Vector2(683f, 384f) is proper placement, crispPixels:false, anchorCenter:true
-            //return;
-        }
-
-        // Todo: Add illustrations for each slide
-        switch (index)
-        {
-            case 1: return;
-            case 2: return;
-            case 3: return;
-            case 4: return;
-            case 5: return;
-            case 6: return;
-            case 7: return;
-            case 8: break;
-            default: return;
         }
     }
 }

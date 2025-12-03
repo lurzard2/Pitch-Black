@@ -126,9 +126,6 @@ public static class Enums
         public static MenuScene.SceneID Slugcat_Beacon_Dreamer = new("Slugcat_Beacon_Dreamer", false);
         public static MenuScene.SceneID Slugcat_Spawn = new("Slugcat_Spawn", false);
         // Dream - Birth
-        public static MenuScene.SceneID Dream_Birth_1 = new(nameof(Dream_Birth_1), false);
-        public static MenuScene.SceneID Dream_Birth_2 = new(nameof(Dream_Birth_2),  false);
-        public static MenuScene.SceneID Dream_Birth_3 = new(nameof(Dream_Birth_3), false);
         public static MenuScene.SceneID Dream_Birth_4 = new(nameof(Dream_Birth_4), false);
         public static MenuScene.SceneID Dream_Birth_5 = new(nameof(Dream_Birth_5), false);
         public static MenuScene.SceneID Dream_Birth_6 = new(nameof(Dream_Birth_6), false);
@@ -147,16 +144,7 @@ public static class Enums
 
     public static class SlideShowID
     {
-        public static SlideShow.SlideShowID DreamBirth = new("DreamBirth", true);
-
-        public static void UnregisterValues()
-        {
-            if (DreamBirth != null)
-            {
-                DreamBirth.Unregister();
-                DreamBirth = null;
-            }
-        }
+        public static SlideShow.SlideShowID Dream_Birth = new("Dream_Birth", false);
     }
 
     // These apparently HAVE to be registered to play ingame. -Lur
