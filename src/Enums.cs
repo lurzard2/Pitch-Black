@@ -15,7 +15,7 @@ public static class Enums
 
     public static class Timeline
     {
-        public static readonly SlugcatStats.Timeline Beacon = new("Beacon", false);
+        public static readonly SlugcatStats.Timeline Beacon = new("Beacon", true);
     }
 
     public static class CreatureTemplateType

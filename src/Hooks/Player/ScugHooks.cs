@@ -18,6 +18,11 @@ public static class ScugHooks
     {
         //logger.LogDebug($"RSS: Player pos - {self.room.game.session.Players[0].pos}");
 
+        if (self.abstractCreature.rippleLayer != 1)
+        {
+            self.abstractCreature.rippleLayer = 1;
+        }
+
         ThanatosisUpdate(self);
 
         // Check here if it's Beacon
