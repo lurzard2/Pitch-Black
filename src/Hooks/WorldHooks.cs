@@ -8,6 +8,34 @@ using static PitchBlack.Plugin;
 
 namespace PitchBlack;
 
+public static class RoomSpecificScriptHooks
+{
+    private static void NewUAD(Room room, UpdatableAndDeletable scriptObj)
+    {
+        room.AddObject(scriptObj);
+    }
+
+    public static void Inject()
+    {
+        On.RoomSpecificScript.AddRoomSpecificScript += AddScriptToRoom;
+    }
+
+    private static void AddScriptToRoom(On.RoomSpecificScript.orig_AddRoomSpecificScript orig, Room room)
+    {
+        orig(room);
+        if (room.game.session is StoryGameSession story && !MiscUtils.IsBeacon(story.saveStateNumber))
+        {
+            return;
+        }
+
+        if (room.abstractRoom.name == "VV_E01")
+        {
+            NewUAD(room, new VV_E01_IntroScript(room));
+        }
+
+    }
+}
+
 public static class DreamersHooks
 {
     // New Dreamer Presence Thing
@@ -319,7 +347,8 @@ public static class WorldHooks
     {
         WorldLoaderHooks.Inject();
         DreamersHooks.Inject();
-        
+        RoomSpecificScriptHooks.Inject();
+
         On.Region.ctor_string_int_int_RainWorldGame_Timeline += ModifyRegionProperties;
     }
 

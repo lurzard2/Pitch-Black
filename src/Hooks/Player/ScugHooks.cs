@@ -16,6 +16,8 @@ public static class ScugHooks
     /// </summary>
     private static void BeaconUpdate(Player self)
     {
+        //logger.LogDebug($"RSS: Player pos - {self.room.game.session.Players[0].pos}");
+
         ThanatosisUpdate(self);
 
         // Check here if it's Beacon

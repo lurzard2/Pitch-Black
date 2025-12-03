@@ -174,7 +174,6 @@ class  Plugin : BaseUnityPlugin
         {
             if (mod.id == MOD_ID)
             {
-                Enums.SlideShowID.UnregisterValues();
                 Enums.MenuSceneID.UnregisterValues();
                 Enums.CreatureTemplateType.UnregisterValues();
                 Enums.SandboxUnlockID.UnregisterValues();
@@ -233,8 +232,10 @@ class  Plugin : BaseUnityPlugin
     private static void RainWorldGame_ctor(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)
     {
         orig(self, manager);
+
+        PBRoomSpecificScript.destroyScript = false;
+
         pursuerTracker.Add(self, new List<NTTracker>());
-        //riftCWT.Add(self, new List<RiftWorldPrecence>());
         if ((MiscUtils.IsBeacon(self.session) || ModOptions.universalPursuer.Value) && pursuerTracker.TryGetValue(self, out var trackers))
         {
             trackers.Add(new NTTracker(self));
