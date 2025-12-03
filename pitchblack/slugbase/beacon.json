@@ -39,6 +39,7 @@
 		"sleep_scene": "Sleep_Beacon",
 		"select_menu_scene_ascended": "Trapped",
 		"title_card": "intro_roll_c_beacon",
+		"intro_slideshow": "Dream_Birth",
 
 		"pb/flip_boost": 0.45
 	}

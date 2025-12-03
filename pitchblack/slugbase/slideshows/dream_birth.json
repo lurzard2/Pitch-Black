@@ -1,0 +1,124 @@
+{
+	"id": "Dream_Birth",
+	"slideshow_folder": "scenes",
+	"next_process": "Game",
+	"music": {
+	"name": "PB_10 - Cryptobiosis",
+	"fade_in": 80
+	},
+	"scenes": [
+	{
+		"name": "Dream_Birth_1",
+		"scene_folder": "scenes/dream - birth 1",
+		"fade_in_start": 0,
+		"fade_in_end": 25,
+		"fade_out_start": 6.5,
+		"images": [
+		{ "name": "dream birth 1 - 0 - beacon", "pos": [0,0], "depth": 4.5, "shader": "Basic" }
+		]
+	},
+	{
+		"name": "Dream_Birth_2",
+		"scene_folder": "scenes/dream - birth 2",
+		"fade_in_start": 7,
+		"fade_in_end": 35,
+		"fade_out_start": 13.5,
+		"images": [
+		{ "name": "dream birth 2 - 0 - beacon", "pos": [0,0], "depth": 4, "shader": "Basic" },
+		{ "name": "dream birth 2 - 1 - egg", "pos": [0,0], "depth": 3.6, "shader": "Basic" },
+		{ "name": "dream birth 2 - 2 - glow", "pos": [0,0], "depth": 3.4, "shader": "Basic" }
+		]
+	},
+	{
+		"name": "Dream_Birth_3",
+		"scene_folder": "scenes/dream - birth 3",
+		"fade_in_start": 14.5,
+		"fade_in_end": 45,
+		"fade_out_start": 25.5,
+		"images": [
+		{ "name": "dream birth 3 - 0 - beacon", "pos": [0,0], "depth": 3.5, "shader": "Basic" },
+		{ "name": "dream birth 3 - 1 - beacon glow", "pos": [0,0], "depth": 3.5, "shader": "Basic" },
+		{ "name": "dream birth 3 - 2 - egg membrane", "pos": [0,0], "depth": 2.6, "shader": "Basic" },
+		{ "name": "dream birth 3 - 3 - egg", "pos": [0,0], "depth": 2.4, "shader": "Basic" },
+		{ "name": "dream birth 3 - 4 - egg glow", "pos": [0,0], "depth": 2.3, "shader": "Basic" }
+		]
+	},
+	{
+		"name": "Dream_Birth_4",
+		"scene_folder": "scenes/dream - birth 4",
+		"fade_in_start": 26.5,
+		"fade_in_end": 37,
+		"fade_out_start": 37,
+		"images": [
+			{ "name": "empty", "pos": [0,0], "depth": 0, "shader": "Basic" }
+		]
+	},
+	{
+		"name": "Dream_Birth_5",
+		"scene_folder": "scenes/dream - birth 5",
+		"fade_in_start": 39.5,
+		"fade_in_end": 48,	
+		"fade_out_start": 50,
+		"images": [
+			{ "name": "empty", "pos": [0,0], "depth": 0, "shader": "Basic" }
+		]
+	},
+	{
+		"name": "Dream_Birth_6",
+		"scene_folder": "scenes/dream - birth 6",
+		"fade_in_start": 51,
+		"fade_in_end": 60,
+		"fade_out_start": 57.5,
+		"images": [
+		{ "name": "dream birth 6 - 4 - egg glow", "pos": [0,0], "depth": 3.2, "shader": "Basic" },
+		{ "name": "dream birth 6 - 3 - beacon", "pos": [0,0], "depth": 3, "shader": "Basic" },
+		{ "name": "dream birth 6 - 2 - egg membrane", "pos": [0,0], "depth": 2.7, "shader": "Basic" },
+		{ "name": "dream birth 6 - 1 - egg membrane highlight", "pos": [0,0], "depth": 2.4, "shader": "Basic" },
+		{ "name": "dream birth 6 - 0 - beacon", "pos": [0,0], "depth": 2, "shader": "Basic" }
+		]
+	},
+	{
+		"name": "Dream_Birth_7",
+		"scene_folder": "scenes/dream - birth 7",
+		"fade_in_start": 59,
+		"fade_in_end": 69,
+		"fade_out_start": 65,
+		"images": [
+		{ "name":"dream birth 7 - 4 - egg glow", "pos":[0,0], "depth": 3.6, "shader": "Basic" },
+		{ "name":"dream birth 7 - 3 - beacon", "pos":[0,0], "depth": 3.4, "shader": "Basic" },
+		{ "name":"dream birth 7 - 2 - beacon hand", "pos":[0,0], "depth": 2.5, "shader": "Basic" },
+		{ "name":"dream birth 7 - 1 - egg membrane glow", "pos":[0,0], "depth": 2.3, "shader": "Basic" },
+		{ "name":"dream birth 7 - 0 - egg membrane", "pos":[0,0], "depth": 1.7, "shader": "Basic" }
+		]
+	},
+	{
+		"name": "Dream_Birth_8",
+		"scene_folder": "scenes/dream - birth 8",
+		"fade_in_start": 67.5,
+		"fade_in_end": 85,
+		"fade_out_start": 75.5,
+		"images": [
+			{ "name":"dream birth 8 - 7 - egg ripple highlight", "pos":[0,0], "depth":4, "shader": "Basic" },
+			{ "name":"dream birth 8 - 6 - egg void ripple", "pos":[0,0], "depth":3.8, "shader": "Basic" },
+			{ "name":"dream birth 8 - 5 - egg thin membrane", "pos":[0,0], "depth":3.6, "shader": "Basic" },
+			{ "name":"dream birth 8 - 4 - egg membrane ripple highlight", "pos":[0,0], "depth":3.4, "shader": "Basic" },
+			{ "name":"dream birth 8 - 3 - egg ripple", "pos":[0,0], "depth":3.2, "shader": "Basic" },
+			{ "name":"dream birth 8 - 2 - egg break", "pos":[0,0], "depth":3.2, "shader": "Basic" },
+			{ "name":"dream birth 8 - 1 - egg albumen", "pos":[0,0], "depth":3, "shader": "Basic" },
+			{ "name":"dream birth 8 - 0 - beacon", "pos":[0,0], "depth":3.4, "shader": "Basic" },
+		]
+	},
+	{
+		"name": "Dream_Birth_9",
+		"scene_folder": "scenes/dream - birth 9",
+		"fade_in_start": 77,
+		"fade_in_end": 97,
+		"fade_out_start": 85.5,
+		"images": [
+		{ "name":"dream birth 9 - 2 - beacon", "pos":[0,0], "depth":3.2, "shader": "Basic" },
+		{ "name":"dream birth 9 - 1 - ripple glow", "pos":[0,0], "depth": 2.9, "shader": "Basic" },
+		{ "name":"dream birth 9 - 0 - ripple", "pos":[0,0], "depth":2.6, "shader": "Basic" },
+		]
+	}
+	]
+} 
