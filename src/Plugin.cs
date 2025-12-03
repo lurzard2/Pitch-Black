@@ -60,7 +60,7 @@ class  Plugin : BaseUnityPlugin
     internal static bool RotundWorldEnabled => _rotundWorldEnabled;
     private static bool _rotundWorldEnabled;
     public static bool individualFoodEnabled;
-    
+
     /// <summary>
     /// Applies all hooks.
     /// </summary>
@@ -91,7 +91,15 @@ class  Plugin : BaseUnityPlugin
         Crafting.Apply();
         FlareBombHooks.Apply();
 
+        On.Watcher.RoomPositionPanel.ctor += RPP_Debug;
+
         logger.LogDebug("PitchBlack's hooks successfully applied!");
+    }
+
+    private void RPP_Debug(On.Watcher.RoomPositionPanel.orig_ctor orig, Watcher.RoomPositionPanel self, DevInterface.DevUI owner, DevInterface.DevUINode parentNode, Vector2 pos, SlugcatStats.Timeline timeline, string roomName)
+    {
+        orig(self, owner, parentNode, pos, timeline, roomName);
+        logger.LogDebug($"RPP: {nameof(self.roomName)} is {self.roomName}");
     }
 
     /// <summary>

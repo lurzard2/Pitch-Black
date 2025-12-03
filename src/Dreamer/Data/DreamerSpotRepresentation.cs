@@ -202,7 +202,7 @@ public class DreamerPanel : Panel, IDevUISignals
             this.HideTimelineSelectPanel();
             this.HideRoomSelectPanel();
             this.HideRoomPositionPanel();
-            string[] decalNames2 = Region.GetFullRegionOrder(this.Data.destTimeline).ToArray();
+            string[] decalNames2 = Region.GetFullRegionOrder(Data.destTimeline).ToArray();
             this.regionSelectPanel = new CustomDecalRepresentation.SelectDecalPanel(this.owner, this, new Vector2(200f, 15f) - this.absPos, decalNames2);
             this.subNodes.Add(this.regionSelectPanel);
             return;

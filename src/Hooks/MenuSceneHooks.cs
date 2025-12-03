@@ -81,6 +81,8 @@ public static class PBDreamScene
     // We work WITH Slugbase scenes, so we match a scene in the json's id to one in the code, (only ones we want to do crossfades for)
     public static void MatchSlideshowIDToSlugbaseScene(MenuScene self)
     {
+        // The order of illustrations set determines their layering, each next illustration is above the last, so order them accordingly
+
         int assignableIndex = 0;
         string assignablePrefix = "";
         if ((self.menu as SlideShow)?.slideShowID == Enums.SlideShowID.Dream_Birth)
@@ -96,6 +98,7 @@ public static class PBDreamScene
     {
         if (self.flatMode)
         {
+            // Todo: Flats
             return;
         }
         int fadeWhen = 0;
@@ -136,7 +139,7 @@ public static class PBDreamScene
                 // Bubbles
                 NewIllustration(self, path, str + "2 - beacon albumen bubbles", 2.2f, MenuDepthIllustration.MenuShader.Basic);
                 NewIllustration(self, path, "empty bubbles", 2.2f, MenuDepthIllustration.MenuShader.Basic, 1, fadeWhen);
-
+                
                 NewIllustration(self, path, str + "1 - beacon membrane highlight", 0.4f, MenuDepthIllustration.MenuShader.Basic);
                 NewIllustration(self, path, str + "0 - beacon hand", 0.2f, MenuDepthIllustration.MenuShader.Basic);
                 break;
