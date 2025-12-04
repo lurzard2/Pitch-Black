@@ -1,4 +1,5 @@
 ﻿using HUD;
+using IL.ScavengerCosmetic;
 using Newtonsoft.Json.Linq;
 using RWCustom;
 using System;
@@ -89,7 +90,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     }
     #endregion
 
-    public DreamerData DreamerData
+    public DreamerData SpecialData
     {
         get
         {
@@ -162,6 +163,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         flipSpeed = 1f;
     }
 
+    #region Parts of Graphics
     /// <summary>
     /// Base class for adding parts (spine + legs)
     /// </summary>
@@ -488,6 +490,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         public Vector2[][,] segments;
         public int[] firstSpriteOfChains;
     }
+    #endregion
 
     private void LoadElement(string elementName)
     {
@@ -506,12 +509,25 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         return room.VisibleInAnyCameraScreenBounds(pos);
     }
 
+    public void TickForEncounter()
+    {
+        if (encounterFinished)
+        {
+            afterEncounteredCounter.Tick();
+        }
+        else
+        {
+            onScreenCounter.Tick();
+        }
+    }
+
     public override void Update(bool eu)
     {
 
         base.Update(eu);
         if (slatedForDeletetion)
         {
+            Destroy();
             return;
         }
 
@@ -556,7 +572,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
 
         if (OnScreen())
         {
-            onScreenCounter.Tick();
+            TickForEncounter();
         }
         else
         {
@@ -593,10 +609,17 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
             convoActive = false;
             MarkEncountered();
         }
-        if (encounterFinished)
+        if (afterEncounteredCounter.isFinished)
         {
             SpawnWarp();
             Despawn();
+        }
+        else if (afterEncounteredCounter > 0)
+        {
+            for (int i = 0; i < afterEncounteredCounter; i++)
+            {
+                AfterEncounteredVisual();
+            }
         }
 
         sinBob += 1f / Mathf.Lerp(140f, 210f, UnityEngine.Random.value);
@@ -724,6 +747,31 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     #endregion
 
     #region Graphics
+    public void AfterEncounteredVisual()
+    {
+        DreamerData data = SpecialData;
+        if (data == null)
+        {
+            return;
+        }
+
+        // Shrinking
+        scale = Mathf.Lerp(scale, targetScale, 0.006f);
+        targetScale -= 0.0002f;
+
+        // No warp or almost dissapeared
+        if (data.destRoom == null || scale <= 0.25)
+        {
+            // Ripple ring
+            float encounterLevel = BeaconSaveData.GetDreamerEncountersNumber(room.game.GetStorySession.saveState);
+            float ringIntensity = (0.25f + encounterLevel) * 0.15f;
+            //float ringSpeed = 2f + encounterLevel * 0.2f;
+            room.AddObject(new RippleRing(placedObject.pos, 80, ringIntensity, 0.5f));
+            afterEncounteredCounter.Finish();
+            return;
+        }
+    }
+
     public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
         sLeaser.sprites = new FSprite[totalSprites];
@@ -794,6 +842,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
 
     public override void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
+
         float num = Mathf.Clamp((Mathf.Lerp(spine[spineBendPoint - 2].lastPos.x, spine[spineBendPoint - 2].pos.x, timeStacker) - Mathf.Lerp(spine[spineBendPoint + 2].lastPos.x, spine[spineBendPoint + 2].pos.x, timeStacker)) / (80f * scale), -1f, 1f);
         float num2 = 10f * scale;
         float num3 = 10f * scale;
@@ -1082,7 +1131,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         }
         return num * 10f * scale;
     }
-
+    
     public override void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
         //primaryColor = Color.Lerp(palette.blackColor, Colors.VisibleWhite, .87f);
@@ -1107,7 +1156,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     #region WarpPoints
     private void SpawnWarp()
     {
-        DreamerData data = DreamerData;
+        DreamerData data = SpecialData;
         if (data == null)
         {
             return;
@@ -1156,7 +1205,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         {
             return;
         }
-        DreamerData data = DreamerData;
+        DreamerData data = SpecialData;
         if (data == null)
         {
             return;
@@ -1169,6 +1218,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         string joinedString = String.Join(",", BeaconSaveData.GetDreamerEncounteredRooms(state));
         Plugin.logger.LogDebug($"Dreamer: Set encountered rooms - {joinedString}");
         IncreaseSpiralLevel(state);
+        RainWorldGame.ForceSaveNewDenLocation(room.world.game, room.abstractRoom.name, false);
         encounterFinished = true;
     }
 
@@ -1219,8 +1269,10 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     private bool convoActive;
     public bool convoFinished;
     public bool encounterFinished;
+    private Counter afterEncounteredCounter = new Counter(240, 0, true);
 
     public float scale;
+    public float targetScale = 0.5f;
     public float lightSpriteScale = 0.3f;
     public int spineSegments = 11;
     public int snoutSegments = 2;

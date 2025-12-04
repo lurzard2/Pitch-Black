@@ -133,6 +133,7 @@ public static class DreamersHooks
 
         foreach (var presence in dreamerPresences)
         {
+            self.ghostMode = lastGhostMode;
             if (presence.presenceSpawned)
             {
                 // Set value to be greater than 0 so ghostMode can be modified by us
@@ -157,6 +158,10 @@ public static class DreamersHooks
                 // Adjacent or other rooms in region effects
                 ForConnectionsMode(self, presence);
                 break;
+            }
+            else
+            {
+                targetDreamIntensity -= 0.0005f;
             }
         }
 
@@ -197,14 +202,7 @@ public static class DreamersHooks
             {
                 float distanceFromDreamer = Vector2.Distance((self.room.updateList[i] as Dreamer).placedObject.pos, creature.mainBodyChunk.pos);
                 targetDreamIntensity = Mathf.Lerp(0.11f, 1f, Mathf.InverseLerp(1500f, 0f, distanceFromDreamer));
-                // Talking
                 if ((self.room.updateList[i] as Dreamer).conversation != null)
-                {
-                    targetDreamIntensity = 0.75f;
-                    break;
-                }
-                // Done
-                if ((self.room.updateList[i] as Dreamer).convoFinished)
                 {
                     targetDreamIntensity = 1f;
                     break;
