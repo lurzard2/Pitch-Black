@@ -748,51 +748,6 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     #endregion
 
     #region Graphics
-    public void AfterEncounteredVisual()
-    {
-        DreamerData data = SpecialData;
-        if (data == null)
-        {
-            return;
-        }
-        // No warp OR About to completely dissapear
-        if (data.destPos == null || scale <= 0.01f)
-        {
-            AddRippleRing();
-            FinishAfterConversationCounter();
-            return;
-        }
-
-        Shrink();
-    }
-
-    private void Shrink()
-    {
-        targetScale -= 0.0005f;
-        distortionScaleFac += 0.002f;
-        scale = Mathf.Lerp(scale, targetScale, 0.006f);
-        return;
-    }
-
-    private void AddRippleRing()
-    {
-        if (dreamerWarpRing == null)
-        {
-            dreamerWarpRing = new RippleRing(pos, afterConversationCounter, 1f, 0.5f);
-            room.AddObject(dreamerWarpRing);
-            if (room.updateList.Contains(dreamerWarpRing))
-            {
-                Plugin.logger.LogDebug("Dreamer: Added a ripple ring to room");
-            }
-        }
-    }
-
-    private void FinishAfterConversationCounter()
-    {
-        Plugin.logger.LogDebug($"Dreamer: Counter is - {afterConversationCounter} before Encounter finished");
-        afterConversationCounter.Finish();
-        return;
-    }
 
     public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
@@ -1175,6 +1130,54 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     }
     #endregion
 
+    #region Post-Encounter Graphics
+    public void AfterEncounteredVisual()
+    {
+        DreamerData data = SpecialData;
+        if (data == null)
+        {
+            return;
+        }
+        // No warp OR About to completely dissapear
+        if (data.destPos == null || scale <= 0.01f)
+        {
+            AddRippleRing();
+            FinishAfterConversationCounter();
+            return;
+        }
+
+        Shrink();
+    }
+
+    private void Shrink()
+    {
+        targetScale -= 0.0005f;
+        distortionScaleFac += 0.002f;
+        scale = Mathf.Lerp(scale, targetScale, 0.006f);
+        return;
+    }
+
+    private void AddRippleRing()
+    {
+        if (dreamerWarpRing == null)
+        {
+            dreamerWarpRing = new RippleRing(pos, afterConversationCounter, 1f, 0.5f);
+            room.AddObject(dreamerWarpRing);
+            if (room.updateList.Contains(dreamerWarpRing))
+            {
+                Plugin.logger.LogDebug("Dreamer: Added a ripple ring to room");
+            }
+        }
+    }
+
+    private void FinishAfterConversationCounter()
+    {
+        Plugin.logger.LogDebug($"Dreamer: Counter is - {afterConversationCounter} before Encounter finished");
+        afterConversationCounter.Finish();
+        return;
+    }
+    #endregion
+
     #region WarpPoints
     private void SpawnWarp()
     {
@@ -1284,46 +1287,47 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     }
     #endregion
 
-    public Vector2 targetPos;
-    public readonly int totalSprites;
-    public readonly int lightSprite;
-    public readonly int behindBodySprites;
-    public readonly int totalStaticSprites = 10;
-    public float sinBob;
-    public Part[] spine;
-    public Part[,] legs;
-    public Rags rags;
-    public Chains chains;
+    private readonly int totalSprites;
+    private readonly int lightSprite;
+    private readonly int behindBodySprites;
+    private readonly int totalStaticSprites = 10;
+    private float sinBob;
 
-    public float flipProg;
-    public float flipSpeed;
-    public float flip;
+    private float flipProg;
+    private float flipSpeed;
+    private float flip;
     private float flipFrom;
     private float flipTo;
     private float defaultFlip;
 
-    private Counter onScreenCounter = new Counter(120, 0, true);
-    private bool convoActive;
-    public bool convoFinished;
-    public bool encounterFinished;
-    private Counter afterConversationCounter = new Counter(280, 0, true);
-
-    public float scale;
-    public float targetScale = 0.5f;
-    public float distortionScaleFac;
-    public float lightSpriteScale = 0.3f;
-    public int spineSegments = 11;
-    public int snoutSegments = 2;
-    public int spineBendPoint = 7;
-    public int thighSegments = 7;
-    public int lowerLegSegments = 17;
-    public float airResistance = 0.6f;
-
-    public Color primaryColor = Colors.VisibleWhite;
-    public Color accentColor = Colors.Rose;
-    public Color glowColor = Colors.ComplementaryRose;
+    private Part[] spine;  
+    private Part[,] legs;
+    private Rags rags;
+    private Chains chains;
 
     public PlacedObject placedObject;
     public DreamerConversation conversation;
     public RippleRing dreamerWarpRing;
+
+    private Counter onScreenCounter = new Counter(120, 0, true);
+    private Counter afterConversationCounter = new Counter(280, 0, true);
+
+    private bool convoActive;
+    private bool convoFinished;
+    private bool encounterFinished;
+
+    private float scale;
+    private float targetScale = 0.5f;
+    private float distortionScaleFac;
+    private float lightSpriteScale = 0.3f;
+    private int spineSegments = 11;
+    private int snoutSegments = 2;
+    private int spineBendPoint = 7;
+    private int thighSegments = 7;
+    private int lowerLegSegments = 17;
+    private float airResistance = 0.6f;
+
+    public Color primaryColor = Colors.VisibleWhite;
+    public Color accentColor = Colors.Rose;
+    public Color glowColor = Colors.ComplementaryRose;
 }
