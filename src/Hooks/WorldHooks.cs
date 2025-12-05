@@ -23,14 +23,17 @@ public static class RoomSpecificScriptHooks
     private static void AddScriptToRoom(On.RoomSpecificScript.orig_AddRoomSpecificScript orig, Room room)
     {
         orig(room);
-        if (room.game.session is StoryGameSession story && !MiscUtils.IsBeacon(story.saveStateNumber))
+        if (room.game.session is StoryGameSession storyCheck && !MiscUtils.IsBeacon(storyCheck.saveStateNumber))
         {
             return;
         }
 
-        if (room.abstractRoom.name == "VV_E01")
+        if (room.abstractRoom.name == "VV_E01" && room.world.game.GetStorySession.saveState.cycleNumber == 0)
         {
-            NewUAD(room, new VV_E01_IntroScript(room));
+            for (int i = 0; i < room.game.Players.Count; i++)
+            {
+                NewUAD(room, new VV_E01(room, i));
+            }
         }
 
     }

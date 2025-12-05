@@ -241,8 +241,6 @@ class  Plugin : BaseUnityPlugin
     {
         orig(self, manager);
 
-        PBRoomSpecificScript.destroyScript = false;
-
         pursuerTracker.Add(self, new List<NTTracker>());
         if ((MiscUtils.IsBeacon(self.session) || ModOptions.universalPursuer.Value) && pursuerTracker.TryGetValue(self, out var trackers))
         {

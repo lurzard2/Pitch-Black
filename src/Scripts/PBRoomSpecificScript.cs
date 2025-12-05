@@ -10,44 +10,55 @@ namespace PitchBlack;
 
 public class PBRoomSpecificScript : UpdatableAndDeletable
 {
+    public bool AllPlayersRealized
+    {
+        get
+        {
+            return room.game.AllPlayersRealized;
+        }
+    }
+
+    public bool RoomIsBeingLoaded
+    {
+        get
+        {
+            return room.game.manager.FadeDelayInProgress || !room.fullyLoaded || !room.BeingViewed;
+        }
+    }
+
     public PBRoomSpecificScript(Room room)
     {
         this.room = room;
-        timeCounter.Reset();
-        alreadyTeleportedCoopPlayers = false;
-        logger.LogDebug($"PBRSS: Added RSS to {room.abstractRoom.name}");
+        time.Reset();
+        logger.LogDebug($"PBRSS: Added script to {room.abstractRoom.name}");
     }
 
     public override void Update(bool eu)
     {
         base.Update(eu);
 
-        if (RealizedPlayer == null)
-        {
-            return;
-        }
-        if (destroyScript)
-        {
-            GiveAllPlayersControllersBack();
-            Destroy();
-            return;
-        }
-
-        timeCounter.Tick();
+        time.Tick();
     }
 
-    public void GiveAllPlayersControllersBack()
+    public void ChangePhase(Phase phase)
     {
-        foreach (var abstrCrit in room.game.session.Players)
-        {
-            if (abstrCrit?.realizedCreature is Player player)
-                player.controller = null;
-        }
+        this.phase = phase;
+        timeInPhase.Reset();
     }
 
-    public Counter timeCounter = new Counter(0, 0, true);
-    internal static bool destroyScript; // Assigned in RainWorldGame.ctor in Plugin.cs
-    public bool alreadyTeleportedCoopPlayers;
-    public bool LoadingRoom => room.game.manager.FadeDelayInProgress || !room.fullyLoaded || !room.BeingViewed;
-    public Player RealizedPlayer => room.game.Players.Count > 0 ? room.game.Players[0].realizedCreature as Player : null;
+    public class Phase : ExtEnum<Phase>
+    {
+        public Phase(string value, bool register) : base(value, register) { }
+
+        public static readonly Phase Init = new(nameof(Init), true);
+        public static readonly Phase End = new(nameof(End), true);
+    }
+
+    public Phase phase;
+
+    public Counter time = new(Int32.MaxValue, 0, true);
+    public Counter timeInPhase = new(Int32.MaxValue, 0, true);
+
+    //public bool LoadingRoom => room.game.manager.FadeDelayInProgress || !room.fullyLoaded || !room.BeingViewed;
+    //public Player RealizedPlayer => room.game.Players.Count > 0 ? room.game.Players[0].realizedCreature as Player : null;
 }
