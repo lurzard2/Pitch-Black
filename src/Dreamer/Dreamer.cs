@@ -513,7 +513,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     {
         if (encounterFinished)
         {
-            afterEncounteredCounter.Tick();
+            afterConversationCounter.Tick();
         }
         else
         {
@@ -570,6 +570,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
             }
         }
 
+        // Todo: Move all this to a Behavior object like VW, then let that handle different encounter types :)
         if (OnScreen())
         {
             TickForEncounter();
@@ -609,14 +610,14 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
             convoActive = false;
             MarkEncountered();
         }
-        if (afterEncounteredCounter.isFinished)
+        if (afterConversationCounter.isFinished)
         {
             SpawnWarp();
             Despawn();
         }
-        else if (afterEncounteredCounter > 0)
+        else if (afterConversationCounter > 0)
         {
-            for (int i = 0; i < afterEncounteredCounter; i++)
+            for (int i = 0; i < afterConversationCounter; i++)
             {
                 AfterEncounteredVisual();
             }
@@ -754,22 +755,43 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         {
             return;
         }
-
-        // Shrinking
-        scale = Mathf.Lerp(scale, targetScale, 0.006f);
-        targetScale -= 0.0002f;
-
-        // No warp or almost dissapeared
-        if (data.destRoom == null || scale <= 0.25)
+        // No warp OR About to completely dissapear
+        if (data.destPos == null || scale <= 0.01f)
         {
-            // Ripple ring
-            float encounterLevel = BeaconSaveData.GetDreamerEncountersNumber(room.game.GetStorySession.saveState);
-            float ringIntensity = (0.25f + encounterLevel) * 0.15f;
-            //float ringSpeed = 2f + encounterLevel * 0.2f;
-            room.AddObject(new RippleRing(placedObject.pos, 80, ringIntensity, 0.5f));
-            afterEncounteredCounter.Finish();
+            AddRippleRing();
+            FinishAfterConversationCounter();
             return;
         }
+
+        Shrink();
+    }
+
+    private void Shrink()
+    {
+        targetScale -= 0.0005f;
+        distortionScaleFac += 0.002f;
+        scale = Mathf.Lerp(scale, targetScale, 0.006f);
+        return;
+    }
+
+    private void AddRippleRing()
+    {
+        if (dreamerWarpRing == null)
+        {
+            dreamerWarpRing = new RippleRing(pos, afterConversationCounter, 1f, 0.5f);
+            room.AddObject(dreamerWarpRing);
+            if (room.updateList.Contains(dreamerWarpRing))
+            {
+                Plugin.logger.LogDebug("Dreamer: Added a ripple ring to room");
+            }
+        }
+    }
+
+    private void FinishAfterConversationCounter()
+    {
+        Plugin.logger.LogDebug($"Dreamer: Counter is - {afterConversationCounter} before Encounter finished");
+        afterConversationCounter.Finish();
+        return;
     }
 
     public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
@@ -891,10 +913,10 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         Vector2 vector8 = (base.pos + new Vector2(0f, -50f) + vector + vector7 + Vector2.Lerp(spine[5].lastPos, spine[5].pos, timeStacker)) / 3f;
         sLeaser.sprites[DistortionSprite].x = vector8.x - camPos.x;
         sLeaser.sprites[DistortionSprite].y = vector8.y - camPos.y;
-        sLeaser.sprites[DistortionSprite].scale = 933f * scale / 16f;
+        sLeaser.sprites[DistortionSprite].scale = (933f * scale / 16f) + distortionScaleFac;
         sLeaser.sprites[LightSprite].x = vector8.x - camPos.x;
         sLeaser.sprites[LightSprite].y = vector8.y - camPos.y;
-        sLeaser.sprites[LightSprite].scale = 500f * lightSpriteScale / 16f;
+        sLeaser.sprites[LightSprite].scale = (500f * lightSpriteScale / 16f) + distortionScaleFac;
         vector4 = Vector2.Lerp(spine[spineBendPoint].lastPos, spine[spineBendPoint].pos, timeStacker);
         vector4 += Custom.DirVec(Vector2.Lerp(spine[spineBendPoint + 1].lastPos, spine[spineBendPoint + 1].pos, timeStacker), vector4);
         vector4 += vector7;
@@ -1210,16 +1232,31 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         {
             return;
         }
+
         Plugin.logger.LogDebug($"Dreamer: I have finished my encounter!");
-        var state = room.game.GetStorySession.saveState;
+        var game = room.world.game;
+        var state = game.GetStorySession.saveState;
         string currentRoomName = room.abstractRoom.name;
+
         DreamersHooks.DeactivateDreamerPresence(room);
+        SaveEncounter(state, currentRoomName);
+        IncreaseSpiralLevel(state);
+        OverwriteSaveDen(game, currentRoomName);
+
+        encounterFinished = true;
+    }
+
+    private void OverwriteSaveDen(RainWorldGame game, string currentRoomName)
+    {
+        RainWorldGame.ForceSaveNewDenLocation(game, currentRoomName, false);
+        Plugin.logger.LogDebug($"Dreamer: Saved {currentRoomName} as den");
+    }
+
+    private void SaveEncounter(SaveState state, string currentRoomName)
+    {
         BeaconSaveData.SetDreamerEncounteredRooms(state, currentRoomName);
         string joinedString = String.Join(",", BeaconSaveData.GetDreamerEncounteredRooms(state));
         Plugin.logger.LogDebug($"Dreamer: Set encountered rooms - {joinedString}");
-        IncreaseSpiralLevel(state);
-        RainWorldGame.ForceSaveNewDenLocation(room.world.game, room.abstractRoom.name, false);
-        encounterFinished = true;
     }
 
     private void IncreaseSpiralLevel(SaveState state)
@@ -1269,10 +1306,11 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     private bool convoActive;
     public bool convoFinished;
     public bool encounterFinished;
-    private Counter afterEncounteredCounter = new Counter(240, 0, true);
+    private Counter afterConversationCounter = new Counter(280, 0, true);
 
     public float scale;
     public float targetScale = 0.5f;
+    public float distortionScaleFac;
     public float lightSpriteScale = 0.3f;
     public int spineSegments = 11;
     public int snoutSegments = 2;
@@ -1287,4 +1325,5 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
 
     public PlacedObject placedObject;
     public DreamerConversation conversation;
+    public RippleRing dreamerWarpRing;
 }
