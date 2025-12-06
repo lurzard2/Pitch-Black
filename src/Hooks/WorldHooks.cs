@@ -164,7 +164,10 @@ public static class DreamersHooks
             }
             else
             {
-                targetDreamIntensity -= 0.0005f;
+                if (targetDreamIntensity > 0f)
+                {
+                    targetDreamIntensity -= 0.0005f;
+                }
             }
         }
 

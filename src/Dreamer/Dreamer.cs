@@ -1282,13 +1282,13 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     {
         if (!slatedForDeletetion)
         {
+            DreamersHooks.targetDreamIntensity = 0f;
             slatedForDeletetion = true;
         }
     }
     #endregion
 
     private readonly int totalSprites;
-    private readonly int lightSprite;
     private readonly int behindBodySprites;
     private readonly int totalStaticSprites = 10;
     private float sinBob;

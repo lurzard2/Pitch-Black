@@ -19,26 +19,7 @@ public class DreamerPresence : World.IMigrationInfluence
     {
         this.world = world;
         this.dreamerRoom = dreamerRoom;
-        int id = this.id;
     }
-
-    //public float DreamMode(AbstractRoom abstractRoom)
-    //{
-    //    if (abstractRoom == dreamerRoom)
-    //    {
-    //        return 1f;
-    //    }
-
-    //    for (int i = 0; i > abstractRoom.connections.Length; i++)
-    //    {
-    //        if (abstractRoom.connections[i] > 0 && abstractRoom.world.GetAbstractRoom(abstractRoom.connections[i]) == dreamerRoom)
-    //        {
-    //            return 1f;
-    //        }
-    //    }
-
-    //    return 0f;
-    //}
 
     #region Room Attraction
     public float AttractionValueForCreature(AbstractRoom room, CreatureTemplate.Type tp, float defValue)
@@ -72,8 +53,9 @@ public class DreamerPresence : World.IMigrationInfluence
     public int id;
     public World world;
     public AbstractRoom dreamerRoom;
-    public List<AbstractRoom> presenceRooms = new List<AbstractRoom>();
+    //public List<AbstractRoom> presenceRooms = new();
 
     public bool presenceSpawned;
     public bool dreamerSpawned;
+    public string songName = "PB_Dreamcatcher";
 }

@@ -84,6 +84,7 @@ class  Plugin : BaseUnityPlugin
         MenuSceneHooks.Apply();
         DevToolsHooks.Apply();
         WorldHooks.Apply();
+        MusicHooks.Apply();
         PBSlugBaseFeatures.Apply();
         ScugHooks.Apply();
         ScugGraphics.Apply();
