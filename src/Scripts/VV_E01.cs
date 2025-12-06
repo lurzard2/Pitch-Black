@@ -16,7 +16,6 @@ public class VV_E01 : PBRoomSpecificScript
         this.playerIndex = playerIndex;
         phase = Phase.Init;
         hasJumped = false;
-        isNoLongerSubmerged = false;
         submersionLimit = Random.Range(140, 200);
     }
 
@@ -147,5 +146,4 @@ public class VV_E01 : PBRoomSpecificScript
     private int playerIndex;
     private bool hasJumped;
     private int submersionLimit;
-    private bool isNoLongerSubmerged;
 }
