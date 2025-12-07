@@ -12,7 +12,7 @@ public static class VoidSpawnHooks
     private static FShader EffectShader => Custom.rainWorld.Shaders["RoseGlow"];
     private static FShader GlowShader => Custom.rainWorld.Shaders["FlatWaterLightBothSides"];
 
-    private static bool IsDreamSpawn(VoidSpawn self)
+    public static bool IsDreamSpawn(VoidSpawn self)
     {
         if (self.variant == Enums.DreamSpawnType.DreamSpawn
             || self.variant == Enums.DreamSpawnType.DreamAmoeba
@@ -30,48 +30,16 @@ public static class VoidSpawnHooks
     {
         On.VoidSpawn.GenerateBody += VoidSpawn_GenerateBody;
         On.VoidSpawnGraphics.Antenna.DrawSprites += Antenna_DrawSprites;
-        On.VoidSpawnGraphics.InitiateSprites += VoidSpawnGraphics_InitiateSprites;
-        On.VoidSpawnGraphics.DrawSprites += VoidSpawnGraphics_DrawSprites;
-        On.VoidSpawnGraphics.UpdateGlowSpriteColor += VoidSpawnGraphics_UpdateGlowSpriteColor;
+        On.Watcher.WarpPoint.ctor += WarpPoint_ctor;
+
     }
 
-    private static void VoidSpawnGraphics_UpdateGlowSpriteColor(On.VoidSpawnGraphics.orig_UpdateGlowSpriteColor orig, VoidSpawnGraphics self, RoomCamera.SpriteLeaser sLeaser)
+    private static void WarpPoint_ctor(On.Watcher.WarpPoint.orig_ctor orig, Watcher.WarpPoint self, Room room, PlacedObject placedObject)
     {
-        if (IsDreamSpawn(self.spawn))
+        orig(self, room, placedObject);
+        if (!self.blackListedObjectTypes.Contains(Enums.AbstractObjectType.DreamSpawn))
         {
-            sLeaser.sprites[self.GlowSprite].color = Color.Lerp(Colors.SaturatedRose, Colors.Rose, Mathf.InverseLerp(0.3f, 0.9f, self.darkness));
-        }
-        else
-        {
-            orig(self, sLeaser);
-        }
-    }
-
-    private static void VoidSpawnGraphics_DrawSprites(On.VoidSpawnGraphics.orig_DrawSprites orig, VoidSpawnGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
-    {
-        orig(self, sLeaser, rCam, timeStacker, camPos);
-        if (IsDreamSpawn(self.spawn))
-        {
-            sLeaser.sprites[self.BodyMeshSprite].shader = BodyShader;
-            sLeaser.sprites[self.GlowSprite].shader = GlowShader;
-            if (self.hasOwnGoldEffect)
-            {
-                sLeaser.sprites[self.EffectSprite].shader = EffectShader;
-            }
-        }
-    }
-
-    private static void VoidSpawnGraphics_InitiateSprites(On.VoidSpawnGraphics.orig_InitiateSprites orig, VoidSpawnGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
-    {
-        orig(self, sLeaser, rCam);
-        if (IsDreamSpawn(self.spawn))
-        {
-            sLeaser.sprites[self.BodyMeshSprite].shader = BodyShader;
-            sLeaser.sprites[self.GlowSprite].shader = GlowShader;
-            if (self.hasOwnGoldEffect)
-            {
-                sLeaser.sprites[self.EffectSprite].shader = EffectShader;
-            }
+            self.blackListedObjectTypes.Add(Enums.AbstractObjectType.DreamSpawn);
         }
     }
 

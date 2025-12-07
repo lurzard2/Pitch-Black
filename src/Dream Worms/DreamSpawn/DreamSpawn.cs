@@ -11,4 +11,12 @@ public class DreamSpawn : VoidSpawn
     public DreamSpawn(AbstractPhysicalObject physicalObject, float voidMeltInRoom, bool dayLightMode, SpawnType variant) : base(physicalObject, voidMeltInRoom, dayLightMode, variant)
     {
     }
+
+    public override void InitiateGraphicsModule()
+    {
+        if (graphicsModule == null)
+        {
+            graphicsModule = new DreamSpawnGraphics(this); 
+        }
+    }
 }

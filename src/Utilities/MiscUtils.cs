@@ -72,11 +72,11 @@ public static class MiscUtils
         {
             //spawnBehavior = new DreamSpawnBehavior.Caught(spawn, room);
             spawnType = Enums.DreamSpawnType.DreamKin;
-            amountToSpawn = 1;
+            amountToSpawn = BeaconSaveData.GetDreamerEncountersNumber(room.world.game.GetStorySession.saveState);
         }
         float getVoidMelt = room.roomSettings.GetEffectAmount(RoomSettings.RoomEffect.Type.VoidMelt);
         obj = new AbstractPhysicalObject(room.world, Enums.AbstractObjectType.DreamSpawn, null, room.GetWorldCoordinate(spawnPos), room.game.GetNewID());
-        spawn = new VoidSpawn(obj, getVoidMelt, room.Darkness(spawnPos) > 0.4f ? false : true, spawnType);
+        spawn = new DreamSpawn(obj, getVoidMelt, room.Darkness(spawnPos) > 0.4f ? false : true, spawnType);
         if (IsVariant(spawn, Enums.DreamSpawnType.DreamKin))
         {
             spawnBehavior = new DreamSpawnBehavior.Caught(spawn, room);

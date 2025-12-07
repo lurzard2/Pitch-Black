@@ -8,7 +8,6 @@ using Random = UnityEngine.Random;
 
 namespace PitchBlack;
 
-#if false
 public class DreamSpawnGraphics : VoidSpawnGraphics
 {
     public DreamSpawnGraphics(PhysicalObject owner) : base(owner)
@@ -18,7 +17,7 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
         float conRadMinFac;
         float headConRad;
 
-        float sizeFac = Mathf.Lerp(self.spawn.sizeFac, 0.5f + 0.5f * Random.value, Random.value);
+        float sizeFac = Mathf.Lerp(spawn.sizeFac, 0.5f + 0.5f * Random.value, Random.value);
         int antennaeCount;
         VoidSpawnGraphics.TailAntenna tailAntenna = null;
         VoidSpawnGraphics.FrontAntenna frontAntenna = null;
@@ -31,27 +30,27 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
 
         int encounterNumber = BeaconSaveData.GetDreamerEncountersNumber(owner.room.world.game.GetStorySession.saveState);
 
-        if (IsVariant(self.spawn, Enums.DreamSpawnType.DreamAmoeba))
+        if (IsVariant(spawn, Enums.DreamSpawnType.DreamAmoeba))
         {
             segments = Random.Range(4, 8);
             conRad = 12f * sizeFac;
-            thickness = self.spawn.mainBody[self.spawn.mainBody.Length - 1].rad;
+            thickness = spawn.mainBody[spawn.mainBody.Length - 1].rad;
             angle = 0f;
             rigid = 0.1f * sizeFac;
             rigidSegs = 2;
             forceDirection = 2.2f;
 
-            tailAntenna = new VoidSpawnGraphics.TailAntenna(self, self.totalSprites, segments, conRad, thickness, angle, rigid, rigidSegs, forceDirection);
-            self.antennae.Add(tailAntenna);
-            self.AddSubModule(self.antennae[self.antennae.Count - 1]);
+            tailAntenna = new VoidSpawnGraphics.TailAntenna(this, totalSprites, segments, conRad, thickness, angle, rigid, rigidSegs, forceDirection);
+            antennae.Add(tailAntenna);
+            AddSubModule(antennae[antennae.Count - 1]);
         }
-        else if (IsVariant(self.spawn, Enums.DreamSpawnType.DreamJelly))
+        else if (IsVariant(spawn, Enums.DreamSpawnType.DreamJelly))
         {
             antennaeCount = Random.Range(6, 8);
             angleDeterminer = Mathf.Lerp(Mathf.Lerp(8f, 24f, Random.value) * antennaeCount, Mathf.Lerp(16f, 45f, Random.value), Random.value);
             segments = Random.Range(4, 14);
             conRadMinFac = Mathf.Lerp(0.2f, 1f, Random.value);
-            thickness = self.spawn.mainBody[self.spawn.mainBody.Length - 1].rad;
+            thickness = spawn.mainBody[spawn.mainBody.Length - 1].rad;
             rigid = 0.1f * sizeFac;
             rigidSegs = 2;
             forceDirection = 2.2f;
@@ -62,32 +61,32 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
                 conRad = 12f * sizeFac * Mathf.Lerp(conRadMinFac, 1f, Mathf.Sin(targetIndex * Mathf.PI));
                 angle = Mathf.Lerp(-angleDeterminer, angleDeterminer, targetIndex);
 
-                tailAntenna = new VoidSpawnGraphics.TailAntenna(self, self.totalSprites, segments, conRad, thickness, angle, rigid, rigidSegs, forceDirection);
-                self.antennae.Add(tailAntenna);
-                self.AddSubModule(self.antennae[self.antennae.Count - 1]);
+                tailAntenna = new VoidSpawnGraphics.TailAntenna(this, totalSprites, segments, conRad, thickness, angle, rigid, rigidSegs, forceDirection);
+                antennae.Add(tailAntenna);
+                AddSubModule(antennae[antennae.Count - 1]);
             }
         }
-        else if (IsVariant(self.spawn, Enums.DreamSpawnType.DreamNoodle)
-            || IsVariant(self.spawn, Enums.DreamSpawnType.DreamEater))
+        else if (IsVariant(spawn, Enums.DreamSpawnType.DreamNoodle)
+            || IsVariant(spawn, Enums.DreamSpawnType.DreamEater))
         {
             segments = Random.Range(1, 5);
             conRad = 12f * sizeFac;
-            thickness = self.spawn.mainBody[self.spawn.mainBody.Length - 1].rad;
+            thickness = spawn.mainBody[spawn.mainBody.Length - 1].rad;
             rigid = 0.1f * sizeFac;
             rigidSegs = 2;
             forceDirection = 2.2f;
 
-            tailAntenna = new VoidSpawnGraphics.TailAntenna(self, self.totalSprites, segments, conRad, thickness, 0f, rigid, rigidSegs, forceDirection);
-            self.antennae.Add(tailAntenna);
-            self.AddSubModule(self.antennae[self.antennae.Count - 1]);
+            tailAntenna = new VoidSpawnGraphics.TailAntenna(this, totalSprites, segments, conRad, thickness, 0f, rigid, rigidSegs, forceDirection);
+            antennae.Add(tailAntenna);
+            AddSubModule(antennae[antennae.Count - 1]);
         }
-        else if (IsVariant(self.spawn, Enums.DreamSpawnType.DreamKin))
+        else if (IsVariant(spawn, Enums.DreamSpawnType.DreamKin))
         {
             antennaeCount = Random.Range(0, Random.Range(0, encounterNumber));
             segments = Random.Range(0, Random.Range(0, encounterNumber));
             conRad = 12f * sizeFac;
             conRadMinFac = Mathf.Lerp(0.2f, 1f, Random.value);
-            thickness = self.spawn.mainBody[self.spawn.mainBody.Length - 1].rad;
+            thickness = spawn.mainBody[spawn.mainBody.Length - 1].rad;
             rigid = 0.1f * sizeFac;
             rigidSegs = 2;
             forceDirection = 2.2f;
@@ -99,9 +98,9 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
                 conRad = 12f * sizeFac * Mathf.Lerp(conRadMinFac, 1f, Mathf.Sin(targetIndex * 3.1415927f));
                 angle = Mathf.Lerp(-angleDeterminer, angleDeterminer, targetIndex);
 
-                tailAntenna = new VoidSpawnGraphics.TailAntenna(self, self.totalSprites, segments, conRad, thickness, angle, rigid, rigidSegs, forceDirection);
-                self.antennae.Add(tailAntenna);
-                self.AddSubModule(self.antennae[self.antennae.Count - 1]);
+                tailAntenna = new VoidSpawnGraphics.TailAntenna(this, totalSprites, segments, conRad, thickness, angle, rigid, rigidSegs, forceDirection);
+                antennae.Add(tailAntenna);
+                AddSubModule(antennae[antennae.Count - 1]);
             }
         }
         else
@@ -111,14 +110,14 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
                 case 0:
                     segments = Random.Range(3, 18);
                     conRad = 12f * sizeFac;
-                    thickness = self.spawn.mainBody[self.spawn.mainBody.Length - 1].rad;
+                    thickness = spawn.mainBody[spawn.mainBody.Length - 1].rad;
                     rigid = 0.1f * sizeFac;
                     rigidSegs = 2;
                     forceDirection = 2.2f;
 
-                    tailAntenna = new VoidSpawnGraphics.TailAntenna(self, self.totalSprites, segments, conRad, thickness, 0f, rigid, rigidSegs, forceDirection);
-                    self.antennae.Add(tailAntenna);
-                    self.AddSubModule(self.antennae[self.antennae.Count - 1]);
+                    tailAntenna = new VoidSpawnGraphics.TailAntenna(this, totalSprites, segments, conRad, thickness, 0f, rigid, rigidSegs, forceDirection);
+                    antennae.Add(tailAntenna);
+                    AddSubModule(antennae[antennae.Count - 1]);
 
                     break;
                 case 1:
@@ -127,7 +126,7 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
                     angleDeterminer = Mathf.Lerp(Mathf.Lerp(2f, 15f, Random.value) * antennaeCount, Mathf.Lerp(8f, 70f, Random.value), Random.value);
                     segments = Random.Range(3, 18);
                     conRadMinFac = Mathf.Lerp(0.2f, 1f, Random.value);
-                    thickness = self.spawn.mainBody[self.spawn.mainBody.Length - 1].rad;
+                    thickness = spawn.mainBody[spawn.mainBody.Length - 1].rad;
                     rigid = 0.1f * sizeFac;
                     rigidSegs = 2;
                     forceDirection = 2.2f;
@@ -138,9 +137,9 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
                         conRad = 12f * sizeFac * Mathf.Lerp(conRadMinFac, 1f, Mathf.Sin(targetIndex * 3.1415927f));
                         angle = Mathf.Lerp(-angleDeterminer, angleDeterminer, targetIndex);
 
-                        tailAntenna = new VoidSpawnGraphics.TailAntenna(self, self.totalSprites, segments, conRad, thickness, angle, rigid, rigidSegs, forceDirection);
-                        self.antennae.Add(tailAntenna);
-                        self.AddSubModule(self.antennae[self.antennae.Count - 1]);
+                        tailAntenna = new VoidSpawnGraphics.TailAntenna(this, totalSprites, segments, conRad, thickness, angle, rigid, rigidSegs, forceDirection);
+                        antennae.Add(tailAntenna);
+                        AddSubModule(antennae[antennae.Count - 1]);
                     }
                     break;
 
@@ -162,9 +161,9 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
                         conRad = conRadMult * Mathf.Lerp(conRadMinFac, 1f, Mathf.Sin(targetIndex * 3.1415927f));
                         angle = Mathf.Lerp(-angleDeterminer, angleDeterminer, targetIndex);
 
-                        tailAntenna = new VoidSpawnGraphics.TailAntenna(self, self.totalSprites, segments, conRad, thickness, angle, rigid, rigidSegs, forceDirection);
-                        self.antennae.Add(tailAntenna);
-                        self.AddSubModule(self.antennae[self.antennae.Count - 1]);
+                        tailAntenna = new VoidSpawnGraphics.TailAntenna(this, totalSprites, segments, conRad, thickness, angle, rigid, rigidSegs, forceDirection);
+                        antennae.Add(tailAntenna);
+                        AddSubModule(antennae[antennae.Count - 1]);
                     }
                     break;
                 default:
@@ -173,7 +172,7 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
         }
 
         antennaeCount = Random.Range(2, Random.Range(2, 7));
-        segments = Random.Range(2, Random.Range(4, (int)Custom.LerpMap(self.spawn.mainBody.Length, 3f, 16f, 6f, 12f, 0.5f)));
+        segments = Random.Range(2, Random.Range(4, (int)Custom.LerpMap(spawn.mainBody.Length, 3f, 16f, 6f, 12f, 0.5f)));
         int frontRigidSegs = segments;
         if (Random.value < 0.5f)
         {
@@ -184,8 +183,8 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
         forceDirection = Mathf.Lerp(2f, 7f, Random.value) / Mathf.Lerp(1f, frontRigidSegs, 0.5f);
         rigid = Mathf.Lerp(0.4f, 2.2f, Random.value);
 
-        if (!IsVariant(self.spawn, Enums.DreamSpawnType.DreamJelly)
-            || !IsVariant(self.spawn, Enums.DreamSpawnType.DreamKin))
+        if (!IsVariant(spawn, Enums.DreamSpawnType.DreamJelly)
+            && !IsVariant(spawn, Enums.DreamSpawnType.DreamKin))
         {
             thickness = 2f * sizeFac;
 
@@ -194,15 +193,15 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
                 float targetIndex = l / (antennaeCount - 1);
                 angle = Mathf.Lerp(-angleDeterminer, angleDeterminer, targetIndex);
 
-                frontAntenna = new VoidSpawnGraphics.FrontAntenna(self, self.totalSprites, segments, headConRad, thickness, angle, rigid, frontRigidSegs, forceDirection);
-                self.antennae.Add(frontAntenna);
-                self.AddSubModule(self.antennae[self.antennae.Count - 1]);
+                frontAntenna = new VoidSpawnGraphics.FrontAntenna(this, totalSprites, segments, headConRad, thickness, angle, rigid, frontRigidSegs, forceDirection);
+                antennae.Add(frontAntenna);
+                AddSubModule(antennae[antennae.Count - 1]);
             }
         }
-        else if (IsVariant(self.spawn, Enums.DreamSpawnType.DreamKin))
+        else if (IsVariant(spawn, Enums.DreamSpawnType.DreamKin))
         {
             antennaeCount = 4;
-            segments = Random.Range(6, 6 + encounterNumber - 3);
+            segments = 5;
             thickness = 2f * sizeFac;
 
             for (int l = 0; l < antennaeCount; l++)
@@ -210,13 +209,13 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
                 float targetIndex = l / (antennaeCount - 1);
                 angle = Mathf.Lerp(-angleDeterminer, angleDeterminer, targetIndex);
 
-                frontAntenna = new VoidSpawnGraphics.FrontAntenna(self, self.totalSprites, segments, headConRad, thickness, angle, rigid, frontRigidSegs, forceDirection);
-                self.antennae.Add(frontAntenna);
-                self.AddSubModule(self.antennae[self.antennae.Count - 1]);
+                frontAntenna = new VoidSpawnGraphics.FrontAntenna(this, totalSprites, segments, headConRad, thickness, angle, rigid, frontRigidSegs, forceDirection);
+                antennae.Add(frontAntenna);
+                AddSubModule(antennae[antennae.Count - 1]);
             }
         }
 
-        self.Reset();
+        Reset();
     }
 
     public override void Update()
@@ -271,4 +270,3 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
     }
 
 }
-#endif
