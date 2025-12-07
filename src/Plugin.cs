@@ -83,6 +83,7 @@ class  Plugin : BaseUnityPlugin
 
         MenuSceneHooks.Apply();
         DevToolsHooks.Apply();
+        PhysicalObjectHooks.Apply();
         WorldHooks.Apply();
         MusicHooks.Apply();
         PBSlugBaseFeatures.Apply();
@@ -90,7 +91,6 @@ class  Plugin : BaseUnityPlugin
         ScugGraphics.Apply();
         FlareStorage.Apply();
         Crafting.Apply();
-        FlareBombHooks.Apply();
 
         On.Watcher.RoomPositionPanel.ctor += RPP_Debug;
 
@@ -154,6 +154,7 @@ class  Plugin : BaseUnityPlugin
                 Futile.atlasManager.LoadAtlas("atlases/lmllspr");
             Futile.atlasManager.LoadAtlas("atlases/nightTerroratlas");
 
+            // Dreamer
             self.Shaders["DreamerRag"] = FShader.CreateShader("dreamerrag", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerrag")).LoadAsset<Shader>("Assets/Shaders/DreamerRag.shader"), new string[]
             {
                 "ripple_both_sides"
@@ -166,6 +167,11 @@ class  Plugin : BaseUnityPlugin
             {
                 "ripple_both_sides"
             });
+
+            // DreamSpawn
+            self.Shaders["DreamSpawnBody"] = FShader.CreateShader("dreamspawnbody", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamspawnbody")).LoadAsset<Shader>("Assets/Shaders/DreamSpawnBody.shader"));
+            self.Shaders["RoseGlow"] = FShader.CreateShader("roseglow", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/roseglow")).LoadAsset<Shader>("Assets/Shaders/RoseGlow.shader"));
+
 
             init = true;
         }

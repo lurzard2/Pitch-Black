@@ -1,4 +1,6 @@
-﻿namespace PitchBlack;
+﻿using UnityEngine;
+
+namespace PitchBlack;
 
 public static class MiscUtils
 {
@@ -40,5 +42,65 @@ public static class MiscUtils
             return true;
         }
         return false;
+    }
+
+    public static bool IsVariant(VoidSpawn self, VoidSpawn.SpawnType variant)
+    {
+        if (self.variant == variant)
+        {
+            return true;
+        }
+        return false;
+    }
+    public static void MaterializeDreamSpawn(Room room, Vector2 spawnPos, Room.RippleSpawnSource spawnSource,
+        int overrideRippleLayer = 0, bool overrideFadeOut = false)
+    {
+        // Defaults
+        int amountToSpawn = 0;
+        int rippleLayer = 0;
+        int fadeOut = Random.Range(400, 1200);
+        AbstractPhysicalObject obj = null;
+        VoidSpawn.SpawnType spawnType = null;
+        VoidSpawn spawn = null;
+        VoidSpawn.Behavior spawnBehavior = null;
+
+        // Override
+        rippleLayer = overrideRippleLayer > 0 ? overrideRippleLayer : 0;
+
+        spawnType = Enums.DreamSpawnType.DreamSpawn;
+        if (spawnSource == Enums.DreamSpawnSource.Dreamcatcher)
+        {
+            //spawnBehavior = new DreamSpawnBehavior.Caught(spawn, room);
+            spawnType = Enums.DreamSpawnType.DreamKin;
+            amountToSpawn = 1;
+        }
+        float getVoidMelt = room.roomSettings.GetEffectAmount(RoomSettings.RoomEffect.Type.VoidMelt);
+        obj = new AbstractPhysicalObject(room.world, Enums.AbstractObjectType.DreamSpawn, null, room.GetWorldCoordinate(spawnPos), room.game.GetNewID());
+        spawn = new VoidSpawn(obj, getVoidMelt, room.Darkness(spawnPos) > 0.4f ? false : true, spawnType);
+        if (IsVariant(spawn, Enums.DreamSpawnType.DreamKin))
+        {
+            spawnBehavior = new DreamSpawnBehavior.Caught(spawn, room);
+        }
+
+        int count = room.voidSpawns.Count;
+        //Stopping spawning if the room has too many
+        if (count >= amountToSpawn)
+        {
+            return;
+        }
+
+        // Setting up everything to spawn one
+        spawn.behavior = spawnBehavior;
+        if (overrideFadeOut)
+        {
+            spawn.canBeDestroyed = false;
+        }
+        else
+        {
+            spawn.timeUntilFadeout = fadeOut;
+        }
+
+        spawn.PlaceInRoom(room);
+        spawn.ChangeRippleLayer(rippleLayer, true);
     }
 }

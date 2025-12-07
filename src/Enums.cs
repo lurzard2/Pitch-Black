@@ -18,6 +18,38 @@ public static class Enums
         public static readonly SlugcatStats.Timeline Beacon = new("Beacon", true);
     }
 
+    public static class DreamSpawnType
+    {
+        public static readonly VoidSpawn.SpawnType DreamSpawn = new(nameof(DreamSpawn), true);
+        public static readonly VoidSpawn.SpawnType DreamJelly = new(nameof(DreamJelly), true);
+        public static readonly VoidSpawn.SpawnType DreamAmoeba = new(nameof(DreamAmoeba), true);
+        public static readonly VoidSpawn.SpawnType DreamNoodle = new(nameof(DreamNoodle), true);
+        public static readonly VoidSpawn.SpawnType DreamEater = new(nameof(DreamEater), true);
+        public static readonly VoidSpawn.SpawnType DreamKin = new(nameof(DreamKin), true);
+    }
+    public static class DreamSpawnSource
+    {
+        public static readonly Room.RippleSpawnSource Dreamcatcher = new(nameof(Dreamcatcher), true);
+        public static readonly Room.RippleSpawnSource Flotsam = new(nameof(Flotsam), true);
+        public static readonly Room.RippleSpawnSource Jetsam = new(nameof(Jetsam), true);
+    }
+
+    public static class AbstractObjectType
+    {
+        public static AbstractPhysicalObject.AbstractObjectType DreamSpawn;
+        public static void RegisterValues()
+        {
+            DreamSpawn = new AbstractPhysicalObject.AbstractObjectType(nameof(DreamSpawn));
+        }
+        public static void UnregisterValues()
+        {
+            if (DreamSpawn != null)
+            {
+                DreamSpawn.Unregister();
+                DreamSpawn = null;
+            }
+        }
+    }
     public static class CreatureTemplateType
     {
         [AllowNull] public static CreatureTemplate.Type LMiniLongLegs = new(nameof(LMiniLongLegs), true);
@@ -141,7 +173,6 @@ public static class Enums
             }
         }
     }
-
     public static class SlideShowID
     {
         public static SlideShow.SlideShowID Dream_Birth = new("Dream_Birth", false);

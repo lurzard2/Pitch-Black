@@ -102,6 +102,9 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     {
         this.placedObject = placedObject;
         pos = placedObject.pos;
+        dreamSpawnCaught = BeaconSaveData.GetDreamerEncountersNumber(room.world.game.GetStorySession.saveState);
+        headPos = pos;
+
         scale = 0.5f;
         UnityEngine.Random.State state = UnityEngine.Random.state;
         UnityEngine.Random.InitState(0);
@@ -570,6 +573,11 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
             }
         }
 
+        for (int i = 0; i < dreamSpawnCaught; i++)
+        {
+            MiscUtils.MaterializeDreamSpawn(room, headPos, Enums.DreamSpawnSource.Dreamcatcher, default, true);
+        }
+
         // Todo: Move all this to a Behavior object like VW, then let that handle different encounter types :)
         if (OnScreen())
         {
@@ -926,6 +934,8 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
             vector4 = vector9;
             num2 = num9;
             num3 = num10;
+            // Reference head position for usage later
+            headPos = vector4 - normalized2 * d2 - a2 * (num2 + num9) * 0.5f - camPos;
         }
         float a3 = Custom.AimFromOneVectorToAnother(vector3, vector) / 360f;
         for (int k = 0; k < (sLeaser.sprites[HeadMeshSprite] as TriangleMesh).verticeColors.Length; k++)
@@ -1330,4 +1340,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     public Color primaryColor = Colors.VisibleWhite;
     public Color accentColor = Colors.Rose;
     public Color glowColor = Colors.ComplementaryRose;
+
+    public Vector2 headPos;
+    public int dreamSpawnCaught;
 }
