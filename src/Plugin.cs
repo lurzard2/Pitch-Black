@@ -92,15 +92,7 @@ class  Plugin : BaseUnityPlugin
         FlareStorage.Apply();
         Crafting.Apply();
 
-        On.Watcher.RoomPositionPanel.ctor += RPP_Debug;
-
         logger.LogDebug("PitchBlack's hooks successfully applied!");
-    }
-
-    private void RPP_Debug(On.Watcher.RoomPositionPanel.orig_ctor orig, Watcher.RoomPositionPanel self, DevInterface.DevUI owner, DevInterface.DevUINode parentNode, Vector2 pos, SlugcatStats.Timeline timeline, string roomName)
-    {
-        orig(self, owner, parentNode, pos, timeline, roomName);
-        logger.LogDebug($"RPP: {nameof(self.roomName)} is {self.roomName}");
     }
 
     /// <summary>
@@ -172,7 +164,6 @@ class  Plugin : BaseUnityPlugin
             self.Shaders["DreamSpawnBody"] = FShader.CreateShader("dreamspawnbody", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamspawnbody")).LoadAsset<Shader>("Assets/Shaders/DreamSpawnBody.shader"));
             self.Shaders["RoseGlow"] = FShader.CreateShader("roseglow", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/roseglow")).LoadAsset<Shader>("Assets/Shaders/RoseGlow.shader"));
 
-
             init = true;
         }
     }
@@ -242,6 +233,7 @@ class  Plugin : BaseUnityPlugin
     private static void RainWorldGame_Update(On.RainWorldGame.orig_Update orig, RainWorldGame self)
     {
         orig(self);
+
         if (pursuerTracker.TryGetValue(self, out List<NTTracker> trackers)) foreach (NTTracker tracker in trackers) tracker.Update();
     }
     private static void RainWorldGame_ctor(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)

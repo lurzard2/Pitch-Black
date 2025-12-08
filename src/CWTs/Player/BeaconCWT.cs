@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using RWCustom;
+using System.Collections.Generic;
 using UnityEngine;
-using RWCustom;
 
 #pragma warning disable IDE0090
 
@@ -8,17 +8,21 @@ namespace PitchBlack;
 
 public class BeaconCWT : ScugCWT
 {
-    // These are static now and initialized basically when the code is loaded. Since they don't need to be reassigned ever, a static
-    // is fine here. The value just needs to be stored in a nicely accessable place that makes sense.
     public Color currentSkinColor;
     public Color currentEyeColor;
+
+    // Blinds player
+    public int brightSquint = 0;
+
+    // Stops crafting
+    public bool heldCraft = false;
+
     public FlareStore storage;
     public int dontThrowTimer = 0;
-    public bool heldCraft = false;
-    public int brightSquint = 0;
     //flashbangs to recover after respawning in jollycoop
     public int coopRefund = 0;
-    //Variables for Thanatosis (in ScugHooks.BeaconUpdate)
+
+    public Cycle cycle;
     public bool deathToggle; //toggle tracking
     public bool isDead; //state tracking
     public bool isDeadButDeniedDeath; //for later implementing coming back from GameOver
@@ -35,7 +39,68 @@ public class BeaconCWT : ScugCWT
     public BeaconCWT(Player player) : base()
     {
         storage = new FlareStore(player);
+        //cycle = new Cycle(player);
     }
+
+    public class Cycle
+    {
+        public Creature owner;
+        public State state;
+        public bool realizedPlayer;
+
+        public Cycle(Creature owner)
+        {
+            this.owner = owner;
+            state = State.Init;
+            realizedPlayer = false;
+        }
+
+        public void Update(bool eu)
+        {
+            realizedPlayer = owner.abstractCreature.realizedCreature != null;
+
+            if (state == State.Init)
+            {
+                InitState();
+                return;
+            }
+        }
+
+        public void InitState()
+        {
+            if (owner.dead)
+            {
+                ChangeState(State.Dead);
+                return;
+            }
+            if (owner.Stunned)
+            {
+                ChangeState(State.Stunned);
+                return;
+            }
+            ChangeState(State.Alive);
+            return;
+        }
+
+        public void ChangeState(State state)
+        {
+            this.state = state;
+        }
+
+        public class State : ExtEnum<State>
+        {
+            public State(string value, bool register) : base(value, register) { }
+
+            public static readonly State Init = new(nameof(Init), true);
+
+            public static readonly State Alive = new(nameof(Alive), true);
+            public static readonly State Stunned = new(nameof(Stunned), true);
+            public static readonly State Thanatosis = new(nameof(Thanatosis), true);
+            public static readonly State Dead = new(nameof(Dead), true);
+            public static readonly State Cycled = new(nameof(Cycled), true);
+        }
+    }
+
     public class AbstractStoredFlare : AbstractPhysicalObject.AbstractObjectStick
     {
         public AbstractPhysicalObject Player
@@ -66,7 +131,7 @@ public class BeaconCWT : ScugCWT
     }
     public class FlareStore
     {
-        public Player ownr;
+        public Player owner;
         public Stack<FlareBomb> storedFlares;
         public bool increment;
         public int counter;
@@ -83,7 +148,7 @@ public class BeaconCWT : ScugCWT
                 storedFlares = new Stack<FlareBomb>(capacity);
                 abstractFlare = new Stack<AbstractStoredFlare>(capacity);
             }
-            ownr = owner;
+            this.owner = owner;
         }
 
         public void Update(bool eu)
@@ -97,7 +162,7 @@ public class BeaconCWT : ScugCWT
                     //WW- WHY ONLY MAIN HAND IF STORAGE IS NOT FULL? SEEMS LIKE THIS SHOULD WORK FROM ANY HAND
                     for (int i = 0; i < 2; i++)
                     {
-                        if (ownr.grasps[i]?.grabbed is FlareBomb f)
+                        if (owner.grasps[i]?.grabbed is FlareBomb f)
                         {
                             FlarebombtoStorage(f);
                             counter = 0;
@@ -116,7 +181,7 @@ public class BeaconCWT : ScugCWT
             {
                 counter = 0;
             }
-            if (!ownr.input[0].pckp)
+            if (!owner.input[0].pckp)
             {
                 interactionLocked = false;
             }
@@ -129,7 +194,7 @@ public class BeaconCWT : ScugCWT
             if (storedFlares.Count <= 0)
                 return;
 
-            PlayerGraphics pG = ownr.graphicsModule as PlayerGraphics;
+            PlayerGraphics pG = owner.graphicsModule as PlayerGraphics;
 
             if (pG == null) return;
 
@@ -150,7 +215,7 @@ public class BeaconCWT : ScugCWT
                     flarePositionStart = new Vector2(-8f, -8f);
                     flarePositionEnd = new Vector2(8f, -8f);
                 }
-                if (ownr.bodyMode == Player.BodyModeIndex.Crawl)
+                if (owner.bodyMode == Player.BodyModeIndex.Crawl)
                 {
                     flarePositionStart.y += 3.25f;
                     flarePositionEnd.y += 3.25f;
@@ -182,21 +247,21 @@ public class BeaconCWT : ScugCWT
             // See if it's possible to add weapon
             for (int i = 0; i < 2; i++)
             {
-                if (ownr.grasps[i] != null && ownr.Grabability(ownr.grasps[i].grabbed) >= Player.ObjectGrabability.TwoHands)
+                if (owner.grasps[i] != null && owner.Grabability(owner.grasps[i].grabbed) >= Player.ObjectGrabability.TwoHands)
                 {
                     return -1;
                 }
             }
 
-            int toPaw = ownr.FreeHand();
+            int toPaw = owner.FreeHand();
             // If empty hand has been detected
             if (toPaw != -1)
             {
                 FlareBomb fb = storedFlares.Pop();
                 AbstractStoredFlare af = abstractFlare.Pop();
-                if (ownr.graphicsModule != null)
+                if (owner.graphicsModule != null)
                 {
-                    fb.firstChunk.MoveFromOutsideMyUpdate(eu, (ownr.graphicsModule as PlayerGraphics).hands[toPaw].pos);
+                    fb.firstChunk.MoveFromOutsideMyUpdate(eu, (owner.graphicsModule as PlayerGraphics).hands[toPaw].pos);
                 }
 
                 af?.Deactivate();
@@ -205,10 +270,10 @@ public class BeaconCWT : ScugCWT
                 fb.CollideWithTerrain = true;
                 fb.collisionRange = 50f;
                 fb.ChangeMode(Weapon.Mode.Free);
-                ownr.SlugcatGrab(fb, toPaw);
+                owner.SlugcatGrab(fb, toPaw);
                 interactionLocked = true;
-                ownr.noPickUpOnRelease = 20;
-                ownr.room.PlaySound(SoundID.Slugcat_Pick_Up_Flare_Bomb, ownr.mainBodyChunk);
+                owner.noPickUpOnRelease = 20;
+                owner.room.PlaySound(SoundID.Slugcat_Pick_Up_Flare_Bomb, owner.mainBodyChunk);
                 // Debug.log("Successfully applied flare to paw! Storage index is now: " + storedFlares.Count);
 
                 return toPaw;
@@ -226,9 +291,9 @@ public class BeaconCWT : ScugCWT
             // Take off the flare from hand
             for (int i = 0; i < 2; i++)
             {
-                if (ownr.grasps[i] != null && ownr.grasps[i].grabbed == f)
+                if (owner.grasps[i] != null && owner.grasps[i].grabbed == f)
                 {
-                    ownr.ReleaseGrasp(i);
+                    owner.ReleaseGrasp(i);
                     break;
                 }
             }
@@ -238,9 +303,9 @@ public class BeaconCWT : ScugCWT
             f.collisionRange = 0f;
             storedFlares.Push(f);
             interactionLocked = true;
-            ownr.noPickUpOnRelease = 20;
-            ownr.room.PlaySound(SoundID.Slugcat_Stash_Spear_On_Back, ownr.mainBodyChunk);
-            abstractFlare.Push(new AbstractStoredFlare(ownr.abstractPhysicalObject, f.abstractPhysicalObject));
+            owner.noPickUpOnRelease = 20;
+            owner.room.PlaySound(SoundID.Slugcat_Stash_Spear_On_Back, owner.mainBodyChunk);
+            abstractFlare.Push(new AbstractStoredFlare(owner.abstractPhysicalObject, f.abstractPhysicalObject));
             // Debug.log("Applied flare into storage! Storage index is now: " + storedFlares.Count);
         }
     }
