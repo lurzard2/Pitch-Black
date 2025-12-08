@@ -103,9 +103,7 @@ public static class DevObjectHooks
 }
 
 public class DevToolsHooks
-
 {
-
     public static void Apply()
     {
         DevEffectHooks.Inject(); 
