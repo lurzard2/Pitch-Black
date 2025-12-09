@@ -39,66 +39,7 @@ public class BeaconCWT : ScugCWT
     public BeaconCWT(Player player) : base()
     {
         storage = new FlareStore(player);
-        //cycle = new Cycle(player);
-    }
-
-    public class Cycle
-    {
-        public Creature owner;
-        public State state;
-        public bool realizedPlayer;
-
-        public Cycle(Creature owner)
-        {
-            this.owner = owner;
-            state = State.Init;
-            realizedPlayer = false;
-        }
-
-        public void Update(bool eu)
-        {
-            realizedPlayer = owner.abstractCreature.realizedCreature != null;
-
-            if (state == State.Init)
-            {
-                InitState();
-                return;
-            }
-        }
-
-        public void InitState()
-        {
-            if (owner.dead)
-            {
-                ChangeState(State.Dead);
-                return;
-            }
-            if (owner.Stunned)
-            {
-                ChangeState(State.Stunned);
-                return;
-            }
-            ChangeState(State.Alive);
-            return;
-        }
-
-        public void ChangeState(State state)
-        {
-            this.state = state;
-        }
-
-        public class State : ExtEnum<State>
-        {
-            public State(string value, bool register) : base(value, register) { }
-
-            public static readonly State Init = new(nameof(Init), true);
-
-            public static readonly State Alive = new(nameof(Alive), true);
-            public static readonly State Stunned = new(nameof(Stunned), true);
-            public static readonly State Thanatosis = new(nameof(Thanatosis), true);
-            public static readonly State Dead = new(nameof(Dead), true);
-            public static readonly State Cycled = new(nameof(Cycled), true);
-        }
+        cycle = new Cycle(player.abstractCreature);
     }
 
     public class AbstractStoredFlare : AbstractPhysicalObject.AbstractObjectStick

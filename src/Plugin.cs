@@ -44,6 +44,7 @@ class  Plugin : BaseUnityPlugin
     public static readonly ConditionalWeakTable<MouseGraphics, RotData> rotRatData = new();
     public static readonly ConditionalWeakTable<World, List<AbstractRoom>> roomsWithDreamerSpot = new();
     public static readonly ConditionalWeakTable<World, List<DreamerPresence>> dreamerPresence = new();
+    public static readonly ConditionalWeakTable<AbstractCreature, Cycle> creatureCycle = new();
 
     // Colors moved to Colors.cs after I saw Alduris set up his codespace that way -Lur 
 
@@ -82,8 +83,9 @@ class  Plugin : BaseUnityPlugin
         On.RainWorldGame.Update += RainWorldGame_Update;
 
         MenuSceneHooks.Apply();
-        DevToolsHooks.Apply();
+        CreatureCycleHooks.Apply();
         PhysicalObjectHooks.Apply();
+        DevToolsHooks.Apply();
         WorldHooks.Apply();
         MusicHooks.Apply();
         PBSlugBaseFeatures.Apply();

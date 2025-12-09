@@ -8,7 +8,7 @@ using static PitchBlack.Plugin;
 
 namespace PitchBlack;
 
-public class PBRoomSpecificScript : UpdatableAndDeletable
+public abstract class PBRoomSpecificScript : UpdatableAndDeletable
 {
     public bool AllPlayersRealized
     {
