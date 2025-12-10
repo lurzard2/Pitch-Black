@@ -17,6 +17,8 @@ public static class MiscUtils
     // For NT tracking
     public static bool ValidTrackRoom(this Room room) => room != null && !room.abstractRoom.shelter && !room.abstractRoom.gate;
 
+    public static bool RegionOutSideCycle(this World world) => world != null && world.region.name == "VV" || world.region.name == "UD" || world.region.name == "WRSA";
+
     // Regions that make Beacon squint regardless of room darkness
     public static bool MakeBeaconCloseEyesHere(Player self, string region, string room)
     {
@@ -68,7 +70,7 @@ public static class MiscUtils
         rippleLayer = overrideRippleLayer > 0 ? overrideRippleLayer : 0;
 
         spawnType = Enums.DreamSpawnType.DreamSpawn;
-        if (spawnSource == Enums.DreamSpawnSource.Dreamcatcher)
+        if (spawnSource == Enums.DreamSpawnSource.Dreamcatcher || spawnSource == Enums.DreamSpawnSource.Jetsam)
         {
             //spawnBehavior = new DreamSpawnBehavior.Caught(spawn, room);
             spawnType = Enums.DreamSpawnType.DreamKin;
@@ -77,9 +79,13 @@ public static class MiscUtils
         float getVoidMelt = room.roomSettings.GetEffectAmount(RoomSettings.RoomEffect.Type.VoidMelt);
         obj = new AbstractPhysicalObject(room.world, Enums.AbstractObjectType.DreamSpawn, null, room.GetWorldCoordinate(spawnPos), room.game.GetNewID());
         spawn = new DreamSpawn(obj, getVoidMelt, room.Darkness(spawnPos) > 0.4f ? false : true, spawnType);
-        if (IsVariant(spawn, Enums.DreamSpawnType.DreamKin))
+        if (spawnSource == Enums.DreamSpawnSource.Dreamcatcher)
         {
             spawnBehavior = new DreamSpawnBehavior.Caught(spawn, room);
+        }
+        else
+        {
+            spawnBehavior = new VoidSpawn.BezierSwarm(spawn, room);
         }
 
         int count = room.voidSpawns.Count;

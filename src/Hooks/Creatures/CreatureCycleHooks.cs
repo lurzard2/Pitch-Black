@@ -40,9 +40,7 @@ public static class CreatureCycleHooks
     {
         orig(self, world, creatureTemplate, realizedCreature, pos, ID);
 
-        string region = self.world.region.name;
-        bool regionBlacklist = region == "VV" || region == "UD" || region == "WRSA";
-        if (regionBlacklist)
+        if (MiscUtils.RegionOutSideCycle(world))
         {
             return;
         }

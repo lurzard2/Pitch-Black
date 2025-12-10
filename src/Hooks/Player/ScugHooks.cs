@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using EffExt;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RWCustom;
 using SlugBase.SaveData;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using static PitchBlack.Plugin;
 
@@ -16,13 +17,22 @@ public static class ScugHooks
     /// </summary>
     private static void BeaconUpdate(Player self)
     {
-        //logger.LogDebug($"RSS: Player pos - {self.room.game.session.Players[0].pos}");
-
-        ThanatosisUpdate(self);
+        if (devMode)
+        {
+            var state = self.room.world.game.GetStorySession.saveState;
+            BeaconSaveData.SetCanUseThanatosis(state, true);
+            BeaconSaveData.SetMaxSpiralLevel(state, 1f);
+            BeaconSaveData.SetSpiralLevel(state, 1f);
+        }
 
         // Check here if it's Beacon
         if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
         {
+            if (cwt.playerCycle != null)
+            {
+                cwt.playerCycle.Update();
+            }
+
             if (cwt.dontThrowTimer > 0)
             {
                 cwt.dontThrowTimer--;
@@ -59,196 +69,196 @@ public static class ScugHooks
         }
     }
 
-    private static void ThanatosisUpdate(Player self)
-    {
-        ThanatosisDeathIntensity(self);
+    //private static void ThanatosisUpdate(Player self)
+    //{
+    //    ThanatosisDeathIntensity(self);
 
-        var state = (self.room.game.session as StoryGameSession).saveState;
+    //    var state = (self.room.game.session as StoryGameSession).saveState;
 
-        if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
-        {
-            // inject ability and input check here specifically
-            if (BeaconSaveData.GetCanUseThanatosis(state) && self.input[0].spec)
-            {
-                logger.LogDebug($"[THANATOSIS] Doing input for Thanatosis, input time: {cwt.inputForThanatosisCounter}.");
-                ToggleThanatosis(self);
-            }
-            if (!self.input[0].spec)
-            {
-                cwt.inputForThanatosisCounter = 0;
-            }
+    //    if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
+    //    {
+    //        // inject ability and input check here specifically
+    //        if (BeaconSaveData.GetCanUseThanatosis(state) && self.input[0].spec)
+    //        {
+    //            logger.LogDebug($"[THANATOSIS] Doing input for Thanatosis, input time: {cwt.inputForThanatosisCounter}.");
+    //            ToggleThanatosis(self);
+    //        }
+    //        if (!self.input[0].spec)
+    //        {
+    //            cwt.inputForThanatosisCounter = 0;
+    //        }
 
-            // determining actual death
-            if (cwt.thanatosisCounter >= cwt.thanatosisLimit || (cwt.isDead && self.dead) && !cwt.diedInThanatosis)
-            {
-                logger.LogDebug($"[THANATOSIS] Time limit reached. Time: {cwt.thanatosisCounter}/{cwt.thanatosisLimit}.");
-                cwt.diedInThanatosis = true;
-            }
-            else if (!cwt.diedInThanatosis)
-            {
-                cwt.thanatosisDeathBumpNeedsToPlay = false;
-            }
-            if (cwt.diedInThanatosis && !cwt.thanatosisDeathBumpNeedsToPlay && self.rippleDeathTime == 80)
-            {
-                self.room.PlaySound(Enums.SoundID.Player_Died_From_Thanatosis);
-                if (BeaconSaveData.GetSpiralLevel(state) > BeaconSaveData.GetMinSpiralLevel(state))
-                {
-                    BeaconSaveData.SetSpiralLevel(state, BeaconSaveData.GetSpiralLevel(state) - 1f);
-                }
-                    //self.room.PlaySound(SoundID.Gate_Rails_Collide);
-                    cwt.thanatosisDeathBumpNeedsToPlay = true;
-            }
+    //        // determining actual death
+    //        if (cwt.thanatosisCounter >= cwt.thanatosisLimit || (cwt.isDead && self.dead) && !cwt.diedInThanatosis)
+    //        {
+    //            logger.LogDebug($"[THANATOSIS] Time limit reached. Time: {cwt.thanatosisCounter}/{cwt.thanatosisLimit}.");
+    //            cwt.diedInThanatosis = true;
+    //        }
+    //        else if (!cwt.diedInThanatosis)
+    //        {
+    //            cwt.thanatosisDeathBumpNeedsToPlay = false;
+    //        }
+    //        if (cwt.diedInThanatosis && !cwt.thanatosisDeathBumpNeedsToPlay && self.rippleDeathTime == 80)
+    //        {
+    //            self.room.PlaySound(Enums.SoundID.Player_Died_From_Thanatosis);
+    //            if (BeaconSaveData.GetSpiralLevel(state) > BeaconSaveData.GetMinSpiralLevel(state))
+    //            {
+    //                BeaconSaveData.SetSpiralLevel(state, BeaconSaveData.GetSpiralLevel(state) - 1f);
+    //            }
+    //                //self.room.PlaySound(SoundID.Gate_Rails_Collide);
+    //                cwt.thanatosisDeathBumpNeedsToPlay = true;
+    //        }
 
-            switch (cwt.isDead)
-            {
-                case true:
-                    InThanatosis(self);
-                    break;
-                default:
-                    OutsideThanatosis(self);
-                    break;
-            }
-        }
-    }
+    //        switch (cwt.isDead)
+    //        {
+    //            case true:
+    //                InThanatosis(self);
+    //                break;
+    //            default:
+    //                OutsideThanatosis(self);
+    //                break;
+    //        }
+    //    }
+    //}
 
-    private static void ToggleThanatosis(Player self)
-    {
-        var GotCWTData = scugCWT.TryGetValue(self, out ScugCWT c);
-        if (GotCWTData && c is BeaconCWT bCWT)
-        {
-            bCWT.inputForThanatosisCounter++;
-            if (bCWT.inputForThanatosisCounter == 24)
-            {
-                bCWT.deathToggle = bCWT.isDead;
-                bCWT.isDead = !bCWT.isDead;
-                // Toggling
-                if (bCWT.deathToggle != bCWT.isDead)
-                {
-                    logger.LogDebug($"[THANATOSIS] Toggle reached! Toggling Thanatosis: {bCWT.isDead}. Ripple Layer: {self.abstractCreature.rippleLayer}.");
-                    self.abstractCreature.rippleLayer = bCWT.isDead ? 1 : 0;
-                    self.room.PlaySound(
-                        bCWT.isDead
-                            ? Enums.SoundID.Player_Activated_Thanatosis
-                            : Enums.SoundID.Player_Deactivated_Thanatosis, self.mainBodyChunk);
-                }
-            }
-        }
-    }
+    //private static void ToggleThanatosis(Player self)
+    //{
+    //    var GotCWTData = scugCWT.TryGetValue(self, out ScugCWT c);
+    //    if (GotCWTData && c is BeaconCWT bCWT)
+    //    {
+    //        bCWT.inputForThanatosisCounter++;
+    //        if (bCWT.inputForThanatosisCounter == 24)
+    //        {
+    //            bCWT.deathToggle = bCWT.isDead;
+    //            bCWT.isDead = !bCWT.isDead;
+    //            // Toggling
+    //            if (bCWT.deathToggle != bCWT.isDead)
+    //            {
+    //                logger.LogDebug($"[THANATOSIS] Toggle reached! Toggling Thanatosis: {bCWT.isDead}. Ripple Layer: {self.abstractCreature.rippleLayer}.");
+    //                self.abstractCreature.rippleLayer = bCWT.isDead ? 1 : 0;
+    //                self.room.PlaySound(
+    //                    bCWT.isDead
+    //                        ? Enums.SoundID.Player_Activated_Thanatosis
+    //                        : Enums.SoundID.Player_Deactivated_Thanatosis, self.mainBodyChunk);
+    //            }
+    //        }
+    //    }
+    //}
 
-    private static void InThanatosis(Player self)
-    {
-        var GotCWTData = scugCWT.TryGetValue(self, out ScugCWT c);
-        if (GotCWTData && c is BeaconCWT cwt)
-        {
-            //if (BeaconSaveData.GetMaxSpiralLevel(self.room.world.game.GetStorySession.saveState) < 1f)
-            //{
-            //    self.SetMalnourished(true, false);
-            //}
+    //private static void InThanatosis(Player self)
+    //{
+    //    var GotCWTData = scugCWT.TryGetValue(self, out ScugCWT c);
+    //    if (GotCWTData && c is BeaconCWT cwt)
+    //    {
+    //        //if (BeaconSaveData.GetMaxSpiralLevel(self.room.world.game.GetStorySession.saveState) < 1f)
+    //        //{
+    //        //    self.SetMalnourished(true, false);
+    //        //}
 
-            // Spawn a DreamSpawn
-            if (!cwt.spawnLeftBody)
-            {
-                //MiscUtils.MaterializeDreamSpawn(self.room, self.mainBodyChunk.pos, PBEnums.VoidSpawn.SpawnSource.Death);
-                cwt.spawnLeftBody = true;
-            }
+    //        // Spawn a DreamSpawn
+    //        if (!cwt.spawnLeftBody)
+    //        {
+    //            //MiscUtils.MaterializeDreamSpawn(self.room, self.mainBodyChunk.pos, PBEnums.VoidSpawn.SpawnSource.Death);
+    //            cwt.spawnLeftBody = true;
+    //        }
 
-            // Input removing is done in IL_Player_checkInput
+    //        // Input removing is done in IL_Player_checkInput
 
-            // Increase time
-            if (cwt.thanatosisCounter <= cwt.thanatosisLimit)
-            {
-                cwt.thanatosisCounter++;
-                if (cwt.thanatosisLerp < 0.92f)
-                {
-                    cwt.thanatosisLerp += 0.01f;
-                }
-                if (!cwt.graspsNeedToBeReleased)
-                {
-                    self.LoseAllGrasps();
-                    //DropAllFlares(self);
-                    cwt.graspsNeedToBeReleased = true;
-                }
-            }
-        }
-    }
+    //        // Increase time
+    //        if (cwt.thanatosisCounter <= cwt.thanatosisLimit)
+    //        {
+    //            cwt.thanatosisCounter++;
+    //            if (cwt.thanatosisLerp < 0.92f)
+    //            {
+    //                cwt.thanatosisLerp += 0.01f;
+    //            }
+    //            if (!cwt.graspsNeedToBeReleased)
+    //            {
+    //                self.LoseAllGrasps();
+    //                //DropAllFlares(self);
+    //                cwt.graspsNeedToBeReleased = true;
+    //            }
+    //        }
+    //    }
+    //}
 
-    private static void OutsideThanatosis(Player self)
-    {
-        var GotCWTData = scugCWT.TryGetValue(self, out ScugCWT c);
-        if (GotCWTData && c is BeaconCWT cwt)
-        {
-            //if (BeaconSaveData.GetMaxSpiralLevel(self.room.world.game.GetStorySession.saveState) < 1f)
-            //{
-            //    self.SetMalnourished(false, false);
-            //}
+    //private static void OutsideThanatosis(Player self)
+    //{
+    //    var GotCWTData = scugCWT.TryGetValue(self, out ScugCWT c);
+    //    if (GotCWTData && c is BeaconCWT cwt)
+    //    {
+    //        //if (BeaconSaveData.GetMaxSpiralLevel(self.room.world.game.GetStorySession.saveState) < 1f)
+    //        //{
+    //        //    self.SetMalnourished(false, false);
+    //        //}
 
-            cwt.graspsNeedToBeReleased = false;
-            cwt.spawnLeftBody = false;
-            if (cwt.thanatosisCounter > 0)
-            {
-                cwt.thanatosisCounter--;
-                if (cwt.thanatosisLerp > 0f)
-                {
-                    cwt.thanatosisLerp -= 0.01f;
-                }
-            }
-            if (cwt.thanatosisLerp < 0.01f)
-            {
-                cwt.thanatosisCounter = 0;
-                self.abstractCreature.rippleLayer = 0;
-            }
-        }
-    }
+    //        cwt.graspsNeedToBeReleased = false;
+    //        cwt.spawnLeftBody = false;
+    //        if (cwt.thanatosisCounter > 0)
+    //        {
+    //            cwt.thanatosisCounter--;
+    //            if (cwt.thanatosisLerp > 0f)
+    //            {
+    //                cwt.thanatosisLerp -= 0.01f;
+    //            }
+    //        }
+    //        if (cwt.thanatosisLerp < 0.01f)
+    //        {
+    //            cwt.thanatosisCounter = 0;
+    //            self.abstractCreature.rippleLayer = 0;
+    //        }
+    //    }
+    //}
 
-    /// <summary>
-    /// Camera effect for Thanatosis using Watcher's RippleDeath shader
-    /// </summary>
-    private static void ThanatosisDeathIntensity(Player self)
-    {
-        if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
-        {
-            if (cwt.isDead)
-            {
-                // Calculation made by MaxDubstep <3
-                float timeCounter = cwt.thanatosisCounter; //x
-                float minKarmaSafeTime = 12 * 40f; //tc
-                float maxKarmaSafeTime = 40 * 40f; // Tc
-                float beginningIntensity = 0.4f; //l
-                float endIntensity = 0.45f; //m
-                float windUpTime = 3 * 40f; //wc
-                float rampUpTime = 3 * 40f; //Wc
-                var state = (self.room.game.session as StoryGameSession).saveState;
-                float plateauDuration = (BeaconSaveData.GetSpiralLevel(state) - 1) * (maxKarmaSafeTime - (windUpTime + rampUpTime) * 2) / 4 + minKarmaSafeTime - windUpTime - rampUpTime; //c
-                // Starting plateau
-                if (timeCounter < windUpTime)
-                {
-                    self.rippleDeathIntensity = Mathf.Sqrt(timeCounter) * beginningIntensity / Mathf.Sqrt(windUpTime);
-                }
-                // Middle of plateau
-                if ((timeCounter < windUpTime + plateauDuration) && timeCounter >= windUpTime)
-                {
-                    self.rippleDeathIntensity = (timeCounter - windUpTime) * (endIntensity - beginningIntensity) / plateauDuration + beginningIntensity;
-                }
-                // Ending DIE INTENSITY!!!!
-                if (timeCounter >= windUpTime + plateauDuration + (rampUpTime / 2))
-                {
-                    float increment = 0.008f;
-                    int mult = 4;
-                    self.rippleDeathIntensity += increment;
-                    increment += 0.008f * mult;
-                    mult += 4;
-                }
-            }
-            if ((cwt.diedInThanatosis || self.dead) && self.rippleDeathIntensity < 0.12f)
-            {
-                self.rippleDeathIntensity += 0.004f;
-            }
-            if (self.rippleDeathIntensity > 0 && !cwt.isDead)
-            {
-                self.rippleDeathIntensity -= 0.004f;
-            }
-        }
-    }
+    ///// <summary>
+    ///// Camera effect for Thanatosis using Watcher's RippleDeath shader
+    ///// </summary>
+    //private static void ThanatosisDeathIntensity(Player self)
+    //{
+    //    if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
+    //    {
+    //        if (cwt.isDead)
+    //        {
+    //            // Calculation made by MaxDubstep <3
+    //            float timeCounter = cwt.thanatosisCounter; //x
+    //            float minKarmaSafeTime = 12 * 40f; //tc
+    //            float maxKarmaSafeTime = 40 * 40f; // Tc
+    //            float beginningIntensity = 0.4f; //l
+    //            float endIntensity = 0.45f; //m
+    //            float windUpTime = 3 * 40f; //wc
+    //            float rampUpTime = 3 * 40f; //Wc
+    //            var state = (self.room.game.session as StoryGameSession).saveState;
+    //            float plateauDuration = (BeaconSaveData.GetSpiralLevel(state) - 1) * (maxKarmaSafeTime - (windUpTime + rampUpTime) * 2) / 4 + minKarmaSafeTime - windUpTime - rampUpTime; //c
+    //            // Starting plateau
+    //            if (timeCounter < windUpTime)
+    //            {
+    //                self.rippleDeathIntensity = Mathf.Sqrt(timeCounter) * beginningIntensity / Mathf.Sqrt(windUpTime);
+    //            }
+    //            // Middle of plateau
+    //            if ((timeCounter < windUpTime + plateauDuration) && timeCounter >= windUpTime)
+    //            {
+    //                self.rippleDeathIntensity = (timeCounter - windUpTime) * (endIntensity - beginningIntensity) / plateauDuration + beginningIntensity;
+    //            }
+    //            // Ending DIE INTENSITY!!!!
+    //            if (timeCounter >= windUpTime + plateauDuration + (rampUpTime / 2))
+    //            {
+    //                float increment = 0.008f;
+    //                int mult = 4;
+    //                self.rippleDeathIntensity += increment;
+    //                increment += 0.008f * mult;
+    //                mult += 4;
+    //            }
+    //        }
+    //        if ((cwt.diedInThanatosis || self.dead) && self.rippleDeathIntensity < 0.12f)
+    //        {
+    //            self.rippleDeathIntensity += 0.004f;
+    //        }
+    //        if (self.rippleDeathIntensity > 0 && !cwt.isDead)
+    //        {
+    //            self.rippleDeathIntensity -= 0.004f;
+    //        }
+    //    }
+    //}
 
     public static void Apply()
     {

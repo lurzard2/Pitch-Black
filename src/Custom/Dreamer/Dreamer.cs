@@ -1279,6 +1279,10 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         if (maxLevel >= 0.5f)
         {
             increment = 0.5f;
+            if (!BeaconSaveData.GetCanUseThanatosis(state))
+            {
+                BeaconSaveData.SetCanUseThanatosis(state, true);
+            }
         }
         else
         {

@@ -58,7 +58,7 @@ public class BeaconThreatTracker
             }
         }
         // If there is no presence, and there is a song, remove it (fixes music triggers after encountering Dreamer)
-        if (game.cameras[0].ghostMode < 0.002f && self.musicPlayer.song != null && self.musicPlayer.song is GhostSong)
+        if (game.cameras[0].ghostMode <= 0.001f && self.musicPlayer.song != null && self.musicPlayer.song is GhostSong)
         {
             self.musicPlayer.song = null;
         }

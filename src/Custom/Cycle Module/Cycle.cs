@@ -68,7 +68,14 @@ public class Cycle
         {
             for (int i = 0; i < idleRipples; i++)
             {
-                AddRipple(CycleRippleSource.Idle);
+                if (state == State.MarkedForCache || state == State.Cached)
+                {
+                    AddRipple(CycleRippleSource.Cache);
+                }
+                else
+                {
+                    AddRipple(CycleRippleSource.Idle);
+                }
                 idleRipples--;
             }
         }
@@ -78,34 +85,37 @@ public class Cycle
     {
         RippleRing ripple = null;
         Vector2 pos = RealizedOwner.bodyChunks[0].pos;
-        int life = state == State.Alive ? Random.Range(40, Random.Range(40, 120)) : Random.Range(-40, Random.Range(-40, -120));
+        // Life
+        int life = 0;
+        if (source == CycleRippleSource.Cache)
+        {
+            Random.Range(-40, Random.Range(-40, -120));
+        }
+        else
+        {
+            life = Random.Range(40, Random.Range(40, 120));
+        }
+        // Intensity
         float intensity = 0;
-
         if (source == CycleRippleSource.Idle)
         {
             intensity = Random.Range(0.1f, Random.Range(0.1f, 1f));
+            RealizedOwner.room.PlaySound(SoundID.MENU_Karma_Ladder_Increase_Bump, pos, intensity - 0.85f, life);
         }
         else if (source == CycleRippleSource.Thanatosis)
         {
             intensity = 1f;
         }
+        else if (source == CycleRippleSource.Cache)
+        {
+            intensity = 0.8f;
+        }
         float speed = intensity * (life / 20);
-
-        // I was gonna stop it from spawning invisible ones but I like the implication
-        //if (intensity < 0.6f)
-        //{
-        //    return;
-        //}
 
         ripple = new RippleRing(pos, life, intensity, speed);
         if (ripple != null)
         {
             RealizedOwner.room.AddObject(ripple);
-            if (intensity > 0.7f)
-            {
-                RealizedOwner.room.PlaySound(SoundID.MENU_Karma_Ladder_Increase_Bump, pos, intensity - 0.75f, life);
-                RealizedOwner.room.PlaySound(WatcherEnums.WatcherSoundID.Warp_Point_Ripple_Hint, pos, intensity - 0.75f, life);
-            }
         }
         if (devMode && RealizedOwner.room.updateList.Contains(ripple))
         {
@@ -114,13 +124,13 @@ public class Cycle
     }
 
     #region Internal
-    private void CycleTick()
+    public void CycleTick()
     {
         cycleTime.Tick();
         cycleStateTime.Tick();
     }
 
-    private void Sync()
+    public void Sync()
     {
         // We only have to check if it's alive, cause this is when the abstractcreature is first updated
         if (abstractOwner.state.alive)
@@ -146,7 +156,11 @@ public class Cycle
 
         public static readonly State Init = new(nameof(Init), true);
         public static readonly State Alive = new(nameof(Alive), true);
+
         public static readonly State Thanatosis = new(nameof(Thanatosis), true);
+        public static readonly State ExitThanatosis = new(nameof(ExitThanatosis), true);
+        public static readonly State PersistThroughCache = new(nameof(PersistThroughCache), true);
+
         public static readonly State MarkedForCache = new(nameof(MarkedForCache), true);
         public static readonly State Cached = new(nameof(Cached), true);
     }
@@ -158,5 +172,7 @@ public class Cycle
 
         public static readonly CycleRippleSource Idle = new(nameof(Idle), true);
         public static readonly CycleRippleSource Thanatosis = new(nameof(Thanatosis), true);
+        public static readonly CycleRippleSource Oscillation = new(nameof(Oscillation), true);
+        public static readonly CycleRippleSource Cache = new(nameof(Cache), true);
     }
 }

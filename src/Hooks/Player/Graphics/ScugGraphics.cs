@@ -173,11 +173,11 @@ public static class ScugGraphics
             int flares = bCWT.storage.storedFlares.Count;
             skinColor = Color.Lerp(Colors.BeaconDefaultColor, Colors.BeaconFullColor, flares / (float)4);
             eyeColor = Colors.BeaconEyeColor;
-
-            if (bCWT.isDead || bCWT.thanatosisCounter > 0)
+            
+            if (bCWT.playerCycle != null && (bCWT.playerCycle.cycle.state == Cycle.State.Thanatosis || bCWT.playerCycle.cycle.state == Cycle.State.ExitThanatosis))
             {
-                bCWT.currentSkinColor = Color.Lerp(skinColor, DecidedSkinColor, bCWT.thanatosisLerp);
-                bCWT.currentEyeColor = Color.Lerp(eyeColor, DecidedEyeColor, bCWT.thanatosisLerp);
+                bCWT.currentSkinColor = Color.Lerp(skinColor, DecidedSkinColor, bCWT.playerCycle.thanatosisLerp);
+                bCWT.currentEyeColor = Color.Lerp(eyeColor, DecidedEyeColor, bCWT.playerCycle.thanatosisLerp);
             }
             else
             {

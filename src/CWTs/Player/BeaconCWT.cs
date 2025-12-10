@@ -22,7 +22,7 @@ public class BeaconCWT : ScugCWT
     //flashbangs to recover after respawning in jollycoop
     public int coopRefund = 0;
 
-    public BeaconCycle cycle;
+    public BeaconCycle playerCycle;
     public bool deathToggle; //toggle tracking
     public bool isDead; //state tracking
     public bool isDeadButDeniedDeath; //for later implementing coming back from GameOver
@@ -38,12 +38,7 @@ public class BeaconCWT : ScugCWT
     public BeaconCWT(Player player) : base()
     {
         storage = new FlareStore(player);
-
-        // Add and refrence the current instantiated cycle for the player abstract creature
-        if (Plugin.creatureCycle.TryGetValue(player.abstractCreature, out var creatureCycle))
-        {
-            cycle = new BeaconCycle(creatureCycle, player);
-        }
+        playerCycle = new BeaconCycle(new Cycle(player.abstractCreature), player);
     }
 
     public class AbstractStoredFlare : AbstractPhysicalObject.AbstractObjectStick
