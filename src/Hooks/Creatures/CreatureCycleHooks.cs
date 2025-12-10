@@ -40,10 +40,18 @@ public static class CreatureCycleHooks
     {
         orig(self, world, creatureTemplate, realizedCreature, pos, ID);
 
-        // Skip adding slug cause we add it to beacon in BeaconCWT
-        if (!creatureCycle.TryGetValue(self, out var _))
+        string region = self.world.region.name;
+        bool regionBlacklist = region == "VV" || region == "UD" || region == "WRSA";
+        if (regionBlacklist)
         {
-            creatureCycle.Add(self, new Cycle(self));
+            return;
+        }
+        else
+        {
+            if (!creatureCycle.TryGetValue(self, out var _))
+            {
+                creatureCycle.Add(self, new Cycle(self));
+            }
         }
     }
 }

@@ -35,8 +35,6 @@ public class Cycle
     public Counter cycleStateTime = new(Int32.MaxValue, 0, true);
     public bool active => cycleTime > 0;
     public int idleRipples;
-    public string region => abstractOwner.world.region.name;
-    public bool regionIsOutsideCycle => region == "VV" || region == "UD";
 
     public Cycle(AbstractCreature abstractOwner)
     {
@@ -57,7 +55,7 @@ public class Cycle
             CycleTick();
         }
 
-        if (Random.value < 0.1f && !regionIsOutsideCycle)
+        if (Random.value < 0.1f)
         {
             idleRipples++;
         }
@@ -66,22 +64,31 @@ public class Cycle
     // In-room features based on state
     public virtual void RealizedUpdate()
     {
-        if (Random.value < 0.1f && idleRipples > 0 && !regionIsOutsideCycle)
+        if (Random.value < 0.1f && idleRipples > 0)
         {
             for (int i = 0; i < idleRipples; i++)
             {
-                AddRipple();
+                AddRipple(CycleRippleSource.Idle);
                 idleRipples--;
             }
         }
     }
 
-    private void AddRipple()
+    public void AddRipple(CycleRippleSource source)
     {
         RippleRing ripple = null;
         Vector2 pos = RealizedOwner.bodyChunks[0].pos;
         int life = state == State.Alive ? Random.Range(40, Random.Range(40, 120)) : Random.Range(-40, Random.Range(-40, -120));
-        float intensity = Random.Range(0.1f, Random.Range(0.1f, 1f));
+        float intensity = 0;
+
+        if (source == CycleRippleSource.Idle)
+        {
+            intensity = Random.Range(0.1f, Random.Range(0.1f, 1f));
+        }
+        else if (source == CycleRippleSource.Thanatosis)
+        {
+            intensity = 1f;
+        }
         float speed = intensity * (life / 20);
 
         // I was gonna stop it from spawning invisible ones but I like the implication
@@ -144,4 +151,12 @@ public class Cycle
         public static readonly State Cached = new(nameof(Cached), true);
     }
     #endregion
+
+    public class CycleRippleSource : ExtEnum<CycleRippleSource>
+    {
+        public CycleRippleSource(string value, bool register) : base(value, register) { }
+
+        public static readonly CycleRippleSource Idle = new(nameof(Idle), true);
+        public static readonly CycleRippleSource Thanatosis = new(nameof(Thanatosis), true);
+    }
 }
