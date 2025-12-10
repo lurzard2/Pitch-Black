@@ -238,11 +238,8 @@ public static class DreamersHooks
     private static void RoomCamera_Update(On.RoomCamera.orig_Update orig, RoomCamera self)
     {
         orig(self);
+
         DreamerGhostModeUpdate(self);
-        //if (self.ghostMode > 0f)
-        //{
-        //    logger.LogDebug($"{self.ghostMode}");
-        //}
     }
 }
 

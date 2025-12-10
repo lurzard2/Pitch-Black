@@ -346,8 +346,6 @@ public static class ScugHooks
     /// </summary>
     private static void Player_Update(On.Player.orig_Update orig, Player self, bool eu)
     {
-        /* Called without a scugcwt-beaconcwt check because Update doesn't like moving classes within cwt code
-        slug check is inside the function -Lur */
         BeaconUpdate(self);
         
         orig(self, eu);
