@@ -85,6 +85,8 @@ class  Plugin : BaseUnityPlugin
         On.RainWorldGame.ctor += RainWorldGame_ctor;
         On.RainWorldGame.Update += RainWorldGame_Update;
 
+        On.Room.ctor += Room_ctor;
+
         MenuSceneHooks.Apply();
         CreatureCycleHooks.Apply();
         PhysicalObjectHooks.Apply();
@@ -245,12 +247,27 @@ class  Plugin : BaseUnityPlugin
     {
         orig(self, manager);
 
+        //if (cycleCache == null)
+        //{
+        //    cycleCache = new CycleCache(self);
+        //}
+
         pursuerTracker.Add(self, new List<NTTracker>());
         if ((MiscUtils.IsBeacon(self.session) || ModOptions.universalPursuer.Value) && pursuerTracker.TryGetValue(self, out var trackers))
         {
             trackers.Add(new NTTracker(self));
             logger.LogDebug("ADDING NT TRACKER");
         }
+    }
 
+    private void Room_ctor(On.Room.orig_ctor orig, Room self, RainWorldGame game, World world, AbstractRoom abstractRoom, bool devUI)
+    {
+        orig(self, game, world, abstractRoom, devUI);
+
+        if (game != null && game.session != null & MiscUtils.IsBeacon(game.session))
+        {
+            // Need this
+            self.ripple = true;
+        }
     }
 }

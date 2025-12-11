@@ -37,8 +37,6 @@ public class BeaconCycle
             return;
         }
 
-        logger.LogDebug($"{cycle.state} - {cycle.cycleStateTime} - {ThanatosisLimit} - {ReachedThanatosisLimit} - {thanatosisLerp}");
-
         if (cycle.state == Cycle.State.Init)
         {
             cycle.Sync();
@@ -87,7 +85,6 @@ public class BeaconCycle
 
         if (cycle.state == Cycle.State.Thanatosis)
         {
-            logger.LogDebug($"Thanatosis: Time is {cycle.cycleStateTime} / {ThanatosisLimit}");
             InThanatosis();
         }
         else if (cycle.state == Cycle.State.ExitThanatosis)
@@ -115,7 +112,7 @@ public class BeaconCycle
         float endIntensity = 0.45f; //m
         float windUpTime = 3 * 40f; //wc
         float rampUpTime = 3 * 40f; //Wc
-        float plateauDuration = SpiralLevel - 1 * (maxSafeTime - (windUpTime + rampUpTime) * 2) / 4 + minSafeTime - windUpTime - rampUpTime; //c
+        float plateauDuration = (SpiralLevel - 1) * (maxSafeTime - (windUpTime + rampUpTime) * 2) / 4 + minSafeTime - windUpTime - rampUpTime; //c
                          
         // Starting plateau
         if (thanatosisTime < windUpTime)
@@ -123,15 +120,19 @@ public class BeaconCycle
             owner.rippleDeathIntensity = Mathf.Sqrt(thanatosisTime) * beginningIntensity / Mathf.Sqrt(windUpTime);
         }
         // Middle of plateau
-        if ((thanatosisTime < windUpTime + plateauDuration) && thanatosisTime >= windUpTime)
+        else if ((thanatosisTime < windUpTime + plateauDuration) && thanatosisTime >= windUpTime)
         {
             owner.rippleDeathIntensity = (thanatosisTime - windUpTime) * (endIntensity - beginningIntensity) / plateauDuration + beginningIntensity;
         }
         // End
-        if (thanatosisTime >= windUpTime + plateauDuration + (rampUpTime / 2))
+        else
         {
             owner.rippleDeathIntensity = Mathf.Lerp(owner.rippleDeathIntensity, 1f, 0.006f);
         }
+        //if (thanatosisTime >= windUpTime + plateauDuration + (rampUpTime / 2))
+        //{
+        //    owner.rippleDeathIntensity = Mathf.Lerp(owner.rippleDeathIntensity, 1f, 0.006f);
+        //}
     }
 
     // Decreasing values that linger from Thanatosis
