@@ -46,9 +46,6 @@ class  Plugin : BaseUnityPlugin
     public static readonly ConditionalWeakTable<World, List<DreamerPresence>> dreamerPresence = new();
     public static readonly ConditionalWeakTable<AbstractCreature, Cycle> creatureCycle = new();
 
-    // WIP
-    public static List<SavedCycle> savedCycles = new();
-
     // Colors moved to Colors.cs after I saw Alduris set up his codespace that way -Lur 
 
     /// <summary>

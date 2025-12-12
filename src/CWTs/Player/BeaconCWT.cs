@@ -23,17 +23,6 @@ public class BeaconCWT : ScugCWT
     public int coopRefund = 0;
 
     public BeaconCycle playerCycle;
-    public bool deathToggle; //toggle tracking
-    public bool isDead; //state tracking
-    public bool isDeadButDeniedDeath; //for later implementing coming back from GameOver
-    public bool diedInThanatosis = false; //used to call GameOver
-    public bool thanatosisDeathBumpNeedsToPlay = false; //stops recursive true death sound
-    public int thanatosisCounter; //tracking current time spent in Thanatosis
-    public float thanatosisLerp; //for lerping player color based on time spent in Thanatosis
-    public int inputForThanatosisCounter = 0; //spec input doesn't recursively flip isDead
-    public bool graspsNeedToBeReleased = false; //stops grasp-losing recursion
-    public bool spawnLeftBody = false;
-    public float thanatosisLimit = 480f;
 
     public BeaconCWT(Player player) : base()
     {

@@ -10,6 +10,7 @@ public class BeaconCycle
     public Cycle cycle;
     public Player owner;
     public SaveState saveState;
+    public bool savedCycle;
 
     // Thanatosis
     public bool deathToggle;
@@ -19,20 +20,19 @@ public class BeaconCycle
     public float MinSpiralLevel => BeaconSaveData.GetMinSpiralLevel(saveState);
     public float MaxSpiralLevel => BeaconSaveData.GetMaxSpiralLevel(saveState);
     public float ThanatosisLimit => (40 * 12) * SpiralLevel;
-    public bool ReachedThanatosisLimit => cycle.state == Cycle.State.Thanatosis && cycle.cycleStateTime == ThanatosisLimit && owner.rippleDeathTime == 80;
+    public bool ReachedThanatosisLimit => cycle.state == Cycle.State.Thanatosis && cycle.cycleStateTime == ThanatosisLimit;
     public float thanatosisLerp;
-    public bool kinLeftBody;
 
     public BeaconCycle(Cycle cycle, Player owner)
     {
         this.cycle = cycle;
         this.owner = owner;
-        saveState = owner.room.world.game.GetStorySession.saveState;
+        saveState = owner.abstractCreature.world.game.GetStorySession.saveState;
     }
 
     public void Update()
     {
-        if (MiscUtils.RegionOutSideCycle(owner.room.world))
+        if (MiscUtils.RegionOutSideCycle(owner.abstractCreature.world))
         {
             return;
         }
@@ -54,6 +54,21 @@ public class BeaconCycle
             }
         }
 
+        // New cycle, catch up to max revives
+        //if (cycle.cycleTime == 1 && SpiralLevel < MaxSpiralLevel)
+        //{
+        //    BeaconSaveData.SetSpiralLevel(saveState, MaxSpiralLevel);
+        //}
+
+        // Save cycle to save data on end
+        //var manager = owner.abstractCreature.world.game.manager;
+        //if (manager.upcomingProcess == ProcessManager.ProcessID.SleepScreen
+        //    || manager.upcomingProcess == ProcessManager.ProcessID.DeathScreen
+        //    || manager.upcomingProcess == ProcessManager.ProcessID.StarveScreen)
+        //{
+        //    BeaconSaveData.SetSavedCycle(saveState, new SavedPlayerCycle(this, saveState.cycleNumber));
+        //}
+
         if (BeaconSaveData.GetCanUseThanatosis(saveState) && owner.input[0].spec)
         {
             logger.LogDebug($"Thanatosis: Doing input for Thanatosis - {specInputCounter}");
@@ -68,7 +83,7 @@ public class BeaconCycle
             specInputCounter.Reset();
         }
 
-        if (ReachedThanatosisLimit)
+        if (ReachedThanatosisLimit && owner.rippleDeathTime == 80)
         {
             if (SpiralLevel >= 1f)
             {
@@ -96,10 +111,6 @@ public class BeaconCycle
     // Increasing values while in Thanatosis
     private void InThanatosis()
     {
-        if (cycle.cycleStateTime > ThanatosisLimit)
-        {
-            return;
-        }
         if (thanatosisLerp < 0.92f)
         {
             thanatosisLerp += 0.01f;
@@ -125,14 +136,14 @@ public class BeaconCycle
             owner.rippleDeathIntensity = (thanatosisTime - windUpTime) * (endIntensity - beginningIntensity) / plateauDuration + beginningIntensity;
         }
         // End
-        else
+        if (thanatosisTime >= windUpTime + plateauDuration + (rampUpTime / 2))
         {
-            owner.rippleDeathIntensity = Mathf.Lerp(owner.rippleDeathIntensity, 1f, 0.006f);
+            float increment = 0.008f;
+            int mult = 4;
+            owner.rippleDeathIntensity += increment;
+            increment += 0.008f * mult;
+            mult += 4;
         }
-        //if (thanatosisTime >= windUpTime + plateauDuration + (rampUpTime / 2))
-        //{
-        //    owner.rippleDeathIntensity = Mathf.Lerp(owner.rippleDeathIntensity, 1f, 0.006f);
-        //}
     }
 
     // Decreasing values that linger from Thanatosis
@@ -154,14 +165,14 @@ public class BeaconCycle
         {
             cycle.ChangeState(Cycle.State.Alive);
         }
-        kinLeftBody = false;
     }
 
-    #region Dying
+    #region Dying & Revivng
     public void Persist()
     {
         cycle.ChangeState(Cycle.State.PersistThroughCache);
         owner.room.PlaySound(Enums.SoundID.Player_Revived, owner.mainBodyChunk);
+
     }
 
     public void EndCycle()
@@ -177,11 +188,6 @@ public class BeaconCycle
         isDead = !isDead;
         if (deathToggle != isDead)
         {
-            if (isDead && !kinLeftBody)
-            {
-                MiscUtils.MaterializeDreamSpawn(owner.room, owner.mainBodyChunk.pos, Enums.DreamSpawnSource.Jetsam);
-                kinLeftBody = true;
-            }
             cycle.AddRipple(isDead ? Cycle.CycleRippleSource.Thanatosis : Cycle.CycleRippleSource.Cache);
             cycle.ChangeState(isDead ? Cycle.State.Thanatosis : Cycle.State.ExitThanatosis);
             logger.LogDebug($"Thanatosis: Reached toggle for Thanatosis - {isDead}");

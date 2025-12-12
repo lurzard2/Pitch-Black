@@ -76,8 +76,9 @@ public class Cycle
             ChangeState(State.Cached);
         }
 
-        if (Random.value < 0.003f && !spawnRipples)
+        if (Random.value < 0.0003f && !spawnRipples)
         {
+            // I just rippled everywhere
             spawnRipples = true;
         }
 
@@ -89,7 +90,7 @@ public class Cycle
                 {
                     AddRipple(CycleRippleSource.Cache);
                 }
-                else
+                else 
                 {
                     AddRipple(CycleRippleSource.Idle);
                 }

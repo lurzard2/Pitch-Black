@@ -1,16 +1,24 @@
-﻿using SlugBase.SaveData;
+﻿using BepInEx.Logging;
+using SlugBase.SaveData;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using static PitchBlack.Plugin;
 
 namespace PitchBlack;
+
 public static class BeaconSaveData
 {
+    public static string completedBeacon = "CompletedBeacon";
+    public static bool GetCompletedBeacon(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(completedBeacon, out bool completion) ? completion : false;
+    public static void SetCompletedBeacon(this SaveState save, bool value) => save.deathPersistentSaveData.GetSlugBaseData().Set(completedBeacon, value);
+
     public static string dreamerEncountersNumber = "DreamerEncountersNumber";
     public static int GetDreamerEncountersNumber(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(dreamerEncountersNumber, out int encounters) ? encounters : 0;
     public static void SetDreamerEncountersNumber(this SaveState save, int value) => save.deathPersistentSaveData.GetSlugBaseData().Set(dreamerEncountersNumber, value);
 
     public static string dreamerEncountersRoom = "DreamerEncountersRoom";
-    public static List<string> GetDreamerEncounteredRooms(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(dreamerEncountersRoom, out List<string> encounters) ? encounters : new List<string>();
+    public static List<string> GetDreamerEncounteredRooms(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(dreamerEncountersRoom, out List<string> encounters) ? encounters : [];
     public static void SetDreamerEncounteredRooms(this SaveState save, string value)
     {
         if (!save.deathPersistentSaveData.GetSlugBaseData().TryGet(dreamerEncountersRoom, out List<string> encounters))
@@ -44,4 +52,36 @@ public static class BeaconSaveData
     public static string maxSpiralLevel = "MaxSpiralLevel";
     public static float GetMaxSpiralLevel(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(maxSpiralLevel, out float value) ? value : 0f;
     public static void SetMaxSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(maxSpiralLevel, value);
+
+    // Cycle saving
+    public static string savedCycles = "SavedCycles";
+    public static List<SavedPlayerCycle> GetSavedCycles(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(savedCycles, out List<SavedPlayerCycle> cycles) ? cycles : [];
+    public static void SetSavedCycle(this SaveState save, SavedPlayerCycle value)
+    {
+        string s = $"SavedPlayerCycle {nameof(value)}:";
+
+        if (!save.deathPersistentSaveData.GetSlugBaseData().TryGet(savedCycles, out List<SavedPlayerCycle> cycles))
+        {
+            logger.LogDebug($"{s} Can't get list, creating one");
+            cycles = new List<SavedPlayerCycle>();
+            save.deathPersistentSaveData.GetSlugBaseData().Set(savedCycles, cycles);
+        }
+
+        foreach (var cycle in cycles)
+        {
+            if (cycle != null && cycle.cycleNumber == value.cycleNumber)
+            {
+                logger.LogDebug($"{s} Aborted due to duplicate cycle in collection - {nameof(value.cycleNumber)}={value.cycleNumber}");
+                return;
+            }
+        }
+
+        bool hasCycle = cycles.Contains(value);
+        if (!hasCycle)
+        {
+            cycles.Add(value);
+            logger.LogDebug($"{s} Cycle #{value.cycleNumber} added to savedata - reason is {value.cycleEndReason.value} - {value.sacrifices} sacrifices");
+        }
+        logger.LogDebug($"{s} Cycle count is {cycles.Count}");
+    }
 }

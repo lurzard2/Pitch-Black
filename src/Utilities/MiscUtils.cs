@@ -76,9 +76,11 @@ public static class MiscUtils
             spawnType = Enums.DreamSpawnType.DreamKin;
             amountToSpawn = BeaconSaveData.GetDreamerEncountersNumber(room.world.game.GetStorySession.saveState);
         }
+
         float getVoidMelt = room.roomSettings.GetEffectAmount(RoomSettings.RoomEffect.Type.VoidMelt);
         obj = new AbstractPhysicalObject(room.world, Enums.AbstractObjectType.DreamSpawn, null, room.GetWorldCoordinate(spawnPos), room.game.GetNewID());
         spawn = new DreamSpawn(obj, getVoidMelt, room.Darkness(spawnPos) > 0.4f ? false : true, spawnType);
+
         if (spawnSource == Enums.DreamSpawnSource.Dreamcatcher)
         {
             spawnBehavior = new DreamSpawnBehavior.Caught(spawn, room);
@@ -90,7 +92,7 @@ public static class MiscUtils
 
         int count = room.voidSpawns.Count;
         //Stopping spawning if the room has too many
-        if (count >= amountToSpawn)
+        if (count >= count + amountToSpawn)
         {
             return;
         }
