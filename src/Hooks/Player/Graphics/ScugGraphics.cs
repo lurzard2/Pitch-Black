@@ -193,7 +193,7 @@ public static class ScugGraphics
                 }
                 else
                 {
-                    if (bCWT.isDead)
+                    if (bCWT.playerCycle.isDead)
                     {
                         sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName("FaceDead");
                     }

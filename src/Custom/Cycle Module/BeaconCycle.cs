@@ -71,7 +71,7 @@ public class BeaconCycle
 
         if (BeaconSaveData.GetCanUseThanatosis(saveState) && owner.input[0].spec)
         {
-            logger.LogDebug($"Thanatosis: Doing input for Thanatosis - {specInputCounter}");
+            //logger.LogDebug($"Thanatosis: Doing input - {specInputCounter}");
             if (specInputCounter == 24)
             {
                 ToggleThanatosis();
@@ -168,18 +168,20 @@ public class BeaconCycle
     }
 
     #region Dying & Revivng
-    public void Persist()
+
+    private void Persist()
     {
         cycle.ChangeState(Cycle.State.PersistThroughCache);
         owner.room.PlaySound(Enums.SoundID.Player_Revived, owner.mainBodyChunk);
 
     }
 
-    public void EndCycle()
+    private void EndCycle()
     {
         cycle.ChangeState(Cycle.State.MarkedForCache);
         owner.room.PlaySound(Enums.SoundID.Player_Died_From_Thanatosis, owner.mainBodyChunk);
     }
+
     #endregion
 
     private void ToggleThanatosis()
@@ -188,12 +190,23 @@ public class BeaconCycle
         isDead = !isDead;
         if (deathToggle != isDead)
         {
-            cycle.AddRipple(isDead ? Cycle.CycleRippleSource.Thanatosis : Cycle.CycleRippleSource.Cache);
-            cycle.ChangeState(isDead ? Cycle.State.Thanatosis : Cycle.State.ExitThanatosis);
-            logger.LogDebug($"Thanatosis: Reached toggle for Thanatosis - {isDead}");
-            cycle.abstractOwner.rippleLayer = isDead ? 1 : 0;
-            SoundID soundEffect = isDead ? Enums.SoundID.Player_Activated_Thanatosis : Enums.SoundID.Player_Deactivated_Thanatosis;
+            logger.LogDebug($"Thanatosis: Reached toggle for Thanatosis - {isDead} - {cycle.state.value}");
+
+            // Enum determining
+            var rippleSource = isDead
+                ? Cycle.CycleRippleSource.Thanatosis
+                : Cycle.CycleRippleSource.Cache;
+            var cycleState = isDead
+                ? Cycle.State.Thanatosis
+                : Cycle.State.ExitThanatosis;
+            var soundEffect = isDead
+                ? Enums.SoundID.Player_Activated_Thanatosis
+                : Enums.SoundID.Player_Deactivated_Thanatosis;
+
+            cycle.AddRipple(rippleSource);
+            cycle.ChangeState(cycleState);
             owner.room.PlaySound(soundEffect, owner.mainBodyChunk);
+            cycle.abstractOwner.rippleLayer = isDead ? 1 : 0;
         }
     }
 }

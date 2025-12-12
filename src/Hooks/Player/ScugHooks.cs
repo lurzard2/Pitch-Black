@@ -285,7 +285,7 @@ public static class ScugHooks
                 if (Plugin.scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beaconCWT)
                 {
                     var state = (self.room.game.session as StoryGameSession).saveState;
-                    if (beaconCWT.isDead && BeaconSaveData.GetMaxSpiralLevel(state) <= 1f)
+                    if (beaconCWT.playerCycle.isDead && BeaconSaveData.GetMaxSpiralLevel(state) <= 1f)
                     {
                         // Create new inputs
                         Player.InputPackage newInputs = new Player.InputPackage(self.room.game.rainWorld.options.controls[num].gamePad, self.room.game.rainWorld.options.controls[num].GetActivePreset(), 0, 0, false, false, false, false, false, originalInputs.spec);
@@ -299,7 +299,7 @@ public static class ScugHooks
                         // Put new values on the stack
                         return newInputs;
                     }
-                    else if (beaconCWT.thanatosisLerp > 0 && !beaconCWT.diedInThanatosis && !self.dead && self.bodyMode == Player.BodyModeIndex.Dead)
+                    else if (beaconCWT.playerCycle.thanatosisLerp > 0 && !self.dead && self.bodyMode == Player.BodyModeIndex.Dead)
                     {
                         //self.animation = Player.AnimationIndex.DownOnFours;
                         self.bodyMode = Player.BodyModeIndex.Crawl;
