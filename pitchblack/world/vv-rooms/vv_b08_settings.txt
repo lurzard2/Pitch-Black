@@ -1,0 +1,21 @@
+Template: NONE
+DangerType: None
+CeilingDrips: 0.6630435
+RainIntensity: 0
+RumbleIntensity: 0
+WaveSpeed: 0.5
+WaveLength: 1
+WaveAmplitude: 0
+SecondWaveLength: 0
+SecondWaveAmplitude: 0
+Grime: 1
+RandomItemDensity: 0
+RandomItemSpearChance: 0
+WaterReflectionAlpha: 0
+Palette: 1002
+EffectColorA: 17
+Effects: Coldness-0.1086956-20-20, Flies-1-21-71, LightBurn-0.06521739-150-87, 
+PlacedObjects: CellDistortion><263.8514><635.1161><50~35~50~86.60254~0.0326087~0.08695652~0~1, CellDistortion><262><516><25~61~50~86.60254~0.0326087~0.08695652~0~1, LightSource><464.639><440.8337><0.04347826~EffectColor1~179~-203~-449~-98.39752~0~0~None~0~0, CellDistortion><275><758><25~61~50~86.60254~0.0326087~0.08695652~0~1, LightSource><467><1094><0.04347826~EffectColor1~179~-203~-449~-98.39752~0~0~None~0~0, CellDistortion><254><874><25~61~50~86.60254~0.0326087~0.08695652~0~1, CellDistortion><691><901><25~68~50~86.60254~0.0326087~0.08695652~0~1, CellDistortion><687><741><25~68~50~86.60254~0.0326087~0.08695652~0~1, 
+AmbientSounds: OMNI><RWTW_RotAmb_Goo.ogg><752.1707><250.1042><0.8152174><0.1, OMNI><RWTW_RotAmb_Swarm.ogg><719.5599><177.8122><0.8152174><0.1586957, OMNI><SO_SFX-DataStream.ogg><746.5563><415.7><0.326087><1.391304, OMNI><Deep Weird Wind.wav><701.5521><315.7215><0.3043478><0.2173913, SPOT><AM_ENV-CricketsWnd.ogg><679.05><552.2537><1><0.1><487.05><1069.254><-122.3553><-92.35535><0><0.2195653, SPOT><AM_ENV-CricketsWnd.ogg><740.5623><457.819><1><0.1><424.5623><401.7751><-143.3553><-168.3553><0><0.2195653, 
+FadePalette: 1000, 0.07608695, 0.1086956
+WetTerrain: OFF

@@ -1,5 +1,4 @@
-﻿using EffExt;
-using Mono.Cecil.Cil;
+﻿using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RWCustom;
 using SlugBase.SaveData;

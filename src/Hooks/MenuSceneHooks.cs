@@ -1,5 +1,4 @@
 ﻿using BepInEx.Logging;
-using EffExt;
 using Menu;
 using RWCustom;
 using SlugBase.SaveData;

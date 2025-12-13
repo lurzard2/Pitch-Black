@@ -11,21 +11,6 @@
         <Reference Include="../lib/*.dll">
             <Private>false</Private>
         </Reference>
-        <Reference Include="Fisobs">
-          <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\312520\2920541687\newest\plugins\Fisobs.dll</HintPath>
-        </Reference>
-        <Reference Include="HOOKS-Assembly-CSharp">
-          <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World\BepInEx\plugins\HOOKS-Assembly-CSharp.dll</HintPath>
-        </Reference>
-        <Reference Include="Pom">
-          <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\312520\2920439169\plugins\Pom.dll</HintPath>
-        </Reference>
-        <Reference Include="Unity.Mathematics">
-          <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World\RainWorld_Data\Managed\Unity.Mathematics.dll</HintPath>
-        </Reference>
-        <Reference Include="UnityEngine.AssetBundleModule">
-          <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Rain World\RainWorld_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
-        </Reference>
     </ItemGroup>
     
     <ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using EffExt;
 using BepInEx.Logging;
 using Fisobs.Core;
 using IL.Watcher;
