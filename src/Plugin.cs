@@ -1,16 +1,13 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using Fisobs.Core;
-using RWCustom;
+using IL.Watcher;
 using SlugBase.Features;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security;
 using System.Security.Permissions;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using static SlugBase.Features.FeatureTypes;
 
@@ -48,27 +45,23 @@ class  Plugin : BaseUnityPlugin
 
     // Colors moved to Colors.cs after I saw Alduris set up his codespace that way -Lur 
 
-    /// <summary>
-    /// SlugBase Features for PB:
-    /// - Names MUST match in both code and .json in order to work, otherwise SlugBase throws a fit.
-    /// - These fields MUST be in Plugin (according to SlimeCubed).
-    /// - Implemented in Hooks\Player\PBSlugBaseFeatures.cs
-    /// [Lur]
-    /// </summary>
+    // SlugBase Features for PB:
+    // - Names MUST match in both code and .json in order to work, otherwise SlugBase throws a fit.
+    // - These fields MUST be in Plugin (according to SlimeCubed).
+    // - Implemented in Hooks\Player\PBSlugBaseFeatures.cs
+    // [Lur]
     public static readonly PlayerFeature<float> FlipBoost = PlayerFloat("pb/flip_boost");
     
-    // Rotund World stuff -WW
+    // Rotund World stuff [WW]
     internal static bool RotundWorldEnabled => _rotundWorldEnabled;
     private static bool _rotundWorldEnabled;
     public static bool individualFoodEnabled;
 
-    /// <summary>
-    /// Applies all hooks.
-    /// </summary>
+    // Applies all hooks
     public void OnEnable()
     {
         logger = Logger;
-        logger.LogDebug("Applying PitchBlack hooks...");
+        logger.LogDebug("Applying hooks...");
 
         On.RainWorld.OnModsInit += EnableMod;
         On.RainWorld.OnModsDisabled += DisableMod;
@@ -90,55 +83,48 @@ class  Plugin : BaseUnityPlugin
         DevToolsHooks.Apply();
         WorldHooks.Apply();
         MusicHooks.Apply();
+
         PBSlugBaseFeatures.Apply();
         ScugHooks.Apply();
         ScugGraphics.Apply();
         FlareStorage.Apply();
         Crafting.Apply();
 
-        logger.LogDebug("PitchBlack's hooks successfully applied!");
+        logger.LogDebug("Hooks successfully applied!");
     }
 
-    /// <summary>
-    /// Load any resources
-    /// Enum Registering
-    /// </summary>
+    // Registering
     private void EnableMod(On.RainWorld.orig_OnModsInit orig, RainWorld self)
     {
         orig(self);
 
-        MachineConnector.SetRegisteredOI(MOD_ID, ModOptions.Instance);
-
         if (!init)
         {
+            // Remix Menu
+            MachineConnector.SetRegisteredOI(MOD_ID, ModOptions.Instance);
+
             Enums.SoundID.RegisterValues();
 
+            // Because Fisobs may break with game updates
             try
             {
-                Content.Register(new LMLLCritob());
                 Content.Register(new NTCritob());
-                Content.Register(new RotRatCritob());
-                Content.Register(new CitizenCritob());
-                
-                LMLLHooks.Apply();
                 NTHooks.Apply();
                 ScareEverything.Apply();
-                RotRatHooks.Apply();
-                CitizenHooks.Apply();
-                
-                // Add creatures to CreatureUnlockList
+
+                Content.Register(new LMLLCritob());
+                LMLLHooks.Apply();
                 if (!MultiplayerUnlocks.CreatureUnlockList.Contains(Enums.SandboxUnlockID.LMiniLongLegs))
-                {
                     MultiplayerUnlocks.CreatureUnlockList.Add(Enums.SandboxUnlockID.LMiniLongLegs);
-                }
-                // if (!MultiplayerUnlocks.CreatureUnlockList.Contains(Enums.SandboxUnlockID.NightTerror))
-                // {
-                //     MultiplayerUnlocks.CreatureUnlockList.Add(Enums.SandboxUnlockID.NightTerror);
-                // }
+                
+
+                Content.Register(new RotRatCritob());
+                RotRatHooks.Apply();
                 if (!MultiplayerUnlocks.CreatureUnlockList.Contains(Enums.SandboxUnlockID.RotRat))
-                {
                     MultiplayerUnlocks.CreatureUnlockList.Add(Enums.SandboxUnlockID.RotRat);
-                }
+
+                Content.Register(new CitizenCritob());
+                CitizenHooks.Apply();
             }
             catch (Exception err)
             {
@@ -172,10 +158,7 @@ class  Plugin : BaseUnityPlugin
         }
     }
 
-    /// <summary>
-    /// Unload any resources
-    /// Enum Unregistering
-    /// </summary>
+    // Unregistering
     private void DisableMod(On.RainWorld.orig_OnModsDisabled orig, RainWorld self, ModManager.Mod[] newlyDisabledMods)
     {
         orig(self, newlyDisabledMods);
@@ -190,29 +173,21 @@ class  Plugin : BaseUnityPlugin
                 Enums.RoomEffectType.UnregisterValues();
                 Enums.PlacedObjectType.UnregisterValues();
                 Enums.SoundID.UnregisterValues();
-                
+
                 // Remove creatures from CreatureUnlockList
                 if (MultiplayerUnlocks.CreatureUnlockList.Contains(Enums.SandboxUnlockID.LMiniLongLegs))
-                {
                     MultiplayerUnlocks.CreatureUnlockList.Remove(Enums.SandboxUnlockID.LMiniLongLegs);
-                }
-                // if (MultiplayerUnlocks.CreatureUnlockList.Contains(Enums.SandboxUnlockID.NightTerror))
-                // {
-                //     MultiplayerUnlocks.CreatureUnlockList.Remove(Enums.SandboxUnlockID.NightTerror);
-                // }
+
                 if (MultiplayerUnlocks.CreatureUnlockList.Contains(Enums.SandboxUnlockID.RotRat))
-                {
                     MultiplayerUnlocks.CreatureUnlockList.Remove(Enums.SandboxUnlockID.RotRat);
-                }
-                
+
+
                 break;
             }
         }
     }
     
-    /// <summary>
-    /// Utilized for conditional code when other mods are enabled.
-    /// </summary>
+    // Other mods
     private void RainWorld_PostModsInit(On.RainWorld.orig_PostModsInit orig, RainWorld self)
     {
         orig(self);
@@ -220,19 +195,20 @@ class  Plugin : BaseUnityPlugin
         foreach (var mod in ModManager.ActiveMods)
         {
             if (mod.id == "willowwisp.bellyplus")
-            {
                 _rotundWorldEnabled = true;
-            }
-            else if (mod.id == "dressmyslugcat")
-            {
-                //DMSPatch.AddSpritesToDMS();
-            }
+
+            //else if (mod.id == "dressmyslugcat")
+            //{
+            //    DMSPatch.AddSpritesToDMS();
+            //}
+
             else if (mod.id == "sprobgik.individualfoodbars")
-            {
                 individualFoodEnabled = true;
-            }
+            
         }
     }
+
+
     
     private static void RainWorldGame_Update(On.RainWorldGame.orig_Update orig, RainWorldGame self)
     {
@@ -243,11 +219,6 @@ class  Plugin : BaseUnityPlugin
     private static void RainWorldGame_ctor(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)
     {
         orig(self, manager);
-
-        //if (cycleCache == null)
-        //{
-        //    cycleCache = new CycleCache(self);
-        //}
 
         pursuerTracker.Add(self, new List<NTTracker>());
         if ((MiscUtils.IsBeacon(self.session) || ModOptions.universalPursuer.Value) && pursuerTracker.TryGetValue(self, out var trackers))

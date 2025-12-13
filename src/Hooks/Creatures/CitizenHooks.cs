@@ -9,12 +9,12 @@ public static class CitizenHooks
 
     public static void Apply()
     {
+        On.Scavenger.ctor += Scavenger_ctor;
         On.Scavenger.Update += Scavenger_Update;
         On.Scavenger.Grab += Scavenger_Grab;
         On.Scavenger.Collide += Scavenger_Collide;
         On.ScavengerAbstractAI.InitGearUp += ScavengerAbstractAI_InitGearUp;
         
-        On.Scavenger.ctor += Scavenger_ctor;
         On.ScavengerGraphics.DrawSprites += ScavengerGraphics_DrawSprites;
         On.ScavengerGraphics.GenerateColors += ScavengerGraphics_GenerateColors;
         On.ScavengerGraphics.AddToContainer += ScavengerGraphics_AddToContainer;
@@ -26,9 +26,7 @@ public static class CitizenHooks
     {
         orig(self, room, placedObject);
         if (!self.blackListedCreatureTypes.Contains(Enums.CreatureTemplateType.Citizen))
-        {
             self.blackListedCreatureTypes.Add(Enums.CreatureTemplateType.Citizen);
-        }
     }
 
     #region Collision disabling hooks
