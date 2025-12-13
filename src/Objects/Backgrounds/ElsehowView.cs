@@ -1,97 +1,96 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using DevInterface;
-using RWCustom;
+using static PitchBlack.Plugin;
 
 namespace PitchBlack;
 
 // Uses borrowed implementation from AboveCloudsView and AnicentUrbanView.
-public class ElsehowView : BackgroundScene
+public class ElsehowView : PBBackgroundScene
 {
+
+    public Simple2DBackgroundIllustration centensSky;
+    public ElseFog generalFog;
+    public List<ElseCloud> elseClouds;
+
     public ElsehowView(Room room, RoomSettings.RoomEffect effect) : base(room)
     {
-        this.effect = effect;
+        string s = "ElsehowView:";
+
         Random.State state = Random.state;
+        Random.InitState(2);
+
+        startAltitude = 1f;
+        endAltitude = 31400f;
+        cloudsStartDepth = 5f;
+        cloudsEndDepth = 40f;
+        distantCloudsEndDepth = 1000f;
+        atmosphereColor = new Color(0.274f, 0.6f, 0.819f);
+
         sceneOrigo = RoomToWorldPos(room.abstractRoom.size.ToVector2() * 5f);
+        Shader.SetGlobalVector(RainWorld.ShadPropSceneOrigoPosition, sceneOrigo);
         Shader.SetGlobalVector(RainWorld.ShadPropMultiplyColor, Color.white);
         Shader.SetGlobalVector(RainWorld.ShadPropAboveCloudsAtmosphereColor, atmosphereColor);
-        Shader.SetGlobalVector(RainWorld.ShadPropSceneOrigoPosition, sceneOrigo);
-        //Shader.SetGlobalVector(RainWorld.ShadPropMultiplyColor, Color.white);
-        Random.InitState(1);
-        // Sky illustration
-        centensSky = new Simple2DBackgroundIllustration(this, "Centens_Sky", new Vector2(683f, 384f));
-        int towers = 200;
-        float screenWidth = 6500f;
-        float offset = 0f;
-        // Tower element and position
+
+        // Sky
+        fullScreenSky = new Simple2DBackgroundIllustration(this, "Centens_Sky", new Vector2(683f, 384f));
+        AddElement(fullScreenSky);
+
+        // Towers
+        float xSprawl = 6500f;
+        int towers = 100;
         for (int i = 0; i < towers; i++)
         {
-            // Variable X and Y Position of Towers
-            float depthRange = Random.Range(50f, 300f);
-            float xplacementRange = Random.Range(-screenWidth, screenWidth);
-            float ydepthRange = Random.Range(-350f, -150f);
-            int visualVariation = Random.Range(0, 3);
-            float scaleRange = Random.Range(0.75f, 1.25f);
-            float towerLayerThickness = 0.1f;
-            float rotationRange = Random.Range(-0.1f, 0.1f);
-            Vector2 pos = new Vector2(PosFromDrawPosAtNeutralCamPos(new Vector2(xplacementRange, 0f), depthRange).x, floorLevel + offset + ydepthRange);
-            // Adding Towers
-            AddElement(new Towers(this, "Centens_Tower_" + visualVariation.ToString(), pos, depthRange, scaleRange, rotationRange, towerLayerThickness));
+            float depth = Random.Range(70f, 200f);
+            float xPlacement = Random.Range(-xSprawl, xSprawl);
+            float yPlacement = Random.Range(-550f, -300f);
+            int towerVariant = Random.Range(0, 3);
+            float scale = Random.Range(0.75f, 1.25f);
+            float rotation = Random.Range(-0.1f, 0.1f);
+            Vector2 pos = PosFromDrawPosAtNeutralCamPos(new Vector2(xPlacement, yPlacement), depth);
+            AddElement(new Tower(this, "Centens_Tower_" + towerVariant.ToString(), pos, depth, scale, rotation, 0.1f));
+            logger.LogDebug($"{s} Tower - pos={pos}(x{xPlacement}, y{yPlacement}) - depth={depth}");
         }
         if (room.world.region != null)
         {
             startAltitude = (room.world.region.regionParams.cloudsStart ?? startAltitude);
             endAltitude = (room.world.region.regionParams.cloudsEnd ?? endAltitude);
-        }
-        if (!room.game.IsArenaSession || effect.type != Enums.RoomEffectType.ElsehowView)
-        {
             sceneOrigo = new Vector2(2514f, (startAltitude + endAltitude) / 2f);
         }
-        //else
-        //{
-        //    Custom.Log(new string[]
-        //    {
-        //        "arena sky view is :",
-        //        effect.amount.ToString()
-        //    });
-        //    float num = 10000f - effect.amount * 30000f;
-        //    sceneOrigo = new Vector2(2514f, num);
-        //    startAltitude = num - 5500f;
-        //    endAltitude = num + 5500f;
-        //}
+
+        elseClouds = new List<ElseCloud>();
 
         // Adding graphics
-        elseClouds = new List<ElseCloud>();
-        LoadGraphic("elsewhyClouds1", false, false);
-        LoadGraphic("elsewhyClouds2", false, false);
-        LoadGraphic("elsewhyClouds3", false, false);
-        LoadGraphic("elsewhyFlyingClouds1", false, false);
+        loadedGraphics.Add("elsewhyClouds1");
+        loadedGraphics.Add("elsewhyClouds2");
+        loadedGraphics.Add("elsewhyClouds3");
+        loadedGraphics.Add("elsewhyFlyingClouds1");
+        LoadGraphics();
+
+        // Fog
         generalFog = new ElseFog(this);
         AddElement(generalFog);
-        AddElement(centensSky);
+
         // Close clouds
-        if (effect.type == Enums.RoomEffectType.ElsehowView)
+        int cloudCount = 9;
+        for (int i = 0; i < cloudCount; i++)
         {
-            int cloudCount = 9;
-            for (int i = 0; i < cloudCount; i++)
-            {
-                float cloudDepth = (float)i / (float)(cloudCount - 1);
-                AddElement(new CloseElseCloud(this, new Vector2(0f, 0f), cloudDepth, i));
-            }
+            float cloudDepth = (float)i / (float)(cloudCount - 1);
+            AddElement(new CloseElseCloud(this, new Vector2(0f, 0f), cloudDepth, i));
+            logger.LogDebug($"{s} CloseElseCloud - depth={cloudDepth} index={i}");
         }
 
-        // NOTE: Distant clouds are from SIClouds, don't use, otherwise it just creates a big sky-colored box when too high up!!!
-        //int distantCloudCount = 11;
-        //for (int j = 0; j < distantCloudCount; j++)
-        //{
-        //    float num15 = (float)j / (float)(distantCloudCount - 1);
-        //    AddElement(new DistantElseCloud(this, new Vector2(0f, -40f * cloudsEndDepth * (1f - num15)), num15, j));
-        //}
+        int distantCloudCount = 140;
+        for (int j = 0; j < distantCloudCount; j++)
+        {
+            float distantCloudDepth = (float)j / (float)(distantCloudCount - 1);
+            AddElement(new DistantElseCloud(this, new Vector2(0f, -40f * cloudsEndDepth * (1f - distantCloudDepth)), distantCloudsEndDepth, j));
+            logger.LogDebug($"{s} DistantElseCloud - depth={distantCloudDepth}, index={j}");
+        }
 
         // Flying clouds
         AddElement(new FlyingElseCloud(this, PosFromDrawPosAtNeutralCamPos(new Vector2(0f, 75f), 355f), 355f, 0, 0.35f, 0.5f, 0.9f));
         AddElement(new FlyingElseCloud(this, PosFromDrawPosAtNeutralCamPos(new Vector2(0f, 43f), 920f), 920f, 0, 0.15f, 0.3f, 0.95f));
-        // Needed in order to set the random state
+
         Random.state = state;
     }
 
@@ -104,26 +103,16 @@ public class ElsehowView : BackgroundScene
         }
         base.AddElement(element);
     }
-    // From AncientUrbanView
-    public float AtmosphereColorAtDepth(float depth)
+
+    private float CloudDepth(float f)
     {
-        return Mathf.Clamp(depth / 8.2f, 0f, 1f);
-    }
-    // Mandatory functions
-    public override void Update(bool eu)
-    {
-        base.Update(eu);
-    }
-    public override void Destroy()
-    {
-        base.Destroy();
+        return Mathf.Lerp(cloudsStartDepth, cloudsEndDepth, f);
     }
 
-    public RoomSettings.RoomEffect effect;
-    public Color atmosphereColor = new Color(0.274f, 0.6f, 0.819f);
-    //floorlevel is from AncientUrbanView for the Buildings
-    public float floorLevel = -8000f;
-    public float yShift;
+    private float DistantCloudDepth(float f)
+    {
+        return Mathf.Lerp(cloudsEndDepth, distantCloudsEndDepth, Mathf.Pow(f, 1.5f));
+    }
 
     #region ElseCloud
     public abstract class ElseCloud : BackgroundSceneElement
@@ -153,7 +142,7 @@ public class ElsehowView : BackgroundScene
 
     #region Towers
     // References AncientUrbanView.Building
-    private class Towers : BackgroundSceneElement
+    private class Tower : BackgroundSceneElement
     {
         private ElsehowView vvScene
         {
@@ -163,7 +152,7 @@ public class ElsehowView : BackgroundScene
             }
         }
 
-        public Towers(ElsehowView scene, string assetName, Vector2 pos, float depth, float scale, float rotation, float atmosphericalDepthAdd) : base(scene, pos, depth)
+        public Tower(ElsehowView scene, string assetName, Vector2 pos, float depth, float scale, float rotation, float atmosphericalDepthAdd) : base(scene, pos, depth)
         {
             this.assetName = assetName;
             this.atmosphericalDepthAdd = atmosphericalDepthAdd;
@@ -182,7 +171,7 @@ public class ElsehowView : BackgroundScene
                 sLeaser.sprites[i] = new FSprite(assetName, true);
                 sLeaser.sprites[i].shader = rCam.game.rainWorld.Shaders["AncientUrbanBuilding"];
                 sLeaser.sprites[i].anchorY = 0f;
-                sLeaser.sprites[i].scale = scale;
+                sLeaser.sprites[i].scale = scale;   
                 sLeaser.sprites[i].rotation = rotation;
             }
             AddToContainer(sLeaser, rCam, null);
@@ -192,7 +181,7 @@ public class ElsehowView : BackgroundScene
         {
             for (int i = 0; i < sLeaser.sprites.Length; i++)
             {
-                Vector2 vector = DrawPos(new Vector2(camPos.x, camPos.y + vvScene.yShift), rCam.hDisplace);
+                Vector2 vector = DrawPos(new Vector2(camPos.x, camPos.y), rCam.hDisplace);
                 sLeaser.sprites[i].x = vector.x;
                 sLeaser.sprites[i].y = vector.y;
                 sLeaser.sprites[i].color = new Color(Mathf.Pow(Mathf.InverseLerp(0f, 600f, depth + atmosphericalDepthAdd), 0.3f) * 0.9f, 1f - (float)i / 3f, 1f);
@@ -218,7 +207,7 @@ public class ElsehowView : BackgroundScene
             }
         }
 
-        public CloseElseCloud(ElsehowView vvScene, Vector2 pos, float depth, int index) : base(vvScene, pos, depth, index)
+        public CloseElseCloud(ElsehowView vvScene, Vector2 pos, float depth, int index) : base(vvScene, pos, vvScene.CloudDepth(depth), index)
         {
             cloudDepth = depth;
         }
@@ -249,7 +238,7 @@ public class ElsehowView : BackgroundScene
             }
             this.depth = Mathf.Lerp(vvScene.cloudsStartDepth, vvScene.cloudsEndDepth, depth);
             float num3 = Mathf.Lerp(10f, 2f, depth);
-            float num4 = DrawPos(new Vector2(camPos.x, camPos.y + vvScene.yShift), rCam.hDisplace).y;
+            float num4 = DrawPos(new Vector2(camPos.x, camPos.y), rCam.hDisplace).y;
             num4 += Mathf.Lerp(Mathf.Pow(cloudDepth, 0.75f), Mathf.Sin(cloudDepth * 3.1415927f), 0.5f) * Mathf.InverseLerp(0.5f, 0f, altitude) * 600f;
             num4 -= Mathf.InverseLerp(0.18f, 0.1f, altitude) * Mathf.Pow(1f - cloudDepth, 3f) * 100f;
             float num5 = Mathf.Lerp(1f, Mathf.Lerp(0.75f, 0.25f, altitude), depth);
@@ -278,7 +267,7 @@ public class ElsehowView : BackgroundScene
             }
         }
 
-        public DistantElseCloud(ElsehowView vvScene, Vector2 pos, float depth, int index) : base(vvScene, pos, depth, index)
+        public DistantElseCloud(ElsehowView vvScene, Vector2 pos, float depth, int index) : base(vvScene, pos, vvScene.DistantCloudDepth(depth), index)
         {
             distantCloudDepth = depth;
         }
@@ -287,9 +276,10 @@ public class ElsehowView : BackgroundScene
         {
             sLeaser.sprites = new FSprite[2];
             sLeaser.sprites[0] = new FSprite("pixel", true);
-            sLeaser.sprites[0].shader = rCam.game.rainWorld.Shaders["Background"];
+            sLeaser.sprites[0].shader = rCam.game.rainWorld.Shaders["CloudDistant"];
             sLeaser.sprites[0].anchorY = 0f;
-            sLeaser.sprites[0].scaleX = 1400f;
+            // this bastard ruined everything v
+            sLeaser.sprites[0].scaleX = 0f;
             sLeaser.sprites[0].x = 683f;
             sLeaser.sprites[0].y = 0f;
             sLeaser.sprites[1] = new FSprite("elsewhyClouds" + (index % 3 + 1).ToString(), true);
@@ -300,7 +290,7 @@ public class ElsehowView : BackgroundScene
 
         public override void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
         {
-            float yPos = scene.RoomToWorldPos(rCam.room.cameraPositions[rCam.currentCameraPosition]).y + vvScene.yShift;
+            float yPos = scene.RoomToWorldPos(rCam.room.cameraPositions[rCam.currentCameraPosition]).y;
             if (Mathf.InverseLerp(vvScene.startAltitude, vvScene.endAltitude, yPos) < 0.33f)
             {
                 sLeaser.sprites[1].isVisible = false;
@@ -310,7 +300,7 @@ public class ElsehowView : BackgroundScene
             sLeaser.sprites[1].isVisible = true;
             sLeaser.sprites[0].isVisible = true;
             float num = 2f;
-            float y = DrawPos(new Vector2(camPos.x, camPos.y + vvScene.yShift), rCam.hDisplace).y;
+            float y = DrawPos(new Vector2(camPos.x, camPos.y), rCam.hDisplace).y;
             float num2 = Mathf.Lerp(0.3f, 0.01f, distantCloudDepth);
             if (index == 8)
             {
@@ -400,8 +390,9 @@ public class ElsehowView : BackgroundScene
         {
             if (!room.game.IsArenaSession)
             {
-                float value = scene.RoomToWorldPos(camPos).y + vvScene.yShift;
-                alpha = Mathf.InverseLerp(22000f, 18000f, value) * 0.6f;
+                // We really need this to persist past certain altitudes ngl
+                float value = scene.RoomToWorldPos(camPos).y;
+                alpha = 0.5f; //Mathf.InverseLerp(22000f, 18000f, value) * 0.6f;
             }
             else
             {
@@ -417,12 +408,4 @@ public class ElsehowView : BackgroundScene
         }
     }
     #endregion
-
-    public Simple2DBackgroundIllustration centensSky;
-    public ElseFog generalFog;
-    public float startAltitude = 20000f;
-    public float endAltitude = 31400f;
-    public float cloudsStartDepth = 5f;
-    public float cloudsEndDepth = 40f;
-    public List<ElseCloud> elseClouds;
 }

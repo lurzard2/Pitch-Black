@@ -22,12 +22,12 @@ public static class MiscUtils
     // Regions that make Beacon squint regardless of room darkness
     public static bool MakeBeaconCloseEyesHere(Player self, string region, string room)
     {
-        bool vhosDarkRooms = room == "vv_e01";
+        bool vhosOverride = room == "vv_e01" || room == "vv_b06";
         bool vhosCondition = region == "vv";
         bool placeIsBright = self.room.Darkness(self.mainBodyChunk.pos) < 0.15f;
         bool presentGhostMode = DreamersHooks.lastGhostMode > 0.40f;
 
-        if (vhosDarkRooms)
+        if (vhosOverride)
         {
             return false;
         }
