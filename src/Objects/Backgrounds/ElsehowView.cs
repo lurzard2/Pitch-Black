@@ -19,7 +19,7 @@ public class ElsehowView : PBBackgroundScene
         Random.State state = Random.state;
         Random.InitState(2);
 
-        startAltitude = 1f;
+        startAltitude = -300f;
         endAltitude = 31400f;
         cloudsStartDepth = 5f;
         cloudsEndDepth = 40f;
