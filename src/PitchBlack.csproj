@@ -14,7 +14,6 @@
     </ItemGroup>
     
     <ItemGroup>
-      <Folder Include="Custom\" />
       <Folder Include="Shaders\" />
     </ItemGroup>
     
