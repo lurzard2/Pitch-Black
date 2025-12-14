@@ -1,0 +1,20 @@
+Template: NONE
+DangerType: None
+CeilingDrips: 0.6630435
+RainIntensity: 0
+RumbleIntensity: 0
+WaveSpeed: 0.5
+WaveLength: 1
+WaveAmplitude: 0
+SecondWaveLength: 0
+SecondWaveAmplitude: 0
+Grime: 1
+RandomItemDensity: 0
+RandomItemSpearChance: 0
+WaterReflectionAlpha: 0
+Palette: 1002
+EffectColorA: 17
+Effects: Coldness-0.1086956-20-20, Flies-1-21-71, LightBurn-0.06521739-150-87, 
+AmbientSounds: OMNI><RWTW_RotAmb_Goo.ogg><752.1707><250.1042><0.8152174><0.1, OMNI><RWTW_RotAmb_Swarm.ogg><719.5599><177.8122><0.8152174><0.1586957, OMNI><SO_SFX-DataStream.ogg><746.5563><415.7><0.1956522><1.391304, OMNI><Deep Weird Wind.wav><701.5521><315.7215><0.3043478><0.2173913, 
+FadePalette: 1000, 0.07608695, 0.1086956
+WetTerrain: OFF

@@ -1,4 +1,8 @@
 Template: vv_settingstemplate_maininterior
+RandomItemDensity: 0
+RandomItemSpearChance: 0
 Effects: ElsehowView-1-30-30, 
+PlacedObjects: SlugcatEyeSelector><262.9445><744.3079><-353~129~0~0~10~3~0.9456522~CustomBlink~439^686, SlugcatEyeSelector><261><1429><-353~129~0~0~10~3~0.8478261~ReverseBlink~440^646, 
 AmbientSounds: OMNI><am_win-wndtone.ogg><791.1506><509.9236><0><1, OMNI><am_win-howlingwnd.ogg><435.1968><509.5357><0><1, OMNI><am_win-medwind.ogg><790.679><588.8393><0.04347826><1, 
-FadePalette: 1002, 0.1304348, 0.3152174, 0.4891304
+FadePalette: 1002, 0.173913, 0.3913043, 0.6413044
+WetTerrain: OFF
