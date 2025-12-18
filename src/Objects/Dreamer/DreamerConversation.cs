@@ -10,21 +10,14 @@ namespace PitchBlack;
 
 public class DreamerConversation : Conversation
 {
-    public bool SpeakerSwitched
-    {
-        get
-        {
-            return switchSpeakerEvents > 0;
-        }
-    }
-
-    public string CurrentTextEvent
-    {
-        get
-        {
-            return (events[0] as TextEvent).text;
-        }
-    }
+    private Dreamer dreamer;
+    private Counter timeSinceLastSound = new Counter(120, 0, true);
+    private string s = "";
+    private int switchSpeakerEvents = 0;
+    private bool wasVoiceSwitched;
+    private List<string> switchSpeakerStrings = new List<string>();
+    public bool SpeakerSwitched => switchSpeakerEvents > 0;
+    public string CurrentTextEvent => (events[0] as TextEvent).text;
 
     public DreamerConversation(Dreamer dreamer, ID id, DialogBox dialogBox) : base(dreamer, id, dialogBox)
     {
@@ -138,6 +131,11 @@ public class DreamerConversation : Conversation
 
     public override void AddEvents()
     {
+        if (id == Enums.ConversationID.Dreamer_PH)
+        {
+            s = "...";
+            events.Add(new TextEvent(this, 0, s, 40));
+        }
         if (id == Enums.ConversationID.Dreamer_1)
         {
             s = "...";
@@ -174,16 +172,44 @@ public class DreamerConversation : Conversation
             events.Add(new TextEvent(this, 0, s, 0));
             return;
         }
-
-        //<Dreamer_2>
+        if (id == Enums.ConversationID.Dreamer_2)
+        {
+            s = "The little sleeper follows the tide once more";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "Drifting smoothly to someplace forever familiar";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "...";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "You, aquainted with this placewhere";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "Eager to squirm your way back in?";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "I suppose...";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "After this where's conception";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "There were holes left, cracks, windows...";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "Assuming you will find more...";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "These won't be the only visits?";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "...";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "Yes, there will be more";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "From the web you'll find more trailing threads";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "You'll certainly find a way...";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "So, I'll be waiting here in my where";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "For another when and another you";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "Another visit.";
+            events.Add(new TextEvent(this, 0, s, 0));
+        }
 
         //<Dreamer_3>
     }
-
-    private Dreamer dreamer;
-    private Counter timeSinceLastSound = new Counter(120, 0, true);
-    private string s = "";
-    private int switchSpeakerEvents = 0;
-    private bool wasVoiceSwitched;
-    private List<string> switchSpeakerStrings = new List<string>();
 }

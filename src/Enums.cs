@@ -254,7 +254,9 @@ public static class Enums
 
     public class ConversationID
     {
+        public static Conversation.ID Dreamer_PH = new(nameof(Dreamer_PH), true);
         public static Conversation.ID Dreamer_1 = new(nameof(Dreamer_1), true);
+        public static Conversation.ID Dreamer_2 = new(nameof(Dreamer_2), true);
 
         public static void UnregisterValues()
         {
@@ -262,6 +264,11 @@ public static class Enums
             {
                 Dreamer_1.Unregister();
                 Dreamer_1 = null;
+            }
+            if (Dreamer_2 != null)
+            {
+                Dreamer_2.Unregister();
+                Dreamer_2 = null;
             }
         }
     }

@@ -745,10 +745,13 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         switch ((session != null) ? BeaconSaveData.GetDreamerEncountersNumber(session.saveState) : 0)
         {
             case 0:
-                result = Enums.ConversationID.Dreamer_1;
+                result = Enums.ConversationID.Dreamer_PH;
+                break;
+            case 1:
+                result = Enums.ConversationID.Dreamer_2;
                 break;
             default:
-                result = Enums.ConversationID.Dreamer_1;
+                result = Enums.ConversationID.Dreamer_PH;
                 break;
         }
         return result;
