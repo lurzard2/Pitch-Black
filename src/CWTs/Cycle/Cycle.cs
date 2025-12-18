@@ -34,7 +34,7 @@ public class Cycle
     // Time per state
     public Counter cycleStateTime = new(Int32.MaxValue, 0, true);
     public bool active => cycleTime > 0;
-    public int idleRipples;
+    public int idleRipplesToSpawn;
     private bool spawnRipples;
 
     public Cycle(AbstractCreature abstractOwner)
@@ -56,14 +56,28 @@ public class Cycle
             CycleTick();
         }
 
-        if (abstractOwner.state.dead)
+        // Mark for cache without ovewriting, on death
+        if (abstractOwner.state.dead
+            && state != State.MarkedForCache
+            && state != State.Cached)
         {
             ChangeState(State.MarkedForCache);
+            // Skip to end of process if abstract
+            if (RealizedOwner == null)
+            {
+                ChangeState(State.Cached);
+            }
+        }
+        
+        // Dying anim done
+        if (state == State.MarkedForCache && cycleStateTime == 80)
+        {
+            ChangeState(State.Cached);
         }
 
-        if (Random.value < 0.5f)
+        if (Random.value < 0.5f && idleRipplesToSpawn <= 15)
         {
-            idleRipples++;
+            idleRipplesToSpawn++;
         }
     }
 
@@ -73,7 +87,6 @@ public class Cycle
         if (state == State.MarkedForCache)
         {
             AddRipple(CycleRippleSource.Cache);
-            ChangeState(State.Cached);
         }
 
         if (Random.value < 0.0003f && !spawnRipples)
@@ -82,9 +95,9 @@ public class Cycle
             spawnRipples = true;
         }
 
-        if (idleRipples > 0 && spawnRipples)
+        if (idleRipplesToSpawn > 0 && spawnRipples)
         {
-            for (int i = 0; i < idleRipples; i++)
+            for (int i = 0; i < idleRipplesToSpawn; i++)
             {
                 if (state == State.Cached)
                 {
@@ -94,10 +107,10 @@ public class Cycle
                 {
                     AddRipple(CycleRippleSource.Idle);
                 }
-                idleRipples--;
+                idleRipplesToSpawn--;
             }
         }
-        if (idleRipples == 0)
+        if (idleRipplesToSpawn == 0)
         {
             spawnRipples = false;
         }
@@ -116,13 +129,21 @@ public class Cycle
         }
         else if (source == CycleRippleSource.Thanatosis)
         {
-            intensity = 0.9f;
             life = 80;
+            intensity = Random.Range(0.6f, Random.Range(0.6f, 1f));
         }
         else if (source == CycleRippleSource.Cache)
         {
-            life = Random.Range(-40, Random.Range(-40, -80));
-            intensity = -0.9f;
+            if (state == State.MarkedForCache)
+            {
+                life = 60;
+                life -= cycleStateTime;
+                intensity = Random.Range(0.4f, Random.Range(0.4f, 1f));
+            }
+            else
+            {
+                intensity = Random.Range(0.2f, Random.Range(0.2f, 1f));
+            }
         }
         float speed = intensity * (life / 20);
 
@@ -137,6 +158,7 @@ public class Cycle
         //{
         //    logger.LogDebug($"Spawned Idle ripple for {abstractOwner.creatureTemplate.type.value} - {life}, {intensity}, {speed}");
         //}
+        return;
     }
 
     #region Internal
@@ -172,11 +194,9 @@ public class Cycle
 
         public static readonly State Init = new(nameof(Init), true);
         public static readonly State Alive = new(nameof(Alive), true);
-
         public static readonly State Thanatosis = new(nameof(Thanatosis), true);
         public static readonly State ExitThanatosis = new(nameof(ExitThanatosis), true);
         public static readonly State PersistThroughCache = new(nameof(PersistThroughCache), true);
-
         public static readonly State MarkedForCache = new(nameof(MarkedForCache), true);
         public static readonly State Cached = new(nameof(Cached), true);
     }
