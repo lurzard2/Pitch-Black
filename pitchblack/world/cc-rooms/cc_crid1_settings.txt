@@ -1,5 +1,2 @@
-Effects: Fog-0-22-87, Ripple Settings-0-318-37-White-CC-cc_crid1-1-1.2-6-1, 
-PlacedObjects: FloatingDebris><811.449><235.4764><100~175~1057317328~4~8~0.217392~1.532609~31~-325|-105~-28|357~2.17|1.19~0|0.04999999~0.24|-0.3000006~Ripple~0.7391304~0v0v0v0|0v0v0v0~0, 
+Effects: Fog-0.8260869-30-30, 
 FadePalette: 15, 0.3826087, 0.3884058
-WetTerrain: OFF
-MorePalette0: 379, 1, 1
