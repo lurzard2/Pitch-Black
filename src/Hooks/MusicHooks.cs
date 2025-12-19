@@ -16,7 +16,9 @@ public class BeaconThreatTracker
     public static void UpdateThreatProcess(PlayerThreatTracker self, RainWorldGame game, Player player)
     {
         Room room = player.room;
-        float conditionalGhostMode = ModManager.MMF ? 0.1f : 0f;
+        float conditionalGhostMode = 0f;
+        string songName = null;
+        float associatedGhostMode;
 
         self.recommendedDroneVolume = room.roomSettings.BkgDroneVolume;
         if (!room.world.rainCycle.MusicAllowed && room.roomSettings.DangerType != RoomRain.DangerType.None)
@@ -24,8 +26,6 @@ public class BeaconThreatTracker
             self.recommendedDroneVolume = 0f;
         }
 
-        string songName = null;
-        float associatedGhostMode;
         if (game.cameras[0].ghostMode > conditionalGhostMode)
         {
             //  Dreamer presences song
@@ -37,7 +37,11 @@ public class BeaconThreatTracker
                     {
                         songName = presences[i].songName;
                         associatedGhostMode = game.cameras[0].ghostMode;
-                        self.ghostMode = associatedGhostMode - 0.15f;
+                        self.ghostMode = associatedGhostMode;
+                    }
+                    else
+                    {
+                        self.ghostMode = 0f;
                     }
                 }
             }
