@@ -77,6 +77,11 @@ public class BeaconCycle
                 ToggleThanatosis();
             }
             specInputCounter.Tick();
+            if (cycle.idleRipplesToSpawn == 0)
+            {
+                cycle.idleRipplesToSpawn++;
+            }
+            cycle.spawnRipples = true;
         }
         else
         {

@@ -31,6 +31,12 @@ public static class CreatureCycleHooks
         {
             if (cycle != null)
             {
+                if (MiscUtils.RegionOutSideCycle(self.world))
+                {
+                    Cycle cycle2 = cycle;
+                    cycle2 = null;
+                    return;
+                }
                 cycle.AbstractUpdate();
             }
         }

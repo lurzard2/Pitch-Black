@@ -35,7 +35,7 @@ public class Cycle
     public Counter cycleStateTime = new(Int32.MaxValue, 0, true);
     public bool active => cycleTime > 0;
     public int idleRipplesToSpawn;
-    private bool spawnRipples;
+    public bool spawnRipples;
 
     public Cycle(AbstractCreature abstractOwner)
     {
