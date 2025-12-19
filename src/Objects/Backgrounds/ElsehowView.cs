@@ -14,7 +14,7 @@ public class ElsehowView : PBBackgroundScene
 
     public ElsehowView(Room room, RoomSettings.RoomEffect effect) : base(room)
     {
-        string s = "ElsehowView:";
+        //string s = "ElsehowView:";
 
         Random.State state = Random.state;
         Random.InitState(2);
@@ -48,7 +48,7 @@ public class ElsehowView : PBBackgroundScene
             float rotation = Random.Range(-0.1f, 0.1f);
             Vector2 pos = PosFromDrawPosAtNeutralCamPos(new Vector2(xPlacement, yPlacement), depth);
             AddElement(new Tower(this, "Centens_Tower_" + towerVariant.ToString(), pos, depth, scale, rotation, 0.1f));
-            logger.LogDebug($"{s} Tower - pos={pos}(x{xPlacement}, y{yPlacement}) - depth={depth}");
+            //logger.LogDebug($"{s} Tower - pos={pos}(x{xPlacement}, y{yPlacement}) - depth={depth}");
         }
         if (room.world.region != null)
         {
@@ -76,7 +76,7 @@ public class ElsehowView : PBBackgroundScene
         {
             float cloudDepth = (float)i / (float)(cloudCount - 1);
             AddElement(new CloseElseCloud(this, new Vector2(0f, 0f), cloudDepth, i));
-            logger.LogDebug($"{s} CloseElseCloud - depth={cloudDepth} index={i}");
+            //logger.LogDebug($"{s} CloseElseCloud - depth={cloudDepth} index={i}");
         }
 
         int distantCloudCount = 140;
@@ -84,7 +84,7 @@ public class ElsehowView : PBBackgroundScene
         {
             float distantCloudDepth = (float)j / (float)(distantCloudCount - 1);
             AddElement(new DistantElseCloud(this, new Vector2(0f, -40f * cloudsEndDepth * (1f - distantCloudDepth)), distantCloudsEndDepth, j));
-            logger.LogDebug($"{s} DistantElseCloud - depth={distantCloudDepth}, index={j}");
+            //logger.LogDebug($"{s} DistantElseCloud - depth={distantCloudDepth}, index={j}");
         }
 
         // Flying clouds
