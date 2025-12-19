@@ -161,7 +161,7 @@ public class DevToolsHooks
             return false;
         }
 
-        logger.LogDebug($"DreamerSpot: Found PlacedObject in room");
+        logger.LogDebug($"DreamerSpot: Found PlacedObject in room - Encounter #{BeaconSaveData.GetDreamerEncountersNumber(self.abstractRoom.world.game.GetStorySession.saveState)}");
         var dreamerData = self.roomSettings.placedObjects[objects].data as DreamerData;
 
         foreach (var presence in dreamerPresences)

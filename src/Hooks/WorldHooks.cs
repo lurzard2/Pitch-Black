@@ -65,13 +65,16 @@ public static class DreamersHooks
                 if (roomMarkedEncountered)
                 {
                     logger.LogDebug("DreamerPresence: Dreamer was marked encountered in this room, aborting process!");
-                    return;
+                    continue;
                 }
-                logger.LogDebug("DreamerRooms: Assigned dummy presence");
-                logger.LogDebug("DreamerRooms: Not an encounter room, moving forward with presence");
-                dummyPresence = new DreamerPresence(self.world, abstractRoom);
-                presencesToAdd.Add(dummyPresence);
-                logger.LogDebug($"DreamerRooms: Added dummy presence to the presence list queue");
+                else
+                {
+                    logger.LogDebug("DreamerRooms: Assigned dummy presence");
+                    logger.LogDebug("DreamerRooms: Not an encounter room, moving forward with presence");
+                    dummyPresence = new DreamerPresence(self.world, abstractRoom);
+                    presencesToAdd.Add(dummyPresence);
+                    logger.LogDebug($"DreamerRooms: Added dummy presence to the presence list queue");
+                }
             }
         }
 
@@ -98,8 +101,6 @@ public static class DreamersHooks
         {
             dreamerPresence.Add(self.world, new List<DreamerPresence>());
         }
-
-        return;
     }
 
     public static void DeactivateDreamerPresence(Room self)
@@ -108,8 +109,12 @@ public static class DreamersHooks
         {
             for (int i = 0; i < presence.Count; i++)
             {
-                if (presence[i].presenceSpawned && presence[i].dreamerRoom == self.abstractRoom)
+                var players = self.abstractRoom.world.game.Players;
+                string roomNameOfPlayer = players[0].realizedCreature.room.abstractRoom.name;
+                logger.LogDebug($"DreamerPresence: THIS ROOM:{self.abstractRoom.name}");
+                if (presence[i].presenceSpawned && presence[i].dreamerRoom.name == roomNameOfPlayer && presence[i].dreamerSpawned)
                 {
+                    logger.LogDebug($"DreamerPresence: PRESENCE ROOM:{presence[i].dreamerRoom.name} - PLAYER ROOM:{roomNameOfPlayer}");
                     self.world.migrationInfluences.Remove(presence[i]);
                     presence[i].dreamerRoom = null;
                     presence[i].presenceSpawned = false;
@@ -117,7 +122,15 @@ public static class DreamersHooks
                     presence.Remove(presence[i]);
                     logger.LogDebug($"DreamerPresence: Removed DreamerPresence from CWT");
                 }
-            } 
+                else
+                {
+                    logger.LogDebug("DreamerPresence: Couldn't remove presence");
+                    logger.LogDebug($"DreamerPresence Contains:");
+                    logger.LogDebug($"> Dreamer's room - {presence[i].dreamerRoom.name}");
+                    logger.LogDebug($"> Presence active - {presence[i].presenceSpawned}");
+                    logger.LogDebug($"> Dreamer active - {presence[i].dreamerSpawned}");
+                }
+            }
         }
     }
 

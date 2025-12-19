@@ -103,6 +103,10 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         this.placedObject = placedObject;
         pos = placedObject.pos;
         dreamSpawnCaught = BeaconSaveData.GetDreamerEncountersNumber(room.world.game.GetStorySession.saveState);
+        for (int i = 0; i < dreamSpawnCaught; i++)
+        {
+            MiscUtils.MaterializeDreamSpawn(room, headPos, Enums.DreamSpawnSource.Dreamcatcher, default, true);
+        }
         headPos = pos;
 
         scale = 0.5f;
@@ -573,11 +577,6 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
             }
         }
 
-        for (int i = 0; i < dreamSpawnCaught; i++)
-        {
-            MiscUtils.MaterializeDreamSpawn(room, headPos, Enums.DreamSpawnSource.Dreamcatcher, default, true);
-        }
-
         // Todo: Move all this to a Behavior object like VW, then let that handle different encounter types :)
         if (OnScreen())
         {
@@ -745,7 +744,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         switch ((session != null) ? BeaconSaveData.GetDreamerEncountersNumber(session.saveState) : 0)
         {
             case 0:
-                result = Enums.ConversationID.Dreamer_PH;
+                result = Enums.ConversationID.Dreamer_1;
                 break;
             case 1:
                 result = Enums.ConversationID.Dreamer_2;
@@ -1254,10 +1253,10 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         var state = game.GetStorySession.saveState;
         string currentRoomName = room.abstractRoom.name;
 
-        DreamersHooks.DeactivateDreamerPresence(room);
         SaveEncounter(state, currentRoomName);
         IncreaseSpiralLevel(state);
         OverwriteSaveDen(game, currentRoomName);
+        DreamersHooks.DeactivateDreamerPresence(room);
 
         encounterFinished = true;
     }
@@ -1271,6 +1270,9 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     private void SaveEncounter(SaveState state, string currentRoomName)
     {
         BeaconSaveData.SetDreamerEncounteredRooms(state, currentRoomName);
+        var encounterNumber = BeaconSaveData.GetDreamerEncountersNumber(state);
+        encounterNumber++;
+        BeaconSaveData.SetDreamerEncountersNumber(state, encounterNumber);
         string joinedString = String.Join(",", BeaconSaveData.GetDreamerEncounteredRooms(state));
         Plugin.logger.LogDebug($"Dreamer: Set encountered rooms - {joinedString}");
     }
