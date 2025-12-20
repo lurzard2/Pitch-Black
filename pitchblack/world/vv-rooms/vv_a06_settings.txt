@@ -1,0 +1,5 @@
+Template: vv_settingstemplate_maininterior
+Effects: ElsehowView-1-23-80, 
+PlacedObjects: CustomDecal><-4.051361><-12.22675><-50~674~952~649~931~-5~0~0~0~1~0~runningwhite~0.1413043~1~0.1413043~1~0.1413043~1~0.1413043~1, 
+AmbientSounds: SPOT><am_win-howlingwnd.ogg><545.3137><353.1896><0.3043478><1><364.3137><428.1896><-100.3553><-88.35535><0><0.1, SPOT><so_sfx-celia.ogg><776.5754><343.4024><0.75><0.1><358.5754><422.4024><-85.35535><-71.35535><0><0.1, 
+BackgroundOffset: 0,326.0869
