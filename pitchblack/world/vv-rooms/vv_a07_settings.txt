@@ -1,0 +1,5 @@
+Template: vv_settingstemplate_maininterior
+PlacedObjects: LightSource><460.3643><349.103><0.07608695~Environment~468~114~50~86.60254~1~1~None~0~0, CustomDecal><70.10519><-48.67003><-12~695~844~689~824~-10~0~0~0~1~0~runningwhite~0.2065217~1~0.2065217~1~0.1086956~1~0.1086956~1, 
+AmbientSounds: SPOT><am_env-lightwind.ogg><599.6725><334.3988><0.5><1><482.6725><371.3989><-46.35535><-85.35535><0><0.2086958, 
+WetTerrain: OFF
+BackgroundOffset: 0,326.0869
