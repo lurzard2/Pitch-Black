@@ -1,5 +1,6 @@
 ﻿using RWCustom;
 using System;
+using System.Security.Policy;
 using UnityEngine;
 using static PitchBlack.Plugin;
 
@@ -10,7 +11,7 @@ public class BeaconCycle
     public Cycle cycle;
     public Player owner;
     public SaveState saveState;
-    public bool savedCycle;
+    public ThanatosisTutorialSequence thanatosisTutorialSequence;
 
     // Thanatosis
     public bool deathToggle;
@@ -69,23 +70,53 @@ public class BeaconCycle
         //    BeaconSaveData.SetSavedCycle(saveState, new SavedPlayerCycle(this, saveState.cycleNumber));
         //}
 
-        if (BeaconSaveData.GetCanUseThanatosis(saveState) && owner.input[0].spec)
+        // Not VV, hasnt used thanatosis. specifically encounter 3
+        if (!MiscUtils.IsVhosRegion(owner.room.world.name)
+            && !BeaconSaveData.GetHasUsedThanatosis(saveState)
+            && BeaconSaveData.GetDreamerEncountersNumber(saveState) == 3)
+        {
+            if (thanatosisTutorialSequence != null)
+            {
+                thanatosisTutorialSequence.Update();
+
+                if (thanatosisTutorialSequence.phase == ThanatosisTutorialSequence.Phase.UsedThanatosis)
+                {
+                    thanatosisTutorialSequence = null;
+                    return;
+                }
+            }
+            else
+            {
+                thanatosisTutorialSequence = new(this, owner.room);
+                return;
+            }
+        }
+
+        if (owner.input[0].spec)
+        {
+            specInputCounter.Tick();
+            if (UnityEngine.Random.value < 0.005f && cycle.idleRipplesToSpawn < 10)
+            {
+                cycle.idleRipplesToSpawn++;
+            }
+        }
+        else
+        {
+            specInputCounter.Reset();
+        }
+
+        if (BeaconSaveData.GetCanUseThanatosis(saveState))
         {
             //logger.LogDebug($"Thanatosis: Doing input - {specInputCounter}");
             if (specInputCounter == 24)
             {
                 ToggleThanatosis();
             }
-            specInputCounter.Tick();
             if (cycle.idleRipplesToSpawn == 0)
             {
                 cycle.idleRipplesToSpawn++;
             }
             cycle.spawnRipples = true;
-        }
-        else
-        {
-            specInputCounter.Reset();
         }
 
         if (ReachedThanatosisLimit && owner.rippleDeathTime == 80)
@@ -120,6 +151,9 @@ public class BeaconCycle
         {
             thanatosisLerp += 0.01f;
         }
+
+        // Let's just not use this for now, its a bit buggy and might reveal too much for early progression
+        return;
 
         float thanatosisTime = cycle.cycleStateTime; //x
         float minSafeTime = 12 * 40f; //tc
@@ -189,12 +223,13 @@ public class BeaconCycle
 
     #endregion
 
-    private void ToggleThanatosis()
+    public void ToggleThanatosis()
     {
         deathToggle = isDead;
         isDead = !isDead;
         if (deathToggle != isDead)
         {
+
             logger.LogDebug($"Thanatosis: Reached toggle for Thanatosis - {isDead} - {cycle.state.value}");
 
             // Enum determining
@@ -208,6 +243,7 @@ public class BeaconCycle
                 ? Enums.SoundID.Player_Activated_Thanatosis
                 : Enums.SoundID.Player_Deactivated_Thanatosis;
 
+            MiscUtils.MaterializeDreamSpawn(owner.room, owner.mainBodyChunk.pos, Enums.DreamSpawnSource.Jetsam, 0, true);
             cycle.AddRipple(rippleSource);
             cycle.ChangeState(cycleState);
             owner.room.PlaySound(soundEffect, owner.mainBodyChunk);

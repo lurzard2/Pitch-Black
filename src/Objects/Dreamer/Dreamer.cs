@@ -749,6 +749,9 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
             case 1:
                 result = Enums.ConversationID.Dreamer_2;
                 break;
+            case 2:
+                result = Enums.ConversationID.Dreamer_3;
+                break;
             default:
                 result = Enums.ConversationID.Dreamer_PH;
                 break;
@@ -1202,15 +1205,20 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         {
             return;
         }
+
         PlacedObject placedObject = new PlacedObject(PlacedObject.Type.WarpPoint, data.CreateWarpPointData(room));
         placedObject.pos = pos;
-        WarpPoint warpPoint = room.TrySpawnWarpPoint(placedObject, true);
 
-        if (warpPoint != null)
+        // Reset warp counter so it may open
+        room.world.game.Players[0].world.game.GetStorySession.warpsTraversedThisCycle = 0;
+
+        // Spawn object
+        WarpPoint warp = room.TrySpawnWarpPoint(placedObject, true);
+        if (warp != null)
         {
-            warpPoint.triggerTime = (float)((int)(warpPoint.triggerActivationTime - 1f));
-            warpPoint.strongPull = true;
-            warpPoint.guaranteeTrigger = true;
+            warp.triggerTime = (float)((int)(warp.triggerActivationTime - 1f));
+            warp.strongPull = true;
+            warp.guaranteeTrigger = true;
         }
     }
 
@@ -1284,10 +1292,11 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         if (maxLevel >= 0.5f)
         {
             increment = 0.5f;
-            if (!BeaconSaveData.GetCanUseThanatosis(state))
-            {
-                BeaconSaveData.SetCanUseThanatosis(state, true);
-            }
+            // We'll set this inside Sequence_OutsideDreamSuffocation()
+            //if (!BeaconSaveData.GetCanUseThanatosis(state))
+            //{
+            //    BeaconSaveData.SetCanUseThanatosis(state, true);
+            //}
         }
         else
         {

@@ -234,7 +234,7 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
             sLeaser.sprites[GlowSprite].color = Colors.SaturatedRose;
             return;
         }
-        sLeaser.sprites[GlowSprite].color = Color.Lerp(Colors.SaturatedRose, Colors.Rose, Mathf.InverseLerp(0.3f, 0.9f, owner.room.Darkness(glowPos)));
+        //sLeaser.sprites[GlowSprite].color = Color.Lerp(Colors.SaturatedRose, Colors.Rose, Mathf.InverseLerp(0.3f, 0.9f, owner.room.Darkness(glowPos)));
     }
 
     public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)

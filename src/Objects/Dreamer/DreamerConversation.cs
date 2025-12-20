@@ -179,11 +179,11 @@ public class DreamerConversation : Conversation
             s = "Drifting smoothly to someplace forever familiar";
             events.Add(new TextEvent(this, 0, s, 0));
             s = "...";
-            events.Add(new TextEvent(this, 0, s, 0));
+            events.Add(new TextEvent(this, 0, s, 40));
             s = "You, aquainted with this placewhere";
             events.Add(new TextEvent(this, 0, s, 0));
             s = "Eager to squirm your way back in?";
-            events.Add(new TextEvent(this, 0, s, 0));
+            events.Add(new TextEvent(this, 0, s, 10));
             s = "I suppose...";
             events.Add(new TextEvent(this, 0, s, 0));
             s = "After this where's conception";
@@ -193,9 +193,9 @@ public class DreamerConversation : Conversation
             s = "Assuming you will find more...";
             events.Add(new TextEvent(this, 0, s, 0));
             s = "These won't be the only visits?";
-            events.Add(new TextEvent(this, 0, s, 0));
+            events.Add(new TextEvent(this, 0, s, 20));
             s = "...";
-            events.Add(new TextEvent(this, 0, s, 0));
+            events.Add(new TextEvent(this, 0, s, 40));
             s = "Yes, there will be more";
             events.Add(new TextEvent(this, 0, s, 0));
             s = "From the web you'll find more trailing threads";
@@ -203,13 +203,62 @@ public class DreamerConversation : Conversation
             s = "You'll certainly find a way...";
             events.Add(new TextEvent(this, 0, s, 0));
             s = "So, I'll be waiting here in my where";
-            events.Add(new TextEvent(this, 0, s, 0));
+            events.Add(new TextEvent(this, 0, s, 10));
             s = "For another when and another you";
-            events.Add(new TextEvent(this, 0, s, 0));
+            events.Add(new TextEvent(this, 0, s, 10));
             s = "Another visit.";
-            events.Add(new TextEvent(this, 0, s, 0));
+            events.Add(new TextEvent(this, 0, s, 10));
+            return;
         }
 
-        //<Dreamer_3>
+        if (id == Enums.ConversationID.Dreamer_3)
+        {
+            s = "...";
+            events.Add(new TextEvent(this, 0, s, 40));
+            s = "Ah... You see Another?";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "You and these...";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "Now that you're here, is that what its like to be spun like a thread?";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "Spun and caught in twine, in a web?...";
+            events.Add(new TextEvent(this, 0, s, 10));
+            s = "...Do you hear me?";
+            events.Add(new TextEvent(this, 0, s, 10));
+            s = "Do you understand that?";
+            events.Add(new TextEvent(this, 0, s, 20));
+            s = "Can you answer me?";
+            events.Add(new TextEvent(this, 0, s, 30));
+            s = "...";
+            events.Add(new TextEvent(this, 0, s, 50));
+            s = "Hmm...";
+            events.Add(new TextEvent(this, 0, s, 20));
+            s = "Still tied down to the scope of the body, I see...";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "I am too";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "...";
+            events.Add(new TextEvent(this, 0, s, 10));
+            s = "But I can see your reflections, writhing";
+            events.Add(new TextEvent(this, 0, s, 10));
+            s = "I can see where the window is";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "And I can feel the twine tightening...";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "You're dying";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "And the suffocation is getting worse";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "I'm afraid there's not much time left for you there, friend";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "If you can bear a responsibility for me";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "When I let you back out of this limbo state";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "Find shelter and die peacefully";
+            events.Add(new TextEvent(this, 0, s, 0));
+            s = "Then come and find me";
+            events.Add(new TextEvent(this, 0, s, 0));
+        }
     }
 }

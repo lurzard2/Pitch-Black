@@ -36,8 +36,15 @@ public static class ScugGraphics
         bool rotMode = BeaconSaveData.GetMaxSpiralLevel(session.saveState) > 1.5f;
         // Target 4f
         bool hybridMode = BeaconSaveData.GetMaxSpiralLevel(session.saveState) > 3.5f;
+        bool tooWeakToMaintainNourishment = BeaconSaveData.GetDreamerEncountersNumber(session.saveState) < 4;
         // If either modes are true use black, else use the starve color
         DecidedSkinColor = rotMode || hybridMode ? Colors.PlayerPaletteBlack : Colors.BeaconStarveColor;
+        if (tooWeakToMaintainNourishment)
+        {
+            DecidedSkinColor = Colors.BeaconStarveColor;
+            return;
+        }
+
         if (hybridMode)
         {
             DecidedEyeColor = Colors.NightmareColor;
@@ -174,7 +181,10 @@ public static class ScugGraphics
             skinColor = Color.Lerp(Colors.BeaconDefaultColor, Colors.BeaconFullColor, flares / (float)4);
             eyeColor = Colors.BeaconEyeColor;
             
-            if (bCWT.playerCycle != null && (bCWT.playerCycle.cycle.state == Cycle.State.Thanatosis || bCWT.playerCycle.cycle.state == Cycle.State.ExitThanatosis))
+            if (bCWT.playerCycle != null
+                && (bCWT.playerCycle.cycle.state == Cycle.State.Thanatosis
+                    || bCWT.playerCycle.cycle.state == Cycle.State.ExitThanatosis
+                    || bCWT.playerCycle.thanatosisLerp > 0f))
             {
                 bCWT.currentSkinColor = Color.Lerp(skinColor, DecidedSkinColor, bCWT.playerCycle.thanatosisLerp);
                 bCWT.currentEyeColor = Color.Lerp(eyeColor, DecidedEyeColor, bCWT.playerCycle.thanatosisLerp);
@@ -193,7 +203,7 @@ public static class ScugGraphics
                 }
                 else
                 {
-                    if (bCWT.playerCycle.isDead)
+                    if (bCWT.playerCycle.isDead || (bCWT.playerCycle.thanatosisTutorialSequence != null && bCWT.playerCycle.thanatosisTutorialSequence.markedAsDead))
                     {
                         sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName("FaceDead");
                     }

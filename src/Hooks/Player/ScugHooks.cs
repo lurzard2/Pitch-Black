@@ -19,9 +19,9 @@ public static class ScugHooks
         if (devMode)
         {
             var state = self.room.world.game.GetStorySession.saveState;
-            BeaconSaveData.SetCanUseThanatosis(state, true);
-            BeaconSaveData.SetMaxSpiralLevel(state, 1f);
-            BeaconSaveData.SetSpiralLevel(state, 1f);
+            //BeaconSaveData.SetCanUseThanatosis(state, true);
+            BeaconSaveData.SetMaxSpiralLevel(state, 0.5f);
+            BeaconSaveData.SetSpiralLevel(state, 0.5f);
         }
 
         // Check here if it's Beacon
@@ -74,7 +74,7 @@ public static class ScugHooks
         On.Player.ctor += Player_ctor;
         On.Player.Update += Player_Update;
         On.SlugcatHand.EngageInMovement += SlugcatHand_EngageInMovement;
-        //IL.Player.checkInput += IL_Player_checkInput;
+        IL.Player.checkInput += IL_Player_checkInput;
     }
 
     private static void IL_Player_checkInput(ILContext il)
@@ -92,25 +92,16 @@ public static class ScugHooks
                 // This needs a proper check for if the player is in thanatosis
                 if (Plugin.scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beaconCWT)
                 {
-                    var state = (self.room.game.session as StoryGameSession).saveState;
-                    if (beaconCWT.playerCycle.isDead && BeaconSaveData.GetMaxSpiralLevel(state) <= 1f)
+                    //var state = (self.room.game.session as StoryGameSession).saveState;
+                    if (beaconCWT.playerCycle.thanatosisTutorialSequence != null && beaconCWT.playerCycle.thanatosisTutorialSequence.markedAsDead)
                     {
                         // Create new inputs
                         Player.InputPackage newInputs = new Player.InputPackage(self.room.game.rainWorld.options.controls[num].gamePad, self.room.game.rainWorld.options.controls[num].GetActivePreset(), 0, 0, false, false, false, false, false, originalInputs.spec);
                         newInputs.downDiagonal = 0;
                         newInputs.analogueDir = Vector2.zero;
 
-                        // Set animation and body mode
-                        self.animation = Player.AnimationIndex.Dead;
-                        self.bodyMode = Player.BodyModeIndex.Dead;
-
                         // Put new values on the stack
                         return newInputs;
-                    }
-                    else if (beaconCWT.playerCycle.thanatosisLerp > 0 && !self.dead && self.bodyMode == Player.BodyModeIndex.Dead)
-                    {
-                        //self.animation = Player.AnimationIndex.DownOnFours;
-                        self.bodyMode = Player.BodyModeIndex.Crawl;
                     }
                 }
                 // If the prior condition is not met, just return the original inputs to the stack.
