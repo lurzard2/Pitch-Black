@@ -35,7 +35,7 @@ public class DreamWarpPoint : WarpPoint
 
     public override void Update(bool eu)
     {
-        if (MiscUtils.IsDreamRegion(room.world.region.name))
+        if (MiscUtils.IsVhosRegion(room.world.region.name))
         {
             Plugin.logger.LogDebug($"DreamWarpPoint Contains:");
             Plugin.logger.LogDebug($"> LOCKED?:{warpLocked}");

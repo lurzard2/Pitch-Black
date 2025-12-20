@@ -1,7 +1,5 @@
-﻿using RWCustom;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Watcher;
 using static PitchBlack.Plugin;
@@ -28,6 +26,8 @@ public static class RoomSpecificScriptHooks
             return;
         }
 
+        var saveState = room.world.game.GetStorySession.saveState;
+
         if (room.abstractRoom.name == "VV_E01" && room.world.game.GetStorySession.saveState.cycleNumber == 0)
         {
             for (int i = 0; i < room.game.Players.Count; i++)
@@ -35,7 +35,6 @@ public static class RoomSpecificScriptHooks
                 NewUAD(room, new VV_E01(room, i));
             }
         }
-
     }
 }
 
@@ -364,6 +363,12 @@ public static class WorldHooks
         RoomSpecificScriptHooks.Inject();
 
         On.Region.ctor_string_int_int_RainWorldGame_Timeline += ModifyRegionProperties;
+        On.Region.HasWarpFatigueResistance += ModifyHasWarpFatigueResistence;
+    }
+
+    private static bool ModifyHasWarpFatigueResistence(On.Region.orig_HasWarpFatigueResistance orig, string name)
+    {
+        return Region.IsAncientUrbanRegion(name) || Region.IsDaemonRegion(name) || MiscUtils.IsVhosRegion(name);
     }
 
     // Replace rot eye+effect color for Beacon

@@ -18,6 +18,7 @@ public static class MiscUtils
     public static bool ValidTrackRoom(this Room room) => room != null && !room.abstractRoom.shelter && !room.abstractRoom.gate;
 
     public static bool RegionOutSideCycle(this World world) => world != null && world.region.name == "VV" || world.region.name == "UD" || world.region.name == "WRSA";
+    public static bool IsVhosRegion(string name) => name.ToLowerInvariant() == "vv";
 
     // Regions that make Beacon squint regardless of room darkness
     public static bool MakeBeaconCloseEyesHere(Player self, string region, string room)
