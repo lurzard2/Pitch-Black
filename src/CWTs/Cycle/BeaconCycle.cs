@@ -188,7 +188,7 @@ public class BeaconCycle
     // Decreasing values that linger from Thanatosis
     private void OutsideThanatosis()
     {
-        if (thanatosisLerp > 0f)
+        if (thanatosisLerp > 0f && thanatosisTutorialSequence == null)
         {
             thanatosisLerp -= 0.01f;
         }

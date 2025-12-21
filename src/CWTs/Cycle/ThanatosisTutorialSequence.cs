@@ -15,7 +15,7 @@ namespace PitchBlack;
 public class ThanatosisTutorialSequence
 {
     public string SequenceText => room.world.game.manager.rainWorld.inGameTranslator.Translate("Hold SPECIAL, and don't stop");
-    public string CycleDisplayText => room.world.game.manager.rainWorld.inGameTranslator.Translate($"Cycle {cycle.saveState.cycleNumber} - {Region.GetRegionFullName(cycle.owner.room.world.region.name, SlugcatStats.Name.White)}");
+    public string CycleDisplayText => room.world.game.manager.rainWorld.inGameTranslator.Translate($"Cycle {cycle.saveState.cycleNumber} ~ {Region.GetRegionFullName(cycle.owner.room.world.region.name, SlugcatStats.Name.White)}");
     public string SequenceCompleteText => room.world.game.manager.rainWorld.inGameTranslator.Translate("Hold SPECIAL to play possum");
 
     public BeaconCycle cycle;
@@ -119,6 +119,10 @@ public class ThanatosisTutorialSequence
                             if (dummyTarget != null && dummyTarget.intensity > 0.6f)
                             {
                                 cycle.saveState.cycleNumber--;
+                                if (dummyTarget.intensity >= 0.8f)
+                                {
+                                    cycle.saveState.cycleNumber -= 5;
+                                }
                             }
                         }
                     }
@@ -259,7 +263,6 @@ public class ThanatosisTutorialSequence
                         prompt.messages[0].time = 180;
                     }
                     seenSpecialPromptThisCycle = true;
-                    STOPSHOWINGCONSISTENTCYCLES = false;
                 }
             }
             else
@@ -271,6 +274,7 @@ public class ThanatosisTutorialSequence
 
         if (phase == Phase.PassPersistEventHorizon_NoLongerNeedsInput)
         {
+            STOPSHOWINGCONSISTENTCYCLES = false;
             if (cycle.thanatosisLerp < 0.5f)
             {
                 cycle.thanatosisLerp += 0.004f;
@@ -302,7 +306,6 @@ public class ThanatosisTutorialSequence
                 STOPSHOWINGCONSISTENTCYCLES = true;
                 prompt.messages.Clear();
                 cycle.owner.room.game.cameras[0].hud.textPrompt.AddMessage(SequenceCompleteText, 40, 200, true, true);
-                cycle.owner.room.game.cameras[0].hud.textPrompt.AddMessage(CycleDisplayText, 220, 120, true, true);
                 if (prompt.messages.Count > 0)
                 {
                     // Tutorial text
@@ -313,10 +316,14 @@ public class ThanatosisTutorialSequence
                     // Final cycle number after sequence
                     if (prompt.messages[0].text == CycleDisplayText)
                     {
-                        prompt.messages[0].time = 80;
+                        prompt.messages[0].time = 100;
                     }
                 }
                 seenTrueTutorialPromptThisCycle = true;
+            }
+            else
+            {
+                cycle.owner.room.game.cameras[0].hud.textPrompt.AddMessage(CycleDisplayText, 120, 120, true, true);
             }
 
             BeaconSaveData.SetHasUsedThanatosis(cycle.saveState, true);
