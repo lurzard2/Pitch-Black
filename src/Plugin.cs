@@ -32,7 +32,7 @@ class  Plugin : BaseUnityPlugin
     public static ManualLogSource logger;
 
     // Dev bool for testing and/or hardcoding values
-    public static bool devMode = true;
+    public static bool devMode = false;
     
     // CWTs
     public static readonly ConditionalWeakTable<Player, ScugCWT> scugCWT = new();
@@ -78,11 +78,14 @@ class  Plugin : BaseUnityPlugin
 
         On.Room.ctor += Room_ctor;
 
-        MenuSceneHooks.Apply();
         CreatureCycleHooks.Apply();
+        DreamerHooks.Apply();
+
+        MenuSceneHooks.Apply();
         PhysicalObjectHooks.Apply();
         DevToolsHooks.Apply();
         WorldHooks.Apply();
+        RoomHooks.Apply();
         MusicHooks.Apply();
 
         PBSlugBaseFeatures.Apply();
