@@ -1,6 +1,6 @@
 ROOMS
 //a place beyond the confines of reality, nothing is what it seems
-VV_A01 : DISCONNECTED
+
 VV_A02 : DISCONNECTED
 VV_B07 : DISCONNECTED
 
@@ -27,6 +27,7 @@ VV_C04 : VV_A08, VV_A06
 VV_D01 : VV_A06
 
 //Tower CC
+VV_A01 : DISCONNECTED
 VV_A07 : DISCONNECTED, DISCONNECTED
 
 END ROOMS
