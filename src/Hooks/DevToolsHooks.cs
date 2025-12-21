@@ -116,9 +116,9 @@ public class DevToolsHooks
     private static void Room_Loaded(On.Room.orig_Loaded orig, Room self)
     {
         orig(self);
-        if (DreamersHooks.timesToAssignDreamerPresence > 0)
+        if (DreamerPresence_Functions.timesToAssignDreamerPresence > 0)
         {
-            DreamersHooks.InitDreamerRoomsToPresences(self);
+            DreamerPresence_Functions.InitDreamerRoomsToPresences(self);
         }
         LoadEffects(self);
         LoadObjects(self);
@@ -140,49 +140,39 @@ public class DevToolsHooks
     {
         for (int objects = 0; objects < self.roomSettings.placedObjects.Count; objects++)
         {
-            if (self.roomSettings.placedObjects[objects].type == Enums.PlacedObjectType.DreamerSpot && self.game.IsStorySession)
+            if (self.roomSettings.placedObjects[objects].type == Enums.PlacedObjectType.DreamerSpot
+                && self.game.IsStorySession
+                && dreamerPresence.TryGetValue(self.world, out var dreamerPresences))
             {
-                // I didn't know bool methods could do that??? peak???
-                bool flowControl = InitDreamerSpot(self, objects);
-                if (!flowControl)
+                for (int i = 0; i < dreamerPresences.Count; i++)
                 {
-                    // Go to the next object
-                    continue;
+                    if (BeaconSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState).Contains(self.abstractRoom.name))
+                    {
+                        PlaceWarp(self, objects);
+                        break;
+                    }
+                    if (dreamerPresences[i].presenceSpawned && dreamerPresences[i].dreamerRoom == self.abstractRoom)
+                    {
+                        PlaceDreamer(self, objects, dreamerPresences[i]);
+                    }
                 }
             }
         }
     }
 
-    private static bool InitDreamerSpot(Room self, int objects)
+    #region Dreamer
+    private static void PlaceDreamer(Room self, int objects, DreamerPresence presence)
     {
-        if (!dreamerPresence.TryGetValue(self.world, out var dreamerPresences))
-        {
-            // Go back to LoadObjects() when we return false
-            return false;
-        }
-
-        logger.LogDebug($"DreamerSpot: Found PlacedObject in room - Encounter #{BeaconSaveData.GetDreamerEncountersNumber(self.abstractRoom.world.game.GetStorySession.saveState)}");
-        var dreamerData = self.roomSettings.placedObjects[objects].data as DreamerData;
-
-        foreach (var presence in dreamerPresences)
-        {
-            if (presence.presenceSpawned && presence.dreamerRoom == self.abstractRoom)
-            {
-                logger.LogDebug($"DreamerSpot: Adding Dreamer to room since presence exists and presence room is loaded");
-                self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[objects]));
-                presence.dreamerSpawned = true;
-                logger.LogDebug($"DreamerPresence: Dreamer active - {presence.dreamerSpawned}");
-                return false;
-            }
-            else if (dreamerData.destRoom != null)
-            {
-                logger.LogDebug($"DreamerSpot: Dreamer already encountered and can spawn warp - Placing warp");
-                Dreamer.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
-                return false;
-            }
-        }
-
-        // Bool has to return a value, why not be true
-        return true;
+        logger.LogDebug($"DreamerSpot: Adding Dreamer to room since presence exists and presence room is loaded");
+        self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[objects]));
+        presence.dreamerSpawned = true;
+        logger.LogDebug($"DreamerPresence: Dreamer active - {presence.dreamerSpawned}");
     }
+
+    private static void PlaceWarp(Room self, int objects)
+    {
+        logger.LogDebug($"DreamerSpot: Dreamer already encountered and can spawn warp - Placing warp");
+        Dreamer.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
+    }
+    #endregion
 }

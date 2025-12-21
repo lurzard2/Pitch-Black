@@ -26,7 +26,7 @@ public static class MiscUtils
         bool vhosOverride = room == "vv_e01" || room == "vv_b06" || room == "vv_b08" || room == "vv_c02" || room == "vv_c01";
         bool vhosCondition = region == "vv";
         bool placeIsBright = self.room.Darkness(self.mainBodyChunk.pos) < 0.15f;
-        bool presentGhostMode = DreamersHooks.lastGhostMode > 0.40f;
+        bool presentGhostMode = DreamerMode_Hooks.lastGhostMode > 0.40f;
 
         if (vhosOverride)
         {

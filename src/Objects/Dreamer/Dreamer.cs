@@ -1264,7 +1264,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         SaveEncounter(state, currentRoomName);
         IncreaseSpiralLevel(state);
         OverwriteSaveDen(game, currentRoomName);
-        DreamersHooks.DeactivateDreamerPresence(room);
+        DreamerPresence_Functions.DeactivateDreamerPresence(room);
 
         encounterFinished = true;
     }
@@ -1310,7 +1310,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     {
         if (!slatedForDeletetion)
         {
-            DreamersHooks.targetDreamIntensity = 0f;
+            DreamerMode_Hooks.targetIntensity = 0f;
             slatedForDeletetion = true;
         }
     }
