@@ -29,21 +29,15 @@ public class BeaconThreatTracker
         if (game.cameras[0].ghostMode > conditionalGhostMode)
         {
             //  Dreamer presences song
-            if (dreamerPresence.TryGetValue(room.world, out var presences))
+            if (DreamerMode_Hooks.currentTarget != null && DreamerMode_Hooks.currentTarget.presenceSpawned)
             {
-                for (int i = 0; i < presences.Count; i++)
-                {
-                    if (presences[i].presenceSpawned)
-                    {
-                        songName = presences[i].songName;
-                        associatedGhostMode = game.cameras[0].ghostMode;
-                        self.ghostMode = associatedGhostMode;
-                    }
-                    else
-                    {
-                        self.ghostMode = 0f;
-                    }
-                }
+                songName = DreamerMode_Hooks.currentTarget.SongName;
+                associatedGhostMode = game.cameras[0].ghostMode;
+                self.ghostMode = associatedGhostMode;
+            }
+            else
+            {
+                self.ghostMode = 0f;
             }
         }
         else
@@ -56,15 +50,25 @@ public class BeaconThreatTracker
         {
             self.recommendedDroneVolume = 0f;
             self.musicPlayer.FadeOutAllNonGhostSongs(120f);
-            if (songName != null && (self.musicPlayer.song == null || !(self.musicPlayer.song is GhostSong)))
+            if (songName != null
+                && (self.musicPlayer.song == null
+                    || self.musicPlayer.song is not GhostSong)
+                && (DreamerMode_Hooks.currentTarget != null
+                    && !DreamerMode_Hooks.currentTarget.myDreamer.songPlaying))
             {
                 self.musicPlayer.RequestGhostSong(songName);
+                DreamerMode_Hooks.currentTarget.myDreamer.songPlaying = true;
             }
         }
         // If there is no presence, and there is a song, remove it (fixes music triggers after encountering Dreamer)
-        if (game.cameras[0].ghostMode <= 0.001f && self.musicPlayer.song != null && self.musicPlayer.song is GhostSong)
+        if (game.cameras[0].ghostMode <= 0f
+            && self.musicPlayer.song != null
+            && self.musicPlayer.song is GhostSong
+            && (DreamerMode_Hooks.currentTarget != null
+                && DreamerMode_Hooks.currentTarget.myDreamer.songPlaying))
         {
             self.musicPlayer.song = null;
+            DreamerMode_Hooks.currentTarget.myDreamer.songPlaying = false;
         }
 
         #region Other Code

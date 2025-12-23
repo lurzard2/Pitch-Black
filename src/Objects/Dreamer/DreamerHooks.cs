@@ -119,7 +119,7 @@ public static class DreamerMode_Hooks
     public static float lastGhostMode;
     public static float targetGhostMode;
     private static string s = "DreamerEffects:";
-    private static DreamerPresence currentTarget = null;
+    public static DreamerPresence currentTarget = null;
 
     public static void Inject()
     {
