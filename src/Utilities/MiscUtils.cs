@@ -17,7 +17,15 @@ public static class MiscUtils
     // For NT tracking
     public static bool ValidTrackRoom(this Room room) => room != null && !room.abstractRoom.shelter && !room.abstractRoom.gate;
 
-    public static bool RegionOutSideCycle(this World world) => world != null && world.region.name == "VV" || world.region.name == "UD" || world.region.name == "WRSA";
+    public static bool RegionOutSideCycle(this World world)
+    {
+        return world != null
+            && (IsVhosRegion(world.name)
+            || world.name.ToLowerInvariant() == "ud"
+            || Region.IsAncientUrbanRegion(world.name)
+            || Region.IsDaemonRegion(world.name));
+    }
+
     public static bool IsVhosRegion(string name) => name.ToLowerInvariant() == "vv";
 
     // Regions that make Beacon squint regardless of room darkness
@@ -26,7 +34,7 @@ public static class MiscUtils
         bool vhosOverride = room == "vv_e01" || room == "vv_b06" || room == "vv_b08" || room == "vv_c02" || room == "vv_c01";
         bool vhosCondition = region == "vv";
         bool placeIsBright = self.room.Darkness(self.mainBodyChunk.pos) < 0.15f;
-        bool presentGhostMode = DreamerMode_Hooks.lastGhostMode > 0.40f;
+        bool presentGhostMode = self.room.game.cameras[0].ghostMode > 0.40f;
 
         if (vhosOverride)
         {

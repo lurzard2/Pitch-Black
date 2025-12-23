@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using RWCustom;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using static PitchBlack.Plugin;
 
@@ -114,90 +116,87 @@ public static class DreamerPresence_Functions
 
 public static class DreamerMode_Hooks
 {
-    // Highest ghostMode should be
-    public static float targetIntensity;
-    // tracking ghostMode
     public static float lastGhostMode;
-    private static float distanceFromDreamer;
+    public static float targetGhostMode;
+    private static string s = "DreamerEffects:";
+    public static DreamerPresence currentTarget = null;
 
     public static void Inject()
     {
         On.RoomCamera.Update += RoomCamera_Update;
     }
 
-    // Adding effects to rooms, using SpinningTop's radial effect
+    // I apologize in advance for the horrendous indents but how about you take a crack at it if you think you can do better
     private static void RoomCamera_Update(On.RoomCamera.orig_Update orig, RoomCamera self)
     {
         orig(self);
-        //UpdateDreamerMode(self);
-    }
 
-    public static void UpdateDreamerMode(RoomCamera self)
-    {
-        lastGhostMode = self.ghostMode;
-        self.ghostMode = Mathf.Lerp(self.ghostMode, targetIntensity, 0.006f);
-
-        if (dreamerPresence.TryGetValue(self.room.world, out var dreamerPresences))
+        if (dreamerPresence.TryGetValue(self.room.world, out var presences) && MiscUtils.IsBeacon(self.room.world.game.session))
         {
-            for (int i = 0; i < dreamerPresences.Count; i++)
+            //logger.LogDebug($"{s} Presence CWT accessed and campaign is Beacon, proceeding to determine ghostMode of room");
+            foreach (var presence in presences)
             {
-                if (dreamerPresences[i].presenceSpawned)
+                var currentPresence = presence;
+
+                if (currentPresence != null && currentPresence.presenceSpawned)
                 {
-                    if (self.ghostMode == 0)
+                    lastGhostMode = self.ghostMode;
+                    self.ghostMode = Mathf.Lerp(lastGhostMode, targetGhostMode, 0.006f);
+
+                    if (currentTarget != null)
                     {
-                        targetIntensity = 0.001f;
+                        currentPresence = currentTarget;
+                    }
+
+                    /* presence.dreamer is a Tuple, blame Alduris for teaching me
+                    * they're neat and I'm just using it because we have a lot of things to associate at once,
+                    * and individually checking them without direct references is really convoluted.
+                    * It's also because more than 1 Dreamer can exist in the same region, dialogue just depends on progression, but we want 1 Dreamer to be placed per presence
+                    * And I've banged my head against a wall for a days now trying to write this damn feature
+                    */
+
+                    // Dreamer in room mode
+                    if (currentPresence.myDreamer.hasSpawned && currentPresence.myDreamer.obj != null && self.room.abstractRoom == currentPresence.myDreamer.abstractRoom)
+                    {
+                        if (currentPresence.myDreamer.obj.conversation != null)
+                        {
+                            targetGhostMode = 1f;
+                            logger.LogDebug($"{s} MODE:Dreamer Conversation");
+                            return;
+                        }
+
+                        Creature creature = self.followAbstractCreature?.realizedCreature as Player;
+                        float distance = Vector2.Distance(currentPresence.myDreamer.obj.placedObject.pos, creature.mainBodyChunk.pos);
+                        targetGhostMode = Mathf.Lerp(0.11f, 1f, Mathf.InverseLerp(1500f, 0f, distance));
+                        logger.LogDebug($"{s} MODE:Dreamer Proximity");
                         return;
                     }
-
-                    if (self.room.abstractRoom != dreamerPresences[i].dreamerRoom)
-                    {
-                        for (int j = 0; j < self.room.abstractRoom.connections.Length; j++)
-                        {
-                            if (self.room.abstractRoom.connections[j] >= 0 && self.room.world.GetAbstractRoom(self.room.abstractRoom.connections[j]) == dreamerPresences[j].dreamerRoom)
-                            {
-                                targetIntensity = 0.25f;
-                            }
-                            // Isnt a connection to dreamer's room
-                            else
-                            {
-                                if (targetIntensity > 0.005f)
-                                {
-                                    targetIntensity -= 0.002f;
-                                }
-                            }
-                        }
-                    }
-                    else if (dreamerPresences[i].dreamerSpawned)
-                    {
-                        for (int k = 0; k < self.room.updateList.Count; k++)
-                        {
-                            if (self.room.updateList[k] is Dreamer)
-                            {
-                                var them = (self.room.updateList[k] as Dreamer).placedObject.pos;
-                                var you = (self.followAbstractCreature?.realizedCreature).mainBodyChunk.pos;
-                                distanceFromDreamer = Vector2.Distance(them, you);
-                                if ((self.room.updateList[k] as Dreamer).conversation != null)
-                                {
-                                    targetIntensity = 1f;
-                                }
-                                else
-                                {
-                                    targetIntensity = Mathf.Lerp(0.11f, 1f, Mathf.InverseLerp(1500f, 0f, distanceFromDreamer));
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if (self.ghostMode > 0)
-                    {
-                        targetIntensity -= 0.0008f;
-                    }
+                    // Adjacent connections mode
                     else
                     {
-                        targetIntensity = 0f;
+                        for (int i = 0; i < self.room.abstractRoom.connections.Length; i++)
+                        {
+                            if (self.room.abstractRoom.connections[i] >= 0 && self.room.world.GetAbstractRoom(self.room.abstractRoom.connections[i]) == currentPresence.myDreamer.abstractRoom)
+                            {
+                                // We only assign this once, here, because it's also true for the next room
+                                // We also only return if it's the same target, to prevent unnecessary checks
+                                currentTarget = presence;
+                                targetGhostMode = 0.25f;
+                                logger.LogDebug($"{s} MODE:Connection to Dreamer Room");
+                                return;
+                            }
+                            else
+                            {
+                                currentTarget = null;
+                                if (targetGhostMode > 0)
+                                {
+                                    targetGhostMode -= 0.006f;
+                                }
+                                logger.LogDebug($"{s} MODE:NONE");
+                            }
+                        }
                     }
+                    //logger.LogDebug($"{s} Determined effects - {self.ghostMode}/{targetGhostMode} - {currentPresence.dreamer.Item1}, {currentPresence.dreamer.Item2}, {currentPresence.dreamer.Item3}");
                 }
             }
         }

@@ -16,7 +16,7 @@ public class ThanatosisTutorialSequence
 {
     public string SequenceText => room.world.game.manager.rainWorld.inGameTranslator.Translate("Hold SPECIAL, and don't stop");
     public string CycleDisplayText => room.world.game.manager.rainWorld.inGameTranslator.Translate($"Cycle {cycle.saveState.cycleNumber} ~ {Region.GetRegionFullName(cycle.owner.room.world.region.name, SlugcatStats.Name.White)}");
-    public string SequenceCompleteText => room.world.game.manager.rainWorld.inGameTranslator.Translate("Hold SPECIAL to play possum");
+    public string SequenceCompleteText => room.world.game.manager.rainWorld.inGameTranslator.Translate("Hold SPECIAL to enter and exit a state of thanatosis");
 
     public BeaconCycle cycle;
     public Room room;

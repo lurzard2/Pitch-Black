@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Music;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine.PlayerLoop;
 
 namespace PitchBlack;
 public class DreamerPresence : World.IMigrationInfluence
@@ -19,6 +21,9 @@ public class DreamerPresence : World.IMigrationInfluence
     {
         this.world = world;
         this.dreamerRoom = dreamerRoom;
+        // Assign a barebones instance, which gets re-instantiated when Dreamer gets added to a room
+        myDreamer = new(dreamerRoom, false, null);
+        Plugin.logger.LogDebug($"DreamerSpawner: ROOM:{myDreamer.abstractRoom.name} - {myDreamer.hasSpawned} - {myDreamer.obj}");
     }
 
     #region Room Attraction
@@ -52,10 +57,40 @@ public class DreamerPresence : World.IMigrationInfluence
 
     public int id;
     public World world;
+    public SaveState saveState => world.game.GetStorySession.saveState;
     public AbstractRoom dreamerRoom;
-    //public List<AbstractRoom> presenceRooms = new();
 
     public bool presenceSpawned;
     public bool dreamerSpawned;
     public string songName = "PB_Dreamcatcher";
+    public string SongName
+    {
+        get
+        {
+            switch (BeaconSaveData.GetDreamerEncountersNumber(saveState))
+            {
+                // Write more songs to use later
+                default: return songName;
+            }
+        }
+    }
+
+    // Defined Tuple for Dreamer containing its abstractRoom, spawn bool, and object, now a class
+    //public Tuple<AbstractRoom, bool, Dreamer> dreamer;
+    public MyDreamer myDreamer;
+
+    public class MyDreamer
+    {
+        public AbstractRoom abstractRoom;
+        public bool hasSpawned;
+        public Dreamer obj;
+        public bool songPlaying;
+        public MyDreamer(AbstractRoom abstractRoom, bool hasSpawned, Dreamer obj)
+        {
+            this.abstractRoom = abstractRoom;
+            this.hasSpawned = hasSpawned;
+            this.obj = obj;
+            songPlaying = false;
+        }
+    }
 }

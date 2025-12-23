@@ -152,7 +152,8 @@ public class Cycle
         {
             RealizedOwner.room.AddObject(ripple);
             RealizedOwner.room.AddObject(new ShockWave(pos, 0.15f * (intensity / 2f), intensity, life, true));
-            RealizedOwner.room.PlaySound(SoundID.Small_Object_Into_Water_Slow, pos, intensity - 0.5f, intensity - 0.2f);
+            // We need a better sound
+            //RealizedOwner.room.PlaySound(SoundID.Small_Object_Into_Water_Slow, pos, intensity - 0.5f, intensity - 0.2f);
         }
         //if (devMode && RealizedOwner.room.updateList.Contains(ripple))
         //{
