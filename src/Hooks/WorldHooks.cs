@@ -112,12 +112,6 @@ public static class WorldHooks
         WorldLoaderHooks.Inject();
 
         On.Region.ctor_string_int_int_RainWorldGame_Timeline += ModifyRegionProperties;
-        On.Region.HasWarpFatigueResistance += ModifyHasWarpFatigueResistence;
-    }
-
-    private static bool ModifyHasWarpFatigueResistence(On.Region.orig_HasWarpFatigueResistance orig, string name)
-    {
-        return Region.IsAncientUrbanRegion(name) || Region.IsDaemonRegion(name) || MiscUtils.IsVhosRegion(name);
     }
 
     // Replace rot eye+effect color for Beacon

@@ -80,6 +80,7 @@ class  Plugin : BaseUnityPlugin
 
         CreatureCycleHooks.Apply();
         DreamerHooks.Apply();
+        WarpPointHooks.Apply();
 
         MenuSceneHooks.Apply();
         PhysicalObjectHooks.Apply();
