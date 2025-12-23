@@ -1292,11 +1292,6 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         if (maxLevel >= 0.5f)
         {
             increment = 0.5f;
-            // We'll set this inside Sequence_OutsideDreamSuffocation()
-            //if (!BeaconSaveData.GetCanUseThanatosis(state))
-            //{
-            //    BeaconSaveData.SetCanUseThanatosis(state, true);
-            //}
         }
         else
         {
@@ -1310,7 +1305,6 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     {
         if (!slatedForDeletetion)
         {
-            DreamerMode_Hooks.targetIntensity = 0f;
             slatedForDeletetion = true;
         }
     }

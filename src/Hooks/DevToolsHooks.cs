@@ -146,14 +146,23 @@ public class DevToolsHooks
             {
                 for (int i = 0; i < dreamerPresences.Count; i++)
                 {
+                    // Encountered
                     if (BeaconSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState).Contains(self.abstractRoom.name))
                     {
                         PlaceWarp(self, objects);
-                        break;
                     }
+                    // Otherwise
                     if (dreamerPresences[i].presenceSpawned && dreamerPresences[i].dreamerRoom == self.abstractRoom)
                     {
                         PlaceDreamer(self, objects, dreamerPresences[i]);
+                        
+                        /* Prevent duplicates
+                        * We can do this because its per room, and there is meant to be 1 instantiated Dreamer per encounter
+                        */
+                        if (dreamerPresences[i].myDreamer.obj != null)
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -164,9 +173,12 @@ public class DevToolsHooks
     private static void PlaceDreamer(Room self, int objects, DreamerPresence presence)
     {
         logger.LogDebug($"DreamerSpot: Adding Dreamer to room since presence exists and presence room is loaded");
-        self.AddObject(new Dreamer(self, self.roomSettings.placedObjects[objects]));
+        Dreamer dreamer = new(self, self.roomSettings.placedObjects[objects]);
+        self.AddObject(dreamer);
         presence.dreamerSpawned = true;
+        presence.myDreamer = new(presence.dreamerRoom, presence.dreamerSpawned, dreamer);
         logger.LogDebug($"DreamerPresence: Dreamer active - {presence.dreamerSpawned}");
+        logger.LogDebug($"DreamerSpawner: ROOM:{presence.myDreamer.abstractRoom.name} - {presence.myDreamer.hasSpawned} - {presence.myDreamer.obj}");
     }
 
     private static void PlaceWarp(Room self, int objects)

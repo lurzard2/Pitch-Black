@@ -152,9 +152,6 @@ public class BeaconCycle
             thanatosisLerp += 0.01f;
         }
 
-        // Let's just not use this for now, its a bit buggy and might reveal too much for early progression
-        return;
-
         float thanatosisTime = cycle.cycleStateTime; //x
         float minSafeTime = 12 * 40f; //tc
         float maxSafeTime = 60 * 40f; // Tc
@@ -188,7 +185,7 @@ public class BeaconCycle
     // Decreasing values that linger from Thanatosis
     private void OutsideThanatosis()
     {
-        if (thanatosisLerp > 0f && thanatosisTutorialSequence == null)
+        if (thanatosisLerp > 0f)
         {
             thanatosisLerp -= 0.01f;
         }
