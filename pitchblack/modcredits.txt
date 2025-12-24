@@ -12,6 +12,10 @@ Matvis: Music, Sound Design
 stormthecat: Art
 Nikki: Creature Programmer
 spinch: Programmer
+Tronsx: Level Design
+Slithers: Level Design
+Dutch: Level Design
+Everyone: Ideas
 
 SPECIAL THANKS
 Millisec "Brooke": Ideas and Design, Beta Thumbnail Art, Photomaniac (RIP)
@@ -26,6 +30,7 @@ Nikki: Night Terror Creature
 LB: LMiniLongLegs Creature
 Leo: RotRat Creature
 Dutch: Level design, Industrial Outflow, Corroded Manufactory
+Tronsx: Level design
 
 REGIONS
 "VV - Elsehow"
