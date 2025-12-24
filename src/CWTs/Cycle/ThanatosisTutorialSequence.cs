@@ -1,13 +1,8 @@
-﻿using HUD;
-using Music;
-using Watcher;
-using RWCustom;
+﻿using RWCustom;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
+using Watcher;
 using static PitchBlack.Plugin;
 
 namespace PitchBlack;
@@ -56,12 +51,15 @@ public class ThanatosisTutorialSequence
 
     float tutorialDeathIntensity = 0;
     float targetDeathIntensity = 0;
-    //int saveGameFramesDefault;
 
     public bool markedAsDead;
     private bool seenSpecialPromptThisCycle;
     private bool seenTrueTutorialPromptThisCycle;
-    private bool hauntingMusicPlayed;
+
+    private SequenceSong thanatosisSong;
+    private string songName = "PB_12 - Fated Demise";
+    private bool songPlayed;
+
     private bool STOPSHOWINGCONSISTENTCYCLES;
 
     public ThanatosisTutorialSequence(BeaconCycle cycle, Room room)
@@ -73,7 +71,8 @@ public class ThanatosisTutorialSequence
         markedAsDead = false;
         seenSpecialPromptThisCycle = false;
         seenTrueTutorialPromptThisCycle = false;
-        hauntingMusicPlayed = false;
+        thanatosisSong = new SequenceSong(room.game.manager.musicPlayer, songName);
+        songPlayed = false;
         STOPSHOWINGCONSISTENTCYCLES = false;
     }
 
@@ -87,20 +86,26 @@ public class ThanatosisTutorialSequence
         else
         {
             // Music Track
-            if (!hauntingMusicPlayed && phase == Phase.StartSuffocation)
+            if (!songPlayed && phase == Phase.StartSuffocation)
             {
                 MusicEvent musicEvent = new MusicEvent();
-
-                if (room.game.manager.musicPlayer != null && room.game.world.rainCycle.MusicAllowed)
+                var musicPlayer = room.game.manager.musicPlayer;
+                if (musicPlayer != null && room.game.world.rainCycle.MusicAllowed && thanatosisSong.ConditionToPlay(songName))
                 {
-                    musicEvent.cyclesRest = 5;
-                    musicEvent.stopAtDeath = false;
-                    musicEvent.stopAtGate = false;
-                    musicEvent.songName = "PB_12 - Fated Demise";
-                    // Game saves songs that have played once unfortunately, so it won't play again if you take too long to do this i think
-                    room.game.manager.musicPlayer.GameRequestsSong(musicEvent);
+                    thanatosisSong.StopCurrentSong();
+                    musicPlayer.song = thanatosisSong;
+                    musicPlayer.song.playWhenReady = true;
+
+                    // ---
+
+                    //musicEvent.cyclesRest = 5;
+                    //musicEvent.stopAtDeath = false;
+                    //musicEvent.stopAtGate = false;
+                    //musicEvent.songName = "PB_12 - Fated Demise";
+                    //// Game saves songs that have played once unfortunately, so it won't play again if you take too long to do this i think
+                    //room.game.manager.musicPlayer.GameRequestsSong(musicEvent);
                 }
-                hauntingMusicPlayed = true;
+                songPlayed = true;
             }
 
             SequenceTick();
@@ -109,24 +114,24 @@ public class ThanatosisTutorialSequence
             // Tracking RippleRings in room
             if (targetDeathIntensity > 0 && !STOPSHOWINGCONSISTENTCYCLES)
             {
-                if (cycle.owner.room.updateList.FirstOrDefault(x => x is RippleRing) is RippleRing dummyTarget)
+                if (cycle.owner.room.updateList.FirstOrDefault(x => x is RippleRing) is RippleRing obj)
                 {
                     for (int i = 0; i < cycle.owner.room.updateList.Count; i++)
                     {
                         if (cycle.owner.room.updateList[i] is RippleRing)
                         {
-                            dummyTarget = cycle.owner.room.updateList[i] as RippleRing;
-                            if (dummyTarget != null && dummyTarget.intensity > 0.6f)
+                            obj = cycle.owner.room.updateList[i] as RippleRing;
+                            if (obj != null && obj.intensity > 0.6f)
                             {
                                 cycle.saveState.cycleNumber--;
-                                if (dummyTarget.intensity >= 0.8f)
+                                if (obj.intensity >= 0.8f)
                                 {
-                                    cycle.saveState.cycleNumber -= 5;
+                                    cycle.saveState.cycleNumber -= UnityEngine.Random.Range(1, 4);
                                 }
                             }
                         }
                     }
-                    if (dummyTarget != null)
+                    if (obj != null)
                     {
                         if (timeTilCycleDisplay.isFinished)
                         {
@@ -139,7 +144,7 @@ public class ThanatosisTutorialSequence
                                 prompt.messages[0].time = 20;
                             }
                             timeTilCycleDisplay.Reset();
-                            dummyTarget = null;
+                            obj = null;
                         }
                     }
                 }
@@ -313,17 +318,8 @@ public class ThanatosisTutorialSequence
                     {
                         prompt.messages[0].time = 180;
                     }
-                    // Final cycle number after sequence
-                    if (prompt.messages[0].text == CycleDisplayText)
-                    {
-                        prompt.messages[0].time = 100;
-                    }
                 }
                 seenTrueTutorialPromptThisCycle = true;
-            }
-            else
-            {
-                cycle.owner.room.game.cameras[0].hud.textPrompt.AddMessage(CycleDisplayText, 120, 120, true, true);
             }
 
             BeaconSaveData.SetHasUsedThanatosis(cycle.saveState, true);
