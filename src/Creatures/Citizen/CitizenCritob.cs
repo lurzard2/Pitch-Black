@@ -27,7 +27,7 @@ sealed class CitizenCritob : Critob
     {
         CreatureTemplate t = new CreatureFormula(CreatureTemplate.Type.Scavenger, Enums.CreatureTemplateType.Citizen, "Citizen")
         {
-            DefaultRelationship = new(CreatureTemplate.Relationship.Type.Ignores, 1f),
+            DefaultRelationship = new(CreatureTemplate.Relationship.Type.DoesntTrack, 1f),
             Pathing = PreBakedPathing.Ancestral(CreatureTemplate.Type.Scavenger),
         }.IntoTemplate();
         t.dangerousToPlayer = 0;
