@@ -1,5 +1,7 @@
 RAIN WORLD: PITCH BLACK
 
+\\\ THIS DOC CONTAINS MAJOR SPOILERS ///
+
 PITCH BLACK DEV TEAM
 Lurzard: Development Lead, Programmer, Menu Illustrations
 Tryn: Music, Sound Design
@@ -12,7 +14,7 @@ Nikki: Creature Programmer
 spinch: Programmer
 
 SPECIAL THANKS (This stuff is gonna be categorized later)
-Millisec "Brooke": Ideas and Design, Beta Thumbnail Art, Photomaniac
+Millisec "Brooke": Ideas and Design, Beta Thumbnail Art, Photomaniac (RIP)
 Moon615: Ideas and Design, Main Coder on the team and Creature Programmer, Original "Rift" Object pre-Watcher
 Ovidia: Ideas and Design, Level design, Elsehow
 Matvis: Level Design, music tracks
@@ -25,7 +27,7 @@ LB: LMiniLongLegs Creature
 Leo: RotRat Creature
 Dutch: Level design, Industrial Outflow, Corroded Manufactory
 
-- REGIONS -
+REGIONS
 ---
 "VV - Elsehow"
 VVTA
@@ -35,11 +37,18 @@ Detrax: A04
 Music-Songs
 Matvis: [VV_B01|PB_BM_01 - First Steps]
 ---
-"SH - Shaded Citadel"
+"SH - Citadel"
 New Music-Songs
-Matvis: [SH_A08|PB_BM_02 - Awakened]
+Matvis: [SH_A09|PB_BM_02 - Awakened]
 ---
-"UD - ???"
+"HI - Industrial Complex"
+New Music-Songs
+Tryn: [HI_A07|PB_04 - Requiem to the Lost Star]
+Matvis: [HI_D01|PB_BM_03 - Into The Night]
+---
+"CC - Chimney Canopy"
+New Music-Songs
+Tryn: [CC_B06|PB_05 - Rain Drops]
 ---
 "CRID - Corroded Manufactory"
 Dutch: All
@@ -47,6 +56,6 @@ Dutch: All
 "IDDC - Industrial Outflow"
 Dutch: All
 ---
-- END REGIONS -
+END REGIONS
 
 TOdo: the rest of stuff latr
