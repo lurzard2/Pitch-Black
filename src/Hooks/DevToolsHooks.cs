@@ -144,14 +144,14 @@ public class DevToolsHooks
                 && self.game.IsStorySession
                 && dreamerPresence.TryGetValue(self.world, out var dreamerPresences))
             {
+                if (BeaconSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState).Contains(self.abstractRoom.name))
+                {
+                    PlaceWarp(self, objects);
+                }
+
                 for (int i = 0; i < dreamerPresences.Count; i++)
                 {
-                    // Encountered
-                    if (BeaconSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState).Contains(self.abstractRoom.name))
-                    {
-                        PlaceWarp(self, objects);
-                    }
-                    // Otherwise
+                    // Presence exists, which means it needs a dreamer
                     if (dreamerPresences[i].presenceSpawned && dreamerPresences[i].dreamerRoom == self.abstractRoom)
                     {
                         PlaceDreamer(self, objects, dreamerPresences[i]);
