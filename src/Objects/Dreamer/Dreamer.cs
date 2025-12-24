@@ -1305,6 +1305,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     {
         if (!slatedForDeletetion)
         {
+            DreamerMode_Hooks.targetGhostMode = 0;
             slatedForDeletetion = true;
         }
     }

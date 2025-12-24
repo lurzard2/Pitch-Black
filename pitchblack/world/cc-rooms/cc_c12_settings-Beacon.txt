@@ -5,7 +5,7 @@ Grime: 0.3804348
 BkgDroneVolume: 0.2869565
 Palette: 6
 Effects: Fog-0.326087-20-20, FireFlies-0.2608696-293-50, 
-PlacedObjects: WarpPoint><826.5502><2093.241><0~0~Beacon~Beacon~VV~vv_a01~470~510~c6c9b818-9257-4924-89c0-46e47ae261d2~WatcherOnly~0~6~8~4~8~4~4~4~7~150~150~-1~0~0~true~false~true~true~false~0~-1~false~-1~false, 
+PlacedObjects: WarpPoint><826.5502><2093.241><0~0~Beacon~Beacon~VV~vv_b09~1650~290~c6c9b818-9257-4924-89c0-46e47ae261d2~WatcherOnly~0~6~8~4~8~4~4~4~7~150~150~-1~0~0~true~false~true~true~false~0~-1~false~-1~false~-1~false, 
 AmbientSounds: OMNI><AM_WIN-HowlingWnd.ogg><745.0768><264.9001><0.2173913><0.6282609, 
 FadePalette: 33, 0.8043478, 0.8478259, 0.8478262
 MorePalette0: 379, 1, 1, 1

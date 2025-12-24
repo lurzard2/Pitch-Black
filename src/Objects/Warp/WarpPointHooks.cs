@@ -22,9 +22,9 @@ public static class WarpPointHooks
 
     private static void Player_ApplyWarpFatigue(On.Player.orig_ApplyWarpFatigue orig, Player self, RainWorldGame game)
     {
-        if (MiscUtils.IsBeacon(self.room.world.game.GetStorySession) || MiscUtils.IsVhosRegion(self.room.world.name))
+        if (MiscUtils.IsBeacon(self))
         {
-            return;
+            self.warpExhausionTime = 0;
         }
         else
         {

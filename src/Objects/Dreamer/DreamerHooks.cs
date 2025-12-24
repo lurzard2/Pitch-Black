@@ -154,7 +154,7 @@ public static class DreamerMode_Hooks
                 if (currentPresence != null && currentPresence.presenceSpawned)
                 {
                     lastGhostMode = self.ghostMode;
-                    self.ghostMode = Mathf.Lerp(lastGhostMode, targetGhostMode, 0.006f);
+                    self.ghostMode = Mathf.Lerp(lastGhostMode, targetGhostMode, 0.06f);
 
                     if (currentTarget != null)
                     {
