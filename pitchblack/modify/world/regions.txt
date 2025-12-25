@@ -1,4 +1,3 @@
-[ADD]UD
 [ADD]VV
 //Corroded Manufactory
 [ADD]CRID
