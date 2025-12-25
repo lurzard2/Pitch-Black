@@ -34,6 +34,8 @@ Tronsx: Level design
 
 REGIONS
 "VV - Elsehow"
+DESIGN CREDIT: Aegonian
+-
 SH Tower
 Ovidia: [A03, A04 B01, B02, B04, B05, C01, E01]
 Slithers: A05
