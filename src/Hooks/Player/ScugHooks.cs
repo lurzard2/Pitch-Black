@@ -18,10 +18,15 @@ public static class ScugHooks
     {
         if (devMode)
         {
-            var state = self.room.world.game.GetStorySession.saveState;
-            //BeaconSaveData.SetCanUseThanatosis(state, true);
-            BeaconSaveData.SetMaxSpiralLevel(state, 0.5f);
-            BeaconSaveData.SetSpiralLevel(state, 0.5f);
+            var saveState = self.room.world.game.GetStorySession.saveState;
+            if (devMode)
+            {
+                BeaconSaveData.SetCanUseThanatosis(saveState, true);
+                BeaconSaveData.SetHasUsedThanatosis(saveState, true);
+                BeaconSaveData.SetMaxSpiralLevel(saveState, 1f);
+                BeaconSaveData.SetSpiralLevel(saveState, 1f);
+                BeaconSaveData.SetDreamerEncountersNumber(saveState, 3);
+            }
         }
 
         // Check here if it's Beacon
