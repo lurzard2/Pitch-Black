@@ -32,7 +32,7 @@ class  Plugin : BaseUnityPlugin
     public static ManualLogSource logger;
 
     // Dev bool for testing and/or hardcoding values
-    public static bool devMode = false;
+    public static bool devMode = true;
     
     // CWTs
     public static readonly ConditionalWeakTable<Player, ScugCWT> scugCWT = new();
