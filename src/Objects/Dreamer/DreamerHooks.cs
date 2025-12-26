@@ -120,8 +120,8 @@ public static class DreamerMode_Hooks
     public static float targetGhostMode;
     private static string s = "DreamerEffects:";
     public static DreamerPresence currentTarget = null;
-    private static int trackPalette = 32;
-    private static Texture2D dreamFadeTex;
+    //private static int trackPalette = 32;
+    //private static Texture2D dreamFadeTex;
 
     private static void LoadDreamPalette(RoomCamera cam, int index)
     {

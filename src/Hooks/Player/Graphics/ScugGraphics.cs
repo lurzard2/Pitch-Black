@@ -119,7 +119,7 @@ public static class ScugGraphics
         {
             cwt.SpritesInitialized = true;
 
-            if (ModOptions.hazHat.Value && self.player.room.game.session is StoryGameSession session && MiscUtils.IsBeacon(session.saveStateNumber)) {
+            if (ModOptions.UsesHatSprite && self.player.room.game.session is StoryGameSession session && MiscUtils.IsBeacon(session.saveStateNumber)) {
                 cwt.hatIndex = sLeaser.sprites.Length;
                 Array.Resize(ref sLeaser.sprites, sLeaser.sprites.Length+1);
                 sLeaser.sprites[cwt.hatIndex] = new FSprite("PBHat");
@@ -146,7 +146,7 @@ public static class ScugGraphics
         {
             scugCWT.SpritesInitialized = false;
             
-            if (ModOptions.hazHat.Value
+            if (ModOptions.UsesHatSprite
                 && sLeaser.sprites.Length > 13
                 && self.player.room.game.session is StoryGameSession session
                 && !MiscUtils.IsBeacon(session.saveStateNumber)) {
@@ -224,7 +224,7 @@ public static class ScugGraphics
                 sLeaser.sprites[9].y -= self.lookDirection.y * 2;
             }
 
-            if (ModOptions.hazHat.Value && self.player.room != null && self.player.room.game.session is StoryGameSession session && !MiscUtils.IsBeacon(session.saveStateNumber))
+            if (ModOptions.UsesHatSprite && self.player.room != null && self.player.room.game.session is StoryGameSession session && !MiscUtils.IsBeacon(session.saveStateNumber))
             {
                 Vector2 vector = Vector2.Lerp(self.drawPositions[0, 1], self.drawPositions[0, 0], timeStacker);
                 Vector2 vector2 = Vector2.Lerp(self.drawPositions[1, 1], self.drawPositions[1, 0], timeStacker);
