@@ -9,7 +9,7 @@ namespace PitchBlack;
 
 public class ThanatosisTutorialSequence
 {
-    public string SequenceText => room.world.game.manager.rainWorld.inGameTranslator.Translate("Hold SPECIAL, and don't stop");
+    public string SequenceText => room.world.game.manager.rainWorld.inGameTranslator.Translate("Hold SPECIAL, and don't stop"/*"Hold SPECIAL to push it away, but don't push too far"*/);
     public string CycleDisplayText => room.world.game.manager.rainWorld.inGameTranslator.Translate($"Cycle {cycle.saveState.cycleNumber} ~ {Region.GetRegionFullName(cycle.owner.room.world.region.name, SlugcatStats.Name.White)}");
     public string SequenceCompleteText => room.world.game.manager.rainWorld.inGameTranslator.Translate("Hold SPECIAL to enter and exit a state of thanatosis");
 
@@ -336,6 +336,20 @@ public class ThanatosisTutorialSequence
         float fight = 0;
         int time = 0;
 
+        //targetDeathIntensity = 0.8f;
+
+        //if (input > 0)
+        //{
+        //    targetDeathIntensity -= 0.006f;
+        //}
+
+        //if (sequencePhaseTime >= 40 * 90)
+        //{
+        //    ChangePhase(Phase.PassPersistEventHorizon_NoLongerNeedsInput);
+        //}
+
+        // ---
+
         demise = 0.8f;
 
         time = 40;
@@ -409,15 +423,17 @@ public class ThanatosisTutorialSequence
     private void FightDeathUpdate()
     {
         bool holdingInput = false;
+
         int inputCount = cycle.specInputCounter;
         if (inputCount > 0)
         {
             holdingInput = true;
         }
+
         Fight(inputCount);
+
         if (holdingInput)
         {
-            targetDeathIntensity -= 0.006f;
             if (cycle.cycle.idleRipplesToSpawn < 15)
             {
                 cycle.cycle.idleRipplesToSpawn += UnityEngine.Random.Range(0, UnityEngine.Random.Range(0, 12));

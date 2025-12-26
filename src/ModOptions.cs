@@ -7,32 +7,48 @@ namespace PitchBlack;
 public class ModOptions : OptionInterface
 {
     public static readonly ModOptions Instance = new();
-	public static Configurable<int> maxFlashStore;
-	public static Configurable<bool> shockStun;
+
+    public static Configurable<bool> pursuer;
+    public static Configurable<int> pursuerAgro;
+    public static Configurable<bool> universalPursuer;
+
+    public static Configurable<bool> shockStun;
 	public static Configurable<bool> elecImmune;
 	public static Configurable<bool> chargeSpears;
-	public static Configurable<bool> pursuer;
-    public static Configurable<int> pursuerAgro;
-    public static Configurable<bool> hazHat;
-    public static Configurable<bool> universalPursuer;
+
+    // Scavenger taking from Beacon's flare storage
     public static Configurable<bool> scavStealing;
+
+    // Hat graphic in player sprites
+    private static Configurable<bool> hazHat;
+    public static bool UsesHatSprite => hazHat.Value;
+
+    // Thanatosis dropping flares on activate
+    private static Configurable<bool> spoiler_RippleLayerDropsFlares;
+    public static bool RippleLayerDropsFlares => spoiler_RippleLayerDropsFlares.Value;
+
+    // Do not require a super long manual input for the sequence
+    private static Configurable<bool> spoiler_SpeedUpThanatosisSequence;
+    public static bool SpeedUpThanatosisSequence => spoiler_SpeedUpThanatosisSequence.Value;
 
     public ModOptions()
     {
-		//maxFlashStore = config.Bind<int>("maxFlashStore", 4, new ConfigAcceptableRange<int>(0, 10));
-		//shockStun = config.Bind<bool>("shockStun", true);
-		elecImmune = config.Bind("elecImmune", false);
-		chargeSpears = config.Bind("chargeSpears", false);
 		pursuer = config.Bind("pursuer", true);
         pursuerAgro = config.Bind("pursuerAgro", 2, new ConfigAcceptableRange<int>(0, 10));
-        hazHat = config.Bind("hazHat", false);
         universalPursuer = config.Bind("universalPursuer", false);
+        //shockStun = config.Bind<bool>("shockStun", true);
+        elecImmune = config.Bind("elecImmune", false);
+        chargeSpears = config.Bind("chargeSpears", false);
         scavStealing = config.Bind("scavStealing", false);
+        hazHat = config.Bind("hazHat", false);
+
+        spoiler_RippleLayerDropsFlares = config.Bind(nameof(spoiler_RippleLayerDropsFlares), true);
+        spoiler_SpeedUpThanatosisSequence = config.Bind(nameof(spoiler_SpeedUpThanatosisSequence), false);
     }
     public override void Initialize()
     {
-        OpTab page1 = new OpTab(this, "Options");
-        OpTab page2 = new OpTab(this, "Dev Options");
+        OpTab page1 = new OpTab(this, "Main");
+        OpTab page2 = new OpTab(this, "Spoilers");
         Tabs =
         [
 	        page1,
@@ -42,6 +58,7 @@ public class ModOptions : OptionInterface
 		const int sliderBarLength = 135;
         const int rightSidePos = 360;
         const int leftSidePos = 60;
+
         #nullable enable
         UIelement[]? page1Elements =
         [
@@ -73,14 +90,14 @@ public class ModOptions : OptionInterface
 
             // Make the text at the bottom
 	        // NOTE: Increment YPos by 20
-            new OpLabel(25, 225, "Beacon:"),
-            new OpLabel(25, 205, Translate("Flashbang creation: Costs 1 food pip per rock + SHIFT / Grab (Automatically added to storage).")),
-            new OpLabel(25, 185, Translate("Add flashbang to storage: Have a flashbang in hand + hold SHIFT / Grab.")),
-            new OpLabel(25, 165, Translate("Remove flashbang from storage: Have a stored flashbang + hold SHIFT / Grab.")),
-            new OpLabel(25, 145, Translate("Quick-throw flashbang: Have a stored flashbang + X / Throw on an empty hand.")),
-            new OpLabel(25, 100, "Photomaniac:"),
-            new OpLabel(25, 80, Translate("Electric Spear creation: Costs 1 food pip per spear + SHIFT / Grab.")),
-            new OpLabel(25, 60, Translate("Electric shockwave ability: SHIFT / Grab + Z / Jump."))
+            new OpLabel(25, 225, "The Beacon:"),
+            new OpLabel(25, 205, Translate("Flare creation: Costs 1 food pip per rock + SHIFT (Grab).")),
+            new OpLabel(25, 185, Translate("Add flare to storage: Have a flashbang in hand + hold SHIFT (Grab).")),
+            new OpLabel(25, 165, Translate("Remove flare from storage: Have a stored flashbang + hold SHIFT (Grab).")),
+            new OpLabel(25, 145, Translate("Quick-throw flare: Have a stored flashbang + X / Throw on an empty hand.")),
+            //new OpLabel(25, 100, "Photomaniac:"),
+            //new OpLabel(25, 80, Translate("Electric Spear creation: Costs 1 food pip per spear + SHIFT / Grab.")),
+            //new OpLabel(25, 60, Translate("Electric shockwave ability: SHIFT / Grab + Z / Jump."))
         ];
         page1.AddItems(page1Elements);
 
