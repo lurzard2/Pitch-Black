@@ -23,6 +23,14 @@ public class VV_E01 : PBRoomSpecificScript
     {
         base.Update(eu);
 
+        // Failsafe
+        if (Plugin.devMode)
+        {
+            player.controller = null;
+            player.airInLungs = 1f;
+            Destroy();
+        }
+
         // Assign player
         if (player == null && AllPlayersRealized)
         {
