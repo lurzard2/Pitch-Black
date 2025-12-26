@@ -23,14 +23,6 @@ public class VV_E01 : PBRoomSpecificScript
     {
         base.Update(eu);
 
-        // Failsafe
-        if (Plugin.devMode)
-        {
-            player.controller = null;
-            player.airInLungs = 1f;
-            Destroy();
-        }
-
         // Assign player
         if (player == null && AllPlayersRealized)
         {
@@ -65,6 +57,14 @@ public class VV_E01 : PBRoomSpecificScript
             }
             if (phase == PlayerFalling)
             {
+                // Failsafe
+                if (Plugin.devMode)
+                {
+                    player.controller = null;
+                    player.airInLungs = 1f;
+                    Destroy();
+                }
+
                 if (player.Submersion > 0.5f && player.airInLungs < 0.8f)
                 {
                     ChangePhase(PlayerSubmerged);
