@@ -174,14 +174,14 @@ public static class DreamerMode_Hooks
                         if (currentPresence.myDreamer.obj.conversation != null)
                         {
                             targetGhostMode = 1f;
-                            logger.LogDebug($"{s} MODE:Dreamer Conversation");
+                            //logger.LogDebug($"{s} MODE:Dreamer Conversation");
                             return;
                         }
 
                         Creature creature = self.followAbstractCreature?.realizedCreature as Player;
                         float distance = Vector2.Distance(currentPresence.myDreamer.obj.placedObject.pos, creature.mainBodyChunk.pos);
                         targetGhostMode = Mathf.Lerp(0.11f, 1f, Mathf.InverseLerp(1500f, 0f, distance));
-                        logger.LogDebug($"{s} MODE:Dreamer Proximity");
+                        //logger.LogDebug($"{s} MODE:Dreamer Proximity");
                         return;
                     }
                     // Adjacent connections mode
@@ -195,7 +195,7 @@ public static class DreamerMode_Hooks
                                 // We also only return if it's the same target, to prevent unnecessary checks
                                 currentTarget = presence;
                                 targetGhostMode = 0.25f;
-                                logger.LogDebug($"{s} MODE:Connection to Dreamer Room");
+                                //logger.LogDebug($"{s} MODE:Connection to Dreamer Room");
                                 return;
                             }
                             else
@@ -205,7 +205,7 @@ public static class DreamerMode_Hooks
                                 {
                                     targetGhostMode -= 0.006f;
                                 }
-                                logger.LogDebug($"{s} MODE:NONE");
+                                //logger.LogDebug($"{s} MODE:NONE");
                             }
                         }
                     }
