@@ -8,13 +8,16 @@ namespace PitchBlack;
 public class ElsehowView : PBBackgroundScene
 {
 
-    public Simple2DBackgroundIllustration centensSky;
-    public ElseFog generalFog;
+    public Simple2DBackgroundIllustration sky;
+    public ElseFog fog;
     public List<ElseCloud> elseClouds;
+    public RoomSettings.RoomEffect effect;
 
     public ElsehowView(Room room, RoomSettings.RoomEffect effect) : base(room)
     {
-        //string s = "ElsehowView:";
+        this.effect = effect;
+
+        string s = "ElsehowView:";
 
         Random.State state = Random.state;
         Random.InitState(2);
@@ -67,8 +70,8 @@ public class ElsehowView : PBBackgroundScene
         LoadGraphics();
 
         // Fog
-        generalFog = new ElseFog(this);
-        AddElement(generalFog);
+        fog = new ElseFog(this);
+        AddElement(fog);
 
         // Close clouds
         int cloudCount = 9;
@@ -391,8 +394,8 @@ public class ElsehowView : PBBackgroundScene
             if (!room.game.IsArenaSession)
             {
                 // We really need this to persist past certain altitudes ngl
-                float value = scene.RoomToWorldPos(camPos).y;
-                alpha = 0.5f; //Mathf.InverseLerp(22000f, 18000f, value) * 0.6f;
+                //float value = scene.RoomToWorldPos(camPos).y;
+                alpha = Mathf.Lerp(1f, 0.5f, vvScene.effect.amount); //0.5f; //Mathf.InverseLerp(22000f, 18000f, value) * 0.6f;
             }
             else
             {
