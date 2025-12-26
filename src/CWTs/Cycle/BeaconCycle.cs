@@ -70,15 +70,6 @@ public class BeaconCycle
         //    BeaconSaveData.SetSavedCycle(saveState, new SavedPlayerCycle(this, saveState.cycleNumber));
         //}
 
-        if (devMode)
-        {
-            BeaconSaveData.SetCanUseThanatosis(saveState, true);
-            BeaconSaveData.SetHasUsedThanatosis(saveState, true);
-            BeaconSaveData.SetMaxSpiralLevel(saveState, 1f);
-            BeaconSaveData.SetSpiralLevel(saveState, 1f);
-            BeaconSaveData.SetDreamerEncountersNumber(saveState, 3);
-        }
-
         // Not VV, hasnt used thanatosis. specifically encounter 3
         if (!MiscUtils.IsVhosRegion(owner.room.world.name)
             && !BeaconSaveData.GetHasUsedThanatosis(saveState)
