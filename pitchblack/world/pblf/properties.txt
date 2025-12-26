@@ -1,0 +1,4 @@
+overseersSpawnChance: 0
+playerGuideOverseerSpawnChance: 0
+hideTimer: true
+Room Setting Templates: Darkness
