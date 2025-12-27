@@ -1,9 +1,9 @@
 {
 	"id": "Beacon",
 	"name": "The Beacon",
-	"description": "A circumventer, lost. The will to persist lights the way. Unnatural, creating dissonance<LINE>with its nature. An entropic journey shall unfold for this dreamer.",
+	"description": "A frail dreamer, lost in a dissonant reality. Your unnatural will to<LINE>live lights the way, carving a path of entropy through painful lucidity.",
 	"features": {
-		"color": "1a1041",
+		"color": "1a1041",	
 		"food_min": 4,
 		"food_max": 6,
 		"diet": {
@@ -41,6 +41,6 @@
 		"title_card": "intro_roll_c_beacon",
 		"intro_slideshow": "Dream_Birth",
 
-		"pb/flip_boost": 0.45
+		"pb/flip_boost": 0.35
 	}
 }
