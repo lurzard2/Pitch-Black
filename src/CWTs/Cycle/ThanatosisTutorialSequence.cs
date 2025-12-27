@@ -417,10 +417,6 @@ public class ThanatosisTutorialSequence
         }
 
         float fate = demise - fight;
-        if (fate >= 0.8)
-        {
-            fate = 0.75f;
-        }
         targetDeathIntensity = fate;
     }
 
