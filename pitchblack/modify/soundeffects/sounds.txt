@@ -5,6 +5,6 @@
 [ADD]Player_Deactivated_Thanatosis_From_Stun : RWPB-Thanatosis04/vol=0.5 
 [ADD]Drowning_Thanatosis_LOOP : RWTW_Ripple_Portal/vol=0.5
 
-[ADD]Dreamer_Voice/vol=0.5 : RWPB-Dreamer01, RWPB-Dreamer02, RWPB-Dreamer03, RWPB-Dreamer04, RWPB-Dreamer05, RWPB-Dreamer06, RWPB-Dreamer07
+[ADD]Dreamer_Voice/vol=0.5 : RWPB-Dreamer01, RWPB-Dreamer02, RWPB-Dreamer03, RWPB-Dreamer04, RWPB-Dreamer05, RWPB-Dreamer06
 [ADD]Beacon_Voice/vol=0.5 : RWTW_NewLizard_Growl_01, RWTW_NewLizard_Growl_02, RWTW_NewLizard_Growl_03, RWTW_NewLizard_Growl_04, RWTW_NewLizard_Growl_05, RWTW_NewLizard_Growl_06, RWTW_NewLizard_Growl_07
 [ADD]Hybrid_Beacon_Voice/vol=0.5 : RWTW_NewLizard_RotScreams_02, RWTW_NewLizard_RotScreams_03, RWTW_NewLizard_RotScreams_04, RWTW_NewLizard_RotScreams_06, RWTW_NewLizard_RotScreams_08, RWTW_NewLizard_RotScreams_10, RWTW_NewLizard_RotScreams_12
