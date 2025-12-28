@@ -17,15 +17,13 @@ public class ElsehowView : PBBackgroundScene
     {
         this.effect = effect;
 
-        string s = "ElsehowView:";
-
         Random.State state = Random.state;
         Random.InitState(2);
 
         startAltitude = -300f;
         endAltitude = 31400f;
         cloudsStartDepth = 5f;
-        cloudsEndDepth = 40f;
+        cloudsEndDepth = 80f;
         distantCloudsEndDepth = 1000f;
         atmosphereColor = new Color(0.274f, 0.6f, 0.819f);
 
@@ -43,24 +41,22 @@ public class ElsehowView : PBBackgroundScene
         int towers = 100;
         for (int i = 0; i < towers; i++)
         {
-            float depth = Random.Range(70f, 200f);
+            float depth = Random.Range(8f, 100f);
             float xPlacement = Random.Range(-xSprawl, xSprawl);
-            float yPlacement = Random.Range(-550f, -300f);
+            float yPlacement = Random.Range(-550f, -300f) - 200f;
             int towerVariant = Random.Range(0, 3);
             float scale = Random.Range(0.75f, 1.25f);
             float rotation = Random.Range(-0.1f, 0.1f);
             Vector2 pos = PosFromDrawPosAtNeutralCamPos(new Vector2(xPlacement, yPlacement), depth);
-            AddElement(new Tower(this, "Centens_Tower_" + towerVariant.ToString(), pos, depth, scale, rotation, 0.1f));
-            //logger.LogDebug($"{s} Tower - pos={pos}(x{xPlacement}, y{yPlacement}) - depth={depth}");
+            AddElement(new Tower(this, "Centens_Tower_" + towerVariant.ToString(), pos, depth, scale, rotation));
         }
-        if (room.world.region != null)
-        {
-            startAltitude = (room.world.region.regionParams.cloudsStart ?? startAltitude);
-            endAltitude = (room.world.region.regionParams.cloudsEnd ?? endAltitude);
+        if (room.world.region != null) {
+            startAltitude = room.world.region.regionParams.cloudsStart ?? startAltitude;
+            endAltitude = room.world.region.regionParams.cloudsEnd ?? endAltitude;
             sceneOrigo = new Vector2(2514f, (startAltitude + endAltitude) / 2f);
         }
 
-        elseClouds = new List<ElseCloud>();
+        elseClouds = [];
 
         // Adding graphics
         loadedGraphics.Add("elsewhyClouds1");
@@ -77,17 +73,15 @@ public class ElsehowView : PBBackgroundScene
         int cloudCount = 9;
         for (int i = 0; i < cloudCount; i++)
         {
-            float cloudDepth = (float)i / (float)(cloudCount - 1);
+            float cloudDepth = i / (float)(cloudCount - 1);
             AddElement(new CloseElseCloud(this, new Vector2(0f, 0f), cloudDepth, i));
-            //logger.LogDebug($"{s} CloseElseCloud - depth={cloudDepth} index={i}");
         }
 
         int distantCloudCount = 140;
         for (int j = 0; j < distantCloudCount; j++)
         {
-            float distantCloudDepth = (float)j / (float)(distantCloudCount - 1);
+            float distantCloudDepth = j / (float)(distantCloudCount - 1);
             AddElement(new DistantElseCloud(this, new Vector2(0f, -40f * cloudsEndDepth * (1f - distantCloudDepth)), distantCloudsEndDepth, j));
-            //logger.LogDebug($"{s} DistantElseCloud - depth={distantCloudDepth}, index={j}");
         }
 
         // Flying clouds
@@ -155,10 +149,9 @@ public class ElsehowView : PBBackgroundScene
             }
         }
 
-        public Tower(ElsehowView scene, string assetName, Vector2 pos, float depth, float scale, float rotation, float atmosphericalDepthAdd) : base(scene, pos, depth)
+        public Tower(ElsehowView scene, string assetName, Vector2 pos, float depth, float scale, float rotation) : base(scene, pos, depth)
         {
             this.assetName = assetName;
-            this.atmosphericalDepthAdd = atmosphericalDepthAdd;
             this.scale = scale;
             this.pos = pos;
             this.depth = depth;
@@ -171,12 +164,13 @@ public class ElsehowView : PBBackgroundScene
             sLeaser.sprites = new FSprite[3];
             for (int i = 0; i < sLeaser.sprites.Length; i++)
             {
-                sLeaser.sprites[i] = new FSprite(assetName, true);
-                sLeaser.sprites[i].shader = rCam.game.rainWorld.Shaders["AncientUrbanBuilding"];
-                sLeaser.sprites[i].anchorY = 0f;
-                sLeaser.sprites[i].scale = scale;   
-                sLeaser.sprites[i].rotation = rotation;
-            }
+				sLeaser.sprites[i] = new FSprite(assetName, true) {
+					shader = rCam.game.rainWorld.Shaders["PitchBlackBackgroundBuildings"],
+					anchorY = 0f,
+					scale = scale,
+					rotation = rotation
+				};
+			}
             AddToContainer(sLeaser, rCam, null);
         }
 
@@ -187,7 +181,7 @@ public class ElsehowView : PBBackgroundScene
                 Vector2 vector = DrawPos(new Vector2(camPos.x, camPos.y), rCam.hDisplace);
                 sLeaser.sprites[i].x = vector.x;
                 sLeaser.sprites[i].y = vector.y;
-                sLeaser.sprites[i].color = new Color(Mathf.Pow(Mathf.InverseLerp(0f, 600f, depth + atmosphericalDepthAdd), 0.3f) * 0.9f, 1f - (float)i / 3f, 1f);
+                sLeaser.sprites[i].color = new Color(Mathf.Pow(Mathf.InverseLerp(0f, 60f, depth), 0.3f) * 0.9f, Mathf.InverseLerp(0f, 120f, depth), 1f);
             }
             base.DrawSprites(sLeaser, rCam, timeStacker, camPos);
         }
@@ -195,7 +189,6 @@ public class ElsehowView : PBBackgroundScene
         public string assetName;
         public float scale;
         public float rotation;
-        public float atmosphericalDepthAdd;
     }
     #endregion
 
