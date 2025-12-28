@@ -159,6 +159,9 @@ class  Plugin : BaseUnityPlugin
             self.Shaders["DreamSpawnBody"] = FShader.CreateShader("dreamspawnbody", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamspawnbody")).LoadAsset<Shader>("Assets/Shaders/DreamSpawnBody.shader"));
             self.Shaders["RoseGlow"] = FShader.CreateShader("roseglow", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/roseglow")).LoadAsset<Shader>("Assets/Shaders/RoseGlow.shader"));
 
+			// Haizlbliek Pitch Black Assets
+			self.Shaders["PitchBlackBackgroundBuildings"] = FShader.CreateShader("PitchBlackBackgroundBuildings", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/haizlbliekpitchblack")).LoadAsset<Shader>("Assets/Shaders/PBBackgroundBuildings.shader"));
+
             init = true;
         }
     }
