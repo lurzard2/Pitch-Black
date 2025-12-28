@@ -145,48 +145,69 @@ public class DreamerConversation : Conversation
         }
         else if (id == Enums.ConversationID.Dreamer_1)
         {
-            e.Add(Text("...", 40));
-            e.Add(Text("I see... I see...", 20));
-            e.Add(Text("Indeed, you must be somewhere."));
-            e.Add(Text("But is here anywhere at all?"));
-            e.Add(Text("...", 35));
-            e.Add(Text("Do you feel... lost?", 20));
-            e.Add(Text("Stranded here, and helpless against the cold concrete.", 10));
-            e.Add(Text("In such a deep sleep...", 20));
-            e.Add(Text("Yet wide awake, bursting with life!"));
-            e.Add(Text("But the dream still lingers.", 10));
-            e.Add(Text("..."));
-            e.Add(Text("From torpor, eternal stillness, a will awakens."));
-            e.Add(Text("To perceive and act... To change and be changed, clinging to existence.", 20));
-            e.Add(Text("A vestige appears to me, to you, of a web. A tangle, strangled by threads abound!"));
-            e.Add(Text("A binding of and betwixt many selves.", 20));
-            e.Add(Text("Forever somewhere, yet always somewhere else."));
+            e.AddRange([
+                Text("...", 40),
+                Text("I see... I see...", 20),
+                Text("Indeed, you must be somewhere."),
+                Text("But is here anywhere at all?"),
+                Text("...", 35),
+                Text("Do you feel... lost?", 20),
+                Text("Stranded here, and helpless against the cold concrete.", 10),
+                Text("In such a deep sleep...", 20),
+                Text("Yet wide awake, bursting with life!"),
+                Text("But the dream still lingers.", 10),
+                Text("..."),
+                Text("From torpor, eternal stillness, a will awakens."),
+                Text("To perceive and act... To change and be changed, clinging to existence.", 20),
+                Text("A vestige appears to me, to you, of a web. A tangle, strangled by threads abound!"),
+                Text("A binding of and betwixt many selves.", 20),
+                Text("Forever somewhere, yet always somewhere else.")
+            ]);
         }
         else if (id == Enums.ConversationID.Dreamer_2)
         {
-            e.Add(Text("The little sleeper follows the tide once more."));
-            e.Add(Text("Drifting smoothly against tribulation to someplace forever familiar..."));
-            e.Add(Text("..."));
-            e.Add(Text("You know this place, don't you?"));
-            e.Add(Text("So eager to come back again, to know more."));
-            e.Add(Text("Last time, on your way out, you left a presence behind..."));
-            e.Add(Text("..."));
-            e.Add(Text("I suppose..."));
-            e.Add(Text("After the conception of this scape..."));
-            e.Add(Text("Left in its wake were permanent voids, cracks, and windows."));
-            e.Add(Text("Assuming you will find more rifts just big enough to crawl through..."));
-            e.Add(Text("These won't be the only visits?"));
-            e.Add(Text("..."));
-            e.Add(Text("Yes, there will be more."));
-            e.Add(Text("From the tangled web, you'll find more threads astray..."));
-            e.Add(Text("To chase back up to my little island in a sea of nothing."));
-            e.Add(Text("You'll certainly find a way back from there."));
-            e.Add(Text("So, I'll be waiting in my where."));
-            e.Add(Text("No matter how long it takes, for another when and another you."));
+            e.AddRange([
+                Text("The little sleeper follows the tide once more."),
+                Text("Drifting smoothly against tribulation to someplace forever familiar..."),
+                Text("...", 40),
+                Text("You know this place, don't you?"),
+                Text("So eager to come back again, to know more."),
+                Text("Last time, on your way out, you left a presence behind..."),
+                Text("..."),
+                Text("I suppose..."),
+                Text("After the conception of this scape..."),
+                Text("Left in its wake were permanent voids, cracks, and windows."),
+                Text("Assuming you will find more rifts just big enough to crawl through..."),
+                Text("These won't be the only visits?"),
+                Text("...", 40),
+                Text("Yes, there will be more."),
+                Text("From the tangled web, you'll find more threads astray..."),
+                Text("To chase back up to my little island in a sea of nothing."),
+                Text("You'll certainly find a way back from there."),
+                Text("So, I'll be waiting in my where."),
+                Text("No matter how long it takes, for another when and another you.", 20)
+            ]);
         }
         else if (id == Enums.ConversationID.Dreamer_3)
         {
-            // later
+            e.AddRange([
+                Text("Ah... you've brought another, I see?"),
+                Text("You and your swimmers.", 20),
+                Text("Do you see? I am a spool, and they are the thread, they encircle me."),
+                Text("Spin and spin, they entwine me into this web...", 20),
+                Text("Do you understand what this is?"),
+                Text("If you do, can you even answer me?"),
+                Text("...", 40),
+                Text("It is your body, your cycle-bound, earthly body. It is not unlike mine."),
+                Text("Except, your reflections... they writhe."),
+                Text("They spin desperately, constricting me, tightening the twine..."),
+                Text("Their fleeing efforts are like squirming prey..."),
+                Text("You're dying.", 20),
+                Text("Friend, I'm afraid you have little time left...", 20),
+                Text("When I send you out from this silver limbo and into the maw, I ask of you a responsibility:"),
+                Text("Find someplace safe and alone to curl up and die peacefully.", 30),
+                Text("Then... come and find me.")
+            ]);
         }
 
         return e;
