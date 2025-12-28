@@ -1,0 +1,10 @@
+DangerType: Flood
+WaveSpeed: 0.5
+WaveLength: 0.75
+WaveAmplitude: 0.04641051
+SecondWaveLength: 0.1666667
+SecondWaveAmplitude: 0
+EffectColorA: 16
+Effects: Fog-0-11-51, LightBurn-0.2173913-18-111, ModifyEffectColorA-0.9456522,0.5,1-745-372, 
+PlacedObjects: Corruption><704.0034><146.55><0~100, PassiveCorruption><253.9586><136.6957><0~100~0~0~7~15~0.8~0.3~0.55~0.05~0.15~0.2~0.2~Default~Dot~Passive~2~0~1, PassiveCorruption><206.8><582.2486><0~100~0~0~7~15~0.8~0.3~0.55~0.05~0.15~0.2~0.2~Default~Dot~Passive~2~0~1, InsectGroup><709.3525><333.1717><1~142~0~0~StandardFly~0.2065217, LightSource><739.5655><328.9228><0.08695652~Environment~-143~169~50~86.60254~1~0~None~0~0, CorruptionDarkness><704.8613><115.1662><0~100, RottenDangleFruit><622.423><515.1495><0~0~2~3, RottenDangleFruit><676.3019><535.5272><0~0~2~3, RottenDangleFruit><773.3098><502.6909><0~0~2~3, 
+AmbientSounds: SPOT><am_ind-utility02.ogg><714.5203><311.301><0.3478261><1><971.5203><328.301><-203.3553><-9.355347><0><0.1, SPOT><so_wat-lildrips.ogg><713.3492><185.8814><0.3043478><1><478.3492><276.8814><-162.3553><-68.35535><0><0.1, SPOT><so_wat-lildrips.ogg><479.3624><179.8951><0.3043478><1><487.3624><553.8951><-169.3553><-24.35535><0><0.1, 
