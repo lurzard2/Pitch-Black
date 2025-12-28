@@ -1,0 +1,8 @@
+BkgDroneVolume: 0.2569565
+EffectColorA: 16
+EffectColorB: 18
+Effects: LightBurn-0.1521739-13-61, ModifyEffectColorA-0.9456522,0.5,1-778-407, 
+PlacedObjects: LightSource><456.7446><262.8001><0.08695652~Environment~70~202~-146~-299.3975~1~0~None~0~0, LightSource><703.8439><278.8234><0.08695652~Environment~-3~140~-91~-264.3975~1~0~None~0~0, PuffBall><511.6416><195.4181><0~0~2~3, CentipedeAttractor><204.224><71.55171><-161~70, CentipedeAttractor><831.0066><74.30013><-162~72, InsectGroup><462.2217><330.698><9~170~0~0~Beetle~0.1956522, Corruption><284.8049><188.0577><4~77, Corruption><485><189><4~77, Corruption><672><193><4~77, PassiveCorruption><65.16479><491.3191><0~100~-162~-395~7~15~0.8~0.3~0.55~0.05~0.15~0.2~0.2~Default~Dot~Passive~2~0~1, PassiveCorruption><890.0258><484.9484><-2~71~-402~-193~7~15~0.8~0.3~0.55~0.05~0.15~0.2~0.2~Default~Dot~Passive~2~0~1, Corruption><838.1311><594.151><0~100, CorruptionDarkness><284.173><177.3154><3~72, CorruptionDarkness><478><173><3~72, CorruptionDarkness><666><181><3~72, RottenDangleFruit><697.2211><451.9479><0~0~2~3, RottenDangleFruit><752.8174><423.1683><0~0~2~3, 
+AmbientSounds: OMNI><AM_ENV-LightWind.ogg><650.413><643.3842><0.3043478><0.7847826, SPOT><SO_NAT-LilDrips.ogg><38.8645><178.086><0.2173913><1><341.8645><157.086><-181.3553><-63.35535><0><0.3934784, SPOT><SO_NAT-LilDrips.ogg><40.9458><65.70914><0.1956522><1><669.9458><190.7091><-150.3553><-50.35535><0><0.2847827, SPOT><AM_IND-Utility02.ogg><763.9665><464.6972><0.3804348><1><501.9665><570.6971><-212.3553><-60.35535><0><0.404348, 
+FadePalette: 8, 0
+RoomSpecificScriptActive: ON
