@@ -9,17 +9,22 @@ namespace PitchBlack;
 
 public class ThanatosisTutorialSequence
 {
-    public string SequenceText => room.world.game.manager.rainWorld.inGameTranslator.Translate("Hold SPECIAL, and don't stop"/*"Hold SPECIAL to push it away, but don't push too far"*/);
-    public string CycleDisplayText => room.world.game.manager.rainWorld.inGameTranslator.Translate($"Cycle {cycle.saveState.cycleNumber} ~ {Region.GetRegionFullName(cycle.owner.room.world.region.name, SlugcatStats.Name.White)}");
-    public string SequenceCompleteText => room.world.game.manager.rainWorld.inGameTranslator.Translate("Hold SPECIAL to enter and exit a state of thanatosis");
+    #region Prompts
+    public InGameTranslator Translator => room.world.game.manager.rainWorld.inGameTranslator;
+    public string SequenceText => Translator.Translate("Hold SPECIAL to maintain stasis, but if it gets too close...");
+    public string SequenceInvertedText => Translator.Translate("The tides are shifting. And If it gets too far...");
+    public string CycleDisplayText => Translator.Translate($"Cycle {cycle.saveState.cycleNumber} ~ {Region.GetRegionFullName(cycle.owner.room.world.region.name, SlugcatStats.Name.White)}");
+    public string SequenceCompleteText => Translator.Translate("Hold SPECIAL to enter and exit a state of thanatosis");
+    #endregion
 
-    public BeaconCycle cycle;
+    public BeaconCycle cycle;   
     public Room room;
     public Counter sequenceTime = new(Int32.MaxValue, 0, true);
     public Counter sequencePhaseTime = new(Int32.MaxValue, 0, true);
     public Counter timeTilCycleDisplay = new(25, 0, true);
     public CreatureSpasmer spasmer;
 
+    #region Phases
     public class Phase : ExtEnum<Phase>
     {
         public Phase(string value, bool register) : base(value, register) { }
@@ -48,12 +53,14 @@ public class ThanatosisTutorialSequence
         this.phase = phase;
         sequencePhaseTime.Reset();
     }
+    #endregion
 
     float tutorialDeathIntensity = 0;
     float targetDeathIntensity = 0;
 
     public bool markedAsDead;
     private bool seenSpecialPromptThisCycle;
+    private bool seenPromptForTidesShifting;
     private bool seenTrueTutorialPromptThisCycle;
 
     private SequenceSong thanatosisSong;
@@ -70,6 +77,7 @@ public class ThanatosisTutorialSequence
         //saveGameFramesDefault = cycle.owner.room.world.game.framesPerSecond;
         markedAsDead = false;
         seenSpecialPromptThisCycle = false;
+        seenPromptForTidesShifting = false;
         seenTrueTutorialPromptThisCycle = false;
         thanatosisSong = new SequenceSong(room.game.manager.musicPlayer, songName);
         songPlayed = false;
@@ -124,7 +132,7 @@ public class ThanatosisTutorialSequence
                             if (obj != null && obj.intensity > 0.6f)
                             {
                                 cycle.saveState.cycleNumber--;
-                                if (obj.intensity >= 0.8f)
+                                if (obj.intensity >= 0.85f)
                                 {
                                     cycle.saveState.cycleNumber -= UnityEngine.Random.Range(1, 4);
                                 }
@@ -135,14 +143,14 @@ public class ThanatosisTutorialSequence
                     {
                         if (timeTilCycleDisplay.isFinished)
                         {
-                            cycle.owner.room.game.cameras[0].hud.textPrompt.AddMessage(CycleDisplayText, 40, 30, false, true);
-                            var prompt = cycle.owner.room.game.cameras[0].hud.textPrompt;
-                            if (prompt.messages.Count > 0
-                                && prompt.messages[0].text == CycleDisplayText
-                                && prompt.messages[0].text != SequenceText)
-                            {
-                                prompt.messages[0].time = 20;
-                            }
+                            MiscUtils.AddHUDMessage(cycle.owner.room.game.cameras[0].hud, false, CycleDisplayText, 40, 20, false, true);
+                            //cycle.owner.room.game.cameras[0].hud.textPrompt.AddMessage(CycleDisplayText, 40, 30, false, true);
+                            //var prompt = cycle.owner.room.game.cameras[0].hud.textPrompt;
+                            //if (prompt.messages.Count > 0
+                            //    && prompt.messages[0].text == CycleDisplayText)
+                            //{
+                            //    prompt.messages[0].time = 20;
+                            //}
                             timeTilCycleDisplay.Reset();
                             obj = null;
                         }
@@ -151,11 +159,11 @@ public class ThanatosisTutorialSequence
             }
 
             // Death effect
-            if (targetDeathIntensity < 0f)
+            if (targetDeathIntensity < 0)
             {
                 targetDeathIntensity = 0;
             }
-            tutorialDeathIntensity = Mathf.Lerp(tutorialDeathIntensity, targetDeathIntensity, 0.006f);
+            tutorialDeathIntensity = Mathf.Lerp(tutorialDeathIntensity, targetDeathIntensity, 0.01f);
             cycle.owner.rippleDeathIntensity = tutorialDeathIntensity;
 
             // Drowning
@@ -164,7 +172,7 @@ public class ThanatosisTutorialSequence
                 cycle.owner.airInLungs -= tutorialDeathIntensity;
             }
 
-            logger.LogDebug($"EFFECT:{targetDeathIntensity} - PHASE:{phase.value} - THANATOSISLERP:{cycle.thanatosisLerp}");
+            //logger.LogDebug($"EFFECT:{targetDeathIntensity} - PHASE:{phase.value} - THANATOSISLERP:{cycle.thanatosisLerp}");
 
             if (markedAsDead)
             {
@@ -181,7 +189,7 @@ public class ThanatosisTutorialSequence
 
         if (phase == Phase.JustExitedFromEncounter)
         {
-            if (sequenceTime == (40 * 30))
+            if (sequenceTime == (40 * 20))
             {
                 ChangePhase(Phase.PendingSuffocation);
             }
@@ -189,7 +197,7 @@ public class ThanatosisTutorialSequence
 
         if (phase == Phase.PendingSuffocation)
         {
-            if (sequencePhaseTime == (40 * 45))
+            if (sequencePhaseTime == (40 * 35))
             {
                 ChangePhase(Phase.StartSuffocation);
             }
@@ -220,7 +228,7 @@ public class ThanatosisTutorialSequence
 
         if (phase == Phase.SlowlyCloseIn)
         {
-            if (sequencePhaseTime >= (40 * 10))
+            if (sequencePhaseTime >= (40 * 8))
             {
                 ChangePhase(Phase.PassEventHorizon_StayInSpotInCurrentRoom);
             }
@@ -259,14 +267,15 @@ public class ThanatosisTutorialSequence
             {
                 if (!seenSpecialPromptThisCycle)
                 {
-                    var prompt = cycle.owner.room.world.game.cameras[0].hud.textPrompt;
+                    MiscUtils.AddHUDMessage(cycle.owner.room.game.cameras[0].hud, true, SequenceText, 40, 180, true, true);
+                    //var prompt = cycle.owner.room.world.game.cameras[0].hud.textPrompt;
                     STOPSHOWINGCONSISTENTCYCLES = true;
-                    prompt.messages.Clear();
-                    AddSpecialInputPrompt();
-                    if (prompt.messages.Count > 0 && prompt.messages.Count < 2 && prompt.messages[0].text == SequenceText)
-                    {
-                        prompt.messages[0].time = 180;
-                    }
+                    //prompt.messages.Clear();
+                    //AddSpecialInputPrompt();
+                    //if (prompt.messages.Count > 0 && prompt.messages.Count < 2 && prompt.messages[0].text == SequenceText)
+                    //{
+                    //    prompt.messages[0].time = 180;
+                    //}
                     seenSpecialPromptThisCycle = true;
                 }
             }
@@ -279,16 +288,16 @@ public class ThanatosisTutorialSequence
 
         if (phase == Phase.PassPersistEventHorizon_NoLongerNeedsInput)
         {
+            targetDeathIntensity = 0.3f;
             STOPSHOWINGCONSISTENTCYCLES = false;
             if (cycle.thanatosisLerp < 0.5f)
             {
                 cycle.thanatosisLerp += 0.004f;
             }
-            if (sequencePhaseTime <= 60)
+            if (sequencePhaseTime <= 40)
             {
-                if (spasmer == null)
+                if (!cycle.owner.Malnourished)
                 {
-                    spasmer = new(cycle.owner, false, sequencePhaseTime + 40);
                     cycle.owner.SetMalnourished(true, false);
                 }
                 return;
@@ -307,18 +316,19 @@ public class ThanatosisTutorialSequence
         {
             if (!seenTrueTutorialPromptThisCycle)
             {
-                var prompt = cycle.owner.room.game.cameras[0].hud.textPrompt;
+                MiscUtils.AddHUDMessage(cycle.owner.room.game.cameras[0].hud, true, SequenceCompleteText, 120, 220, true, true);
+                //var prompt = cycle.owner.room.game.cameras[0].hud.textPrompt;
                 STOPSHOWINGCONSISTENTCYCLES = true;
-                prompt.messages.Clear();
-                cycle.owner.room.game.cameras[0].hud.textPrompt.AddMessage(SequenceCompleteText, 40, 200, true, true);
-                if (prompt.messages.Count > 0)
-                {
-                    // Tutorial text
-                    if (prompt.messages[0].text == SequenceCompleteText)
-                    {
-                        prompt.messages[0].time = 180;
-                    }
-                }
+                //prompt.messages.Clear();
+                //cycle.owner.room.game.cameras[0].hud.textPrompt.AddMessage(SequenceCompleteText, 40, 200, true, true);
+                //if (prompt.messages.Count > 0)
+                //{
+                //    // Tutorial text
+                //    if (prompt.messages[0].text == SequenceCompleteText)
+                //    {
+                //        prompt.messages[0].time = 180;
+                //    }
+                //}
                 seenTrueTutorialPromptThisCycle = true;
             }
 
@@ -329,95 +339,46 @@ public class ThanatosisTutorialSequence
             ChangePhase(Phase.UsedThanatosis);
         }
     }
-
-    private void Fight(int input)
+    private void Fight(int time, bool inputDown)
     {
-        float demise = 0;
-        float fight = 0;
-        int time = 0;
+        float lastIntensity = cycle.owner.rippleDeathIntensity;
+        bool inverted = time >= (40 * 45);
+        float increment = 0.006f;
 
-        //targetDeathIntensity = 0.8f;
-
-        //if (input > 0)
-        //{
-        //    targetDeathIntensity -= 0.006f;
-        //}
-
-        //if (sequencePhaseTime >= 40 * 90)
-        //{
-        //    ChangePhase(Phase.PassPersistEventHorizon_NoLongerNeedsInput);
-        //}
-
-        // ---
-
-        demise = 0.8f;
-
-        time = 40;
-        if (input >= time)
+        // Show prompt when inverted!
+        var prompt = cycle.owner.room.game.cameras[0].hud.textPrompt;
+        if (inverted && !seenPromptForTidesShifting)
         {
-            fight = 0.5f;
+            MiscUtils.AddHUDMessage(cycle.owner.room.game.cameras[0].hud, true, SequenceInvertedText, 40, 220, true, true);
+            STOPSHOWINGCONSISTENTCYCLES = true;
+            seenPromptForTidesShifting = true;
         }
-        if (sequencePhaseTime >= time)
+        // Turn back on cycle counting
+        if (prompt.messages.Count == 0 && STOPSHOWINGCONSISTENTCYCLES && seenPromptForTidesShifting)
         {
-            demise += 0.2f;
+            STOPSHOWINGCONSISTENTCYCLES = false;
         }
 
-        time = 40 * 20;
-        if (input >= time)
+        // Increasing and decreasing intensity, then inverting it
+        if (inputDown)
         {
-            fight += 0.2f;
+            targetDeathIntensity = inverted ? targetDeathIntensity += increment : targetDeathIntensity -= increment;
         }
-        if (sequencePhaseTime >= time + (40 * 10))
+        else
         {
-            demise += 0.25f;
-        }
-
-        time = 40 * 35;
-        if (input >= time)
-        {
-            fight += 0.1f;
-            if (input >= time + (40 * 8))
-            {
-                fight += 0.2f;
-            }
-        }
-        if (sequencePhaseTime >= time + (40 * 5))
-        {
-            demise += 0.15f;
+            targetDeathIntensity = inverted ? targetDeathIntensity -= increment : targetDeathIntensity += increment;
         }
 
-        time = 40 * 60;
-        if (input >= time)
+        if (time >= 40 * 98)
         {
-            fight += 0.3f;
-        }
-        if (sequencePhaseTime >= time + (40 * 10))
-        {
-            demise += 0.6f;
-        }
-
-        time = 40 * 80;
-        if (input >= time)
-        {
-            fight += 0.3f;
-        }
-
-        if (input >= 40 * 85)
-        {
-            fight += 0.9f;
-            demise = 0;
-        }
-
-        time = 40 * 90;
-        if ((input >= time) && fight > demise)
-        {
-            fight = 0;
-            demise = 0;
             ChangePhase(Phase.PassPersistEventHorizon_NoLongerNeedsInput);
         }
 
-        float fate = demise - fight;
-        targetDeathIntensity = fate;
+        if (lastIntensity == 0.1f || lastIntensity == 0.8f)
+        {
+            // For now, before I rewrite it.
+            cycle.owner.Die();
+        }
     }
 
     private void FightDeathUpdate()
@@ -430,7 +391,7 @@ public class ThanatosisTutorialSequence
             holdingInput = true;
         }
 
-        Fight(inputCount);
+        Fight(sequencePhaseTime, holdingInput);
 
         if (holdingInput)
         {
@@ -443,13 +404,8 @@ public class ThanatosisTutorialSequence
         if (cycle.cycle.idleRipplesToSpawn >= 8 && cycle.cycle.spawnRipples)
         {
             cycle.cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
-            cycle.owner.room.PlaySound(Enums.SoundID.Player_Deactivated_Thanatosis, 0.5f, 0.05f * cycle.cycle.idleRipplesToSpawn, 0.85f);
+            cycle.owner.room.PlaySound(Enums.SoundID.Player_Deactivated_Thanatosis, 0.5f, 0.03f * cycle.cycle.idleRipplesToSpawn, 0.85f);
         }
-    }
-
-    private void AddSpecialInputPrompt()
-    {
-        cycle.owner.room.game.cameras[0].hud.textPrompt.AddMessage(SequenceText, 40, 240, true, true);
     }
 
     private void KillingUpdate()

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using HUD;
 
 namespace PitchBlack;
 
@@ -119,5 +120,23 @@ public static class MiscUtils
 
         spawn.PlaceInRoom(room);
         spawn.ChangeRippleLayer(rippleLayer, true);
+    }
+
+    public static void AddHUDMessage(HUD.HUD hud, bool clear, string text, int wait, int time, bool darken, bool hideHUD)
+    {
+        var prompt = hud.textPrompt;
+        // Clear previous, to force it to 0
+        if (clear)
+        {
+            prompt.messages.Clear();
+        }
+
+        // Add message to list
+        // "time" is +10 in the AddMessage line because it must be longer than the actual time, and we override time after.
+        prompt.AddMessage(text, wait, time + 10, darken, hideHUD);
+        if (prompt.messages.Count > 0 && prompt.messages[0].text == text)
+        {
+            prompt.messages[0].time = time;
+        }
     }
 }
