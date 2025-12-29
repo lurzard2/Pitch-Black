@@ -335,6 +335,7 @@ public class ThanatosisTutorialSequence
             BeaconSaveData.SetHasUsedThanatosis(cycle.saveState, true);
             // Do not make them do that whole thing over again
             RainWorldGame.ForceSaveNewDenLocation(cycle.owner.room.world.game, cycle.owner.room.abstractRoom.name, false);
+            cycle.cycle.spawnRipples = false;
             // Ends sequence
             ChangePhase(Phase.UsedThanatosis);
         }
