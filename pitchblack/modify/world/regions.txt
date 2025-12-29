@@ -4,5 +4,7 @@
 [ADD]CRID
 // Industrial Outflow
 [ADD]IDDC
-//Dissolved Fields
+//Rotten regions
 [ADD]PBLF
+[ADD]PBSB
+[ADD]PBSL
