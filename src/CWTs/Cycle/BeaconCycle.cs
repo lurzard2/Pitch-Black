@@ -33,6 +33,7 @@ public class BeaconCycle
 
     public void Update()
     {
+
         if (MiscUtils.RegionOutSideCycle(owner.abstractCreature.world))
         {
             return;
@@ -52,6 +53,18 @@ public class BeaconCycle
             if (owner != null)
             {
                 cycle.RealizedUpdate();
+            }
+        }
+
+        if (BeaconSaveData.GetCompletedBeacon(saveState) && cycle.cycleTime == 40*10)
+        {
+            var prompt = owner.room.world.game.cameras[0].hud.textPrompt;
+            prompt.messages.Clear();
+            string ptText = "[THIS MARKS THE END OF THE PLAYTEST CURRENTLY]";
+            owner.room.game.cameras[0].hud.textPrompt.AddMessage(ptText, 40, 30, true, true);
+            if (prompt.messages.Count == 0 && prompt.messages[0].text == ptText)
+            {
+                prompt.messages[0].time = 180;
             }
         }
 
@@ -82,6 +95,7 @@ public class BeaconCycle
                 if (thanatosisTutorialSequence.phase == ThanatosisTutorialSequence.Phase.UsedThanatosis)
                 {
                     thanatosisTutorialSequence = null;
+                    BeaconSaveData.SetCompletedBeacon(saveState, true);
                     return;
                 }
             }
@@ -152,6 +166,8 @@ public class BeaconCycle
             thanatosisLerp += 0.01f;
         }
 
+        // this will have to be modified later to be actually uh, good
+
         float thanatosisTime = cycle.cycleStateTime; //x
         float minSafeTime = 12 * 40f; //tc
         float maxSafeTime = 60 * 40f; // Tc
@@ -159,7 +175,7 @@ public class BeaconCycle
         float endIntensity = 0.45f; //m
         float windUpTime = 3 * 40f; //wc
         float rampUpTime = 3 * 40f; //Wc
-        float plateauDuration = (SpiralLevel - 1) * (maxSafeTime - (windUpTime + rampUpTime) * 2) / 4 + minSafeTime - windUpTime - rampUpTime; //c
+        float plateauDuration = (SpiralLevel) * (maxSafeTime - (windUpTime + rampUpTime) * 2) / 4 + minSafeTime - windUpTime - rampUpTime; //c
                          
         // Starting plateau
         if (thanatosisTime < windUpTime)
