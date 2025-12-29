@@ -33,7 +33,7 @@ public class BeaconCycle
 
     public void Update()
     {
-
+        // Stopsplayer ripples and thanatosis
         if (MiscUtils.RegionOutSideCycle(owner.abstractCreature.world))
         {
             return;
@@ -58,21 +58,15 @@ public class BeaconCycle
 
         if (BeaconSaveData.GetCompletedBeacon(saveState) && cycle.cycleTime == 40*10)
         {
-            var prompt = owner.room.world.game.cameras[0].hud.textPrompt;
-            prompt.messages.Clear();
             string ptText = "[THIS MARKS THE END OF THE PLAYTEST CURRENTLY]";
-            owner.room.game.cameras[0].hud.textPrompt.AddMessage(ptText, 40, 30, true, true);
-            if (prompt.messages.Count == 0 && prompt.messages[0].text == ptText)
-            {
-                prompt.messages[0].time = 180;
-            }
+            MiscUtils.AddHUDMessage(owner.room.game.cameras[0].hud, true, ptText, 0, 100, true, true);
         }
 
         // New cycle, catch up to max revives
-        //if (cycle.cycleTime == 1 && SpiralLevel < MaxSpiralLevel)
-        //{
-        //    BeaconSaveData.SetSpiralLevel(saveState, MaxSpiralLevel);
-        //}
+        if (cycle.cycleTime == 1 && SpiralLevel < MaxSpiralLevel)
+        {
+            BeaconSaveData.SetSpiralLevel(saveState, MaxSpiralLevel);
+        }
 
         // Save cycle to save data on end
         //var manager = owner.abstractCreature.world.game.manager;
