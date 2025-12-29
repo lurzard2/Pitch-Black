@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using HUD;
+using System.Linq;
 
 namespace PitchBlack;
 
@@ -20,11 +21,17 @@ public static class MiscUtils
 
     public static bool RegionOutSideCycle(this World world)
     {
-        return world != null
-            && (IsVhosRegion(world.name)
-            || world.name.ToLowerInvariant() == "ud"
-            || Region.IsAncientUrbanRegion(world.name)
-            || Region.IsDaemonRegion(world.name));
+        bool isPBSBRegion = world.name.ToLowerInvariant() == "pbsb";
+        bool watcherCondition = Region.IsAncientUrbanRegion(world.name) || Region.IsDaemonRegion(world.name);
+
+        if (IsVhosRegion(world.name) || isPBSBRegion || watcherCondition)
+        {
+            return true;
+        }
+        //for (int i = 0; i < world.abstractRooms.Length; i++)
+        //{
+        //}
+        return false;
     }
 
     public static bool IsVhosRegion(string name) => name.ToLowerInvariant() == "vv";
