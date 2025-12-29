@@ -256,11 +256,14 @@ public class BeaconCycle
                 ? Enums.SoundID.Player_Activated_Thanatosis
                 : Enums.SoundID.Player_Deactivated_Thanatosis;
 
-            MiscUtils.MaterializeDreamSpawn(owner.room, owner.mainBodyChunk.pos, Enums.DreamSpawnSource.Jetsam, 0, true);
+            MiscUtils.MaterializeDreamSpawn(owner.room, owner.mainBodyChunk.pos, Enums.DreamSpawnSource.Jetsam);
             cycle.AddRipple(rippleSource);
             cycle.ChangeState(cycleState);
             owner.room.PlaySound(soundEffect, owner.mainBodyChunk);
             cycle.abstractOwner.rippleLayer = isDead ? 1 : 0;
+
+            // Rot immunity
+            cycle.abstractOwner.tentacleImmune = isDead;
         }
     }
 }
