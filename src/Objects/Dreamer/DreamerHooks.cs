@@ -118,23 +118,20 @@ public static class DreamerMode_Hooks
 {
     public static float lastGhostMode;
     public static float targetGhostMode;
-    private static string s = "DreamerEffects:";
     public static DreamerPresence currentTarget = null;
-    //private static int trackPalette = 32;
-    //private static Texture2D dreamFadeTex;
 
-    private static void LoadDreamPalette(RoomCamera cam, int index)
-    {
-        cam.LoadGhostPalette(index);
-    }
+	public static Texture2D dreamerFadeTex = null;
 
     public static void Inject()
     {
         On.RoomCamera.Update += RoomCamera_Update;
+        On.RoomCamera.ctor += On_RoomCamera_ctor;
+        On.RoomCamera.ClearAllSprites += On_RoomCamera_ClearAllSprites;
+        On.RoomCamera.ApplyFade += On_RoomCamera_ApplyFade;
     }
 
-    // I apologize in advance for the horrendous indents but how about you take a crack at it if you think you can do better
-    private static void RoomCamera_Update(On.RoomCamera.orig_Update orig, RoomCamera self)
+	// I apologize in advance for the horrendous indents but how about you take a crack at it if you think you can do better
+	private static void RoomCamera_Update(On.RoomCamera.orig_Update orig, RoomCamera self)
     {
         orig(self);
 
@@ -214,4 +211,28 @@ public static class DreamerMode_Hooks
             }
         }
     }
+
+	private static void On_RoomCamera_ctor(On.RoomCamera.orig_ctor orig, RoomCamera self, RainWorldGame game, int cameraNumber)
+	{
+		orig(self, game, cameraNumber);
+		self.LoadPalette(1004, ref dreamerFadeTex);
+	}
+
+	private static void On_RoomCamera_ClearAllSprites(On.RoomCamera.orig_ClearAllSprites orig, RoomCamera self)
+	{
+		orig(self);
+		UnityEngine.Object.Destroy(dreamerFadeTex);
+	}
+
+	private static void On_RoomCamera_ApplyFade(On.RoomCamera.orig_ApplyFade orig, RoomCamera self)
+	{
+		Texture2D ghostFadeTex = self.ghostFadeTex;
+		if (currentTarget != null) {
+			self.ghostFadeTex = dreamerFadeTex;
+		}
+
+		orig(self);
+
+		self.ghostFadeTex = ghostFadeTex;
+	}
 }
