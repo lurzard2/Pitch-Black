@@ -31,8 +31,8 @@ LB: LMiniLongLegs Creature
 Leo: RotRat Creature
 Dutch: Level design, Industrial Outflow, Corroded Manufactory
 Tronsx: Level design
-scuglat: Beacon select screen description, dialogue qa, ideas
-(NOT) Reincarnid: Dialogue qa, ideas
+Scuglat: Beacon select screen description, dialogue qa + writing, ideas
+(NOT) Reincarnid: Dialogue qa + writing, ideas
 
 REGIONS
 "VV - Elsehow"
