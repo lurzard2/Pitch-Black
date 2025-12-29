@@ -82,6 +82,7 @@ class  Plugin : BaseUnityPlugin
         DreamerHooks.Apply();
         WarpPointHooks.Apply();
         RotImmunity.Apply();
+        CreatureHooks.Apply();
 
         MenuSceneHooks.Apply();
         PhysicalObjectHooks.Apply();
