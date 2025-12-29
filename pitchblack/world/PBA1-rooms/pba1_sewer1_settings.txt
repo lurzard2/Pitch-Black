@@ -1,0 +1,5 @@
+Template: pba1_settingstemplate_sewer
+Grime: 0.3608697
+BkgDroneVolume: 0
+WaterReflectionAlpha: 0.4434785
+FadePalette: 8, 0.1507248, 0.1507247
