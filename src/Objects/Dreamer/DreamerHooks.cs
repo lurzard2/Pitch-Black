@@ -135,12 +135,6 @@ public static class DreamerMode_Hooks
     {
         orig(self);
 
-        //if (currentTarget != null && trackPalette == 32)
-        //{
-        //    LoadDreamPalette(self, 1004);
-        //    trackPalette = 1004;
-        //}
-
         if (dreamerPresence.TryGetValue(self.room.world, out var presences) && MiscUtils.IsBeacon(self.room.world.game.session))
         {
             //logger.LogDebug($"{s} Presence CWT accessed and campaign is Beacon, proceeding to determine ghostMode of room");
