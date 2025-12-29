@@ -192,21 +192,28 @@ public class DreamerConversation : Conversation
         {
             e.AddRange([
                 Text("Ah... you've brought another, I see?"),
-                Text("You and your swimmers.", 20),
+                Text("You and these little floaters.", 20),
+                Text("Now that you're finally here..."),
                 Text("Do you see? I am a spool, and they are the thread, they encircle me."),
                 Text("Spin and spin, they entwine me into this web...", 20),
-                Text("Do you understand what this is?"),
-                Text("If you do, can you even answer me?"),
+                Text("...Do you really hear me?"),
+                Text("Do you understand that?"),
+                Text("Can you answer me?"),
                 Text("...", 40),
-                Text("It is your body, your cycle-bound, earthly body. It is not unlike mine."),
-                Text("Except, your reflections... they writhe."),
-                Text("They spin desperately, constricting me, tightening the twine..."),
-                Text("Their fleeing efforts are like squirming prey..."),
-                Text("You're dying.", 20),
-                Text("Friend, I'm afraid you have little time left...", 20),
-                Text("When I send you out from this silver limbo and into the maw, I ask of you a responsibility:"),
-                Text("Find someplace safe and alone to curl up and die peacefully.", 30),
-                Text("Then... come and find me.")
+                Text("Still, you are held by the tethers of reality, a cycle-bound vessel you are forced to inhabit."),
+                Text("I am too.", 20),
+                Text("...", 20),
+                Text("But I can see your reflections, writhing in pain.", default, 40),
+                Text("I can see the window, shattered as it may be."),
+                Text("Each shard vorpal, pointed and glimmering with your blood.", 20),
+                Text("You're dying.", 40),
+                Text("You're drowning as you drift deeper beneath the waves..."),
+                Text("And I'm afraid there's not much time left for you there, friend."),
+                Text("If you can bear a responsibility for me, a favor..."),
+                Text("When I free you from my personal purgatory..."),
+                Text("Find somewhere comfortable where you can curl up and die peacefully, please."),
+                Text("Don't struggle. Don't cry. I can't bear to see it anymore.", 20),
+                Text("Then, come and find me, when you finally wake.")
             ]);
         }
 
