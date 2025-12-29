@@ -178,7 +178,8 @@ public static class ScugGraphics
             Color eyeColor = new Color(color.r, color.g, color.b);
 
             int flares = bCWT.storage.storedFlares.Count;
-            skinColor = Color.Lerp(Colors.BeaconDefaultColor, Colors.BeaconFullColor, flares / (float)4);
+            Color DecidedBaseColor = self.player.Malnourished ? Colors.BeaconStarveColor : Colors.BeaconDefaultColor;
+            skinColor = Color.Lerp(DecidedBaseColor, Colors.BeaconFullColor, flares / (float)4);
             eyeColor = Colors.BeaconEyeColor;
             
             if (bCWT.playerCycle != null

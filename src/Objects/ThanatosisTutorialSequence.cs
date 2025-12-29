@@ -103,15 +103,6 @@ public class ThanatosisTutorialSequence
                     thanatosisSong.StopCurrentSong();
                     musicPlayer.song = thanatosisSong;
                     musicPlayer.song.playWhenReady = true;
-
-                    // ---
-
-                    //musicEvent.cyclesRest = 5;
-                    //musicEvent.stopAtDeath = false;
-                    //musicEvent.stopAtGate = false;
-                    //musicEvent.songName = "PB_12 - Fated Demise";
-                    //// Game saves songs that have played once unfortunately, so it won't play again if you take too long to do this i think
-                    //room.game.manager.musicPlayer.GameRequestsSong(musicEvent);
                 }
                 songPlayed = true;
             }
@@ -375,7 +366,7 @@ public class ThanatosisTutorialSequence
             ChangePhase(Phase.PassPersistEventHorizon_NoLongerNeedsInput);
         }
 
-        if (lastIntensity == 0.1f || lastIntensity == 0.8f)
+        if (lastIntensity < 0.1f || lastIntensity > 0.8f)
         {
             // For now, before I rewrite it.
             cycle.owner.Die();
