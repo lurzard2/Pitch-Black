@@ -9,6 +9,7 @@ namespace PitchBlack;
 
 public static class BeaconSaveData
 {
+    // For the playtest currently
     public static string completedBeacon = "CompletedBeacon";
     public static bool GetCompletedBeacon(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(completedBeacon, out bool completion) ? completion : false;
     public static void SetCompletedBeacon(this SaveState save, bool value) => save.deathPersistentSaveData.GetSlugBaseData().Set(completedBeacon, value);
