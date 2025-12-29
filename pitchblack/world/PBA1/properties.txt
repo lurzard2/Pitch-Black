@@ -1,0 +1,2 @@
+dragonflyColor: 52AE5D
+Room Setting Templates: inside, outside, sewer
