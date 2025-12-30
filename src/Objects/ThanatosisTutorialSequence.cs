@@ -22,6 +22,7 @@ public class ThanatosisTutorialSequence
     public Counter sequenceTime = new(Int32.MaxValue, 0, true);
     public Counter sequencePhaseTime = new(Int32.MaxValue, 0, true);
     public Counter timeTilCycleDisplay = new(25, 0, true);
+    public Counter deathTime = new(80, 0, true);
     public CreatureSpasmer spasmer;
 
     #region Phases
@@ -367,12 +368,26 @@ public class ThanatosisTutorialSequence
         }
     }
 
-    private void FightDeathUpdate()
+    private void TickDeath()
     {
-        if (cycle.owner.rippleDeathIntensity <= 0.15f || cycle.owner.rippleDeathIntensity >= 0.75f)
+        deathTime.Tick();
+
+        if (deathTime.isFinished)
         {
             // For now, before I rewrite it.
             cycle.owner.Die();
+        }
+    }
+
+    private void FightDeathUpdate()
+    {
+        if (cycle.owner.rippleDeathIntensity <= 0.07f || cycle.owner.rippleDeathIntensity >= 0.79f)
+        {
+            TickDeath();
+        }
+        else
+        {
+            deathTime.Reset();
         }
 
         bool holdingInput = false;
