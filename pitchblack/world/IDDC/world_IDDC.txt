@@ -1,6 +1,8 @@
 CONDITIONAL LINKS
 Beacon : IDDC_A07 : GATE_IDDC_LF : DISCONNECTED
+Beacon : IDDC_A07 : GATE_IDDC_LF : IDDC_DREAM
 Beacon : GATE_IDDC_LF : IDDC_A07 : DISCONNECTED
+Beacon : IDDC_DREAM : 1 : IDDC_A07
 END CONDITIONAL LINKS
 
 ROOMS
@@ -10,7 +12,6 @@ IDDC_A17 : IDDC_C05, IDDC_A16
 IDDC_A21 : IDDC_A22, IDDC_C05, IDDC_D01
 IDDC_D01 : IDDC_A23, IDDC_A21, IDDC_A25
 IDDC_A03 : IDDC_C02, IDDC_A06, IDDC_C01
-GATE_IDDC_LF : IDDC_A07, DISCONNECTED, DISCONNECTED : GATE
 IDDC_A04 : IDDC_B01, IDDC_A05, IDDC_B02
 IDDC_A02 : IDDC_C02, IDDC_B01, IDDC_A05
 IDDC_A05 : IDDC_A02, IDDC_A04, IDDC_C01
@@ -63,67 +64,68 @@ IDDC_A28 : IDDC_B10 : SWARMROOM
 IDDC_B10 : IDDC_A28, IDDC_A19, IDDC_A13
 IDDC_A25 : IDDC_D01, IDDC_B12, IDDC_A24
 IDDC_C05 : IDDC_A21, IDDC_A17
+GATE_IDDC_LF : IDDC_A07, DISCONNECTED, DISCONNECTED : GATE
+IDDC_DREAM : DISCONNECTED
 END ROOMS
 
 CREATURES
-
-OFFSCREEN : 0-Scavenger-8
-(Artificer, Spear)OFFSCREEN : 0-Scavenger-16, 0-ScavengerElite-5
-(Saint)OFFSCREEN : 0-Scavenger-12
-
-//Basegame slugs
-
-//All
-IDDC_A05 : 3-Polliwog-3
-LINEAGE : IDDC_A06 : 2 : PinkLizard-0.2, NONE-0.2, WaterSpitter-0
-IDDC_A07 : 2-Leech-5
-IDDC_A09 : 3-Cicada
-IDDC_A13 : 3-Salamander
-IDDC_A14 : 3-PinkLizard, 4-TentaclePlant
-IDDC_A15 : 3-WhiteLizard
-IDDC_A16 : 3-BlueLizard
-IDDC_A17 : 2-Snail-3
-IDDC_A18 : 3-Eggbug
-LINEAGE : IDDC_A19 : 3 : WaterSpitter-0.35, Green-0.2, WaterSpitter-0.3, RedLizard-0
-(X-Saint)LINEAGE : IDDC_A23 : 2 : SmallCentipede-0.5, Centipede-{0.223}
-(Saint)LINEAGE : IDDC_A23 : 2 : RedCentipede-0
-
-IDDC_A24 : 3-Leech-6
-IDDC_A25 : 3-Snail
-IDDC_A27 : 3-Dropwig
-IDDC_A28 : 1-Snail-2
-
-IDDC_B01 : 3-Dropwig
-IDDC_B02 : 3-GreenLizard, 4-Leech-2
+IDDC_A17 : 2-snail-3
+IDDC_A05 : 3-polliwog-3
+IDDC_C02 : 3-pinklizard
+IDDC_C02 : 4-surfaceswimmer
+IDDC_C02 : 5-leech-8
+IDDC_C03 : 3-cicada-2
+IDDC_B04 : 3-cicada-3, 3-polliwog-3
+IDDC_B06 : 2-cicada-2
+IDDC_B15 : 3-polliwog-2
+IDDC_B15 : 4-leech-8
+IDDC_B07 : 2-leech-7, 2-salamander
+IDDC_A09 : 3-cicada
+IDDC_A16 : 3-bluelizard
+IDDC_A15 : 3-whitelizard
+IDDC_A14 : 3-pinklizard
+IDDC_A14 : 4-tentacleplant
+(Saint)IDDC_A23 : 2-redcentipede
+(X-Saint)LINEAGE : IDDC_A23 : 2 : smallcentipede-0.5, centipede-0
+IDDC_A07 : 2-leech-5
+IDDC_C01 : 3-pinklizard
+IDDC_C01 : 4-leech-11
+IDDC_A24 : 3-leech-6
+IDDC_B14 : 2-greenlizard
+(Red,White)IDDC_B12 : 3-polliwog-4
+IDDC_B13 : 3-surfaceswimmer
+IDDC_B13 : 4-whitelizard
+LINEAGE : IDDC_A19 : 3 : waterspitter-0.35, greenlizard-0.2, waterspitter-0.3, redlizard-0
+LINEAGE : IDDC_C06 : 3 : bluelizard-0.5, waterspitter-0
+IDDC_B11 : 3-dropbug
+IDDC_A13 : 3-salamander
+IDDC_B09 : 3-polliwog-3
+IDDC_B09 : 4-leech-9
+IDDC_A18 : 3-eggbug
+IDDC_A27 : 3-dropbug
+IDDC_B16 : 3-whitelizard
+IDDC_B16 : 4-leech-5
+IDDC_B01 : 3-dropbug
+IDDC_C04 : 3-leech-14
+LINEAGE : IDDC_A06 : 2 : pinklizard-0.2, NONE-0.2, waterspitter-0
+IDDC_B02 : 3-greenlizard
+IDDC_B02 : 4-leech-2
+IDDC_B08 : 3-polliwog-3
+IDDC_B08 : 4-snail-2
+IDDC_A28 : 1-snail-2
+IDDC_B10 : 3-snail-3
+IDDC_B10 : 4-salamander
+IDDC_A25 : 3-snail
+IDDC_C05 : 2-tentacleplant
+IDDC_C05 : 3-eggbug
+OFFSCREEN : 0-scavenger-8
+(Artificer,Spear)OFFSCREEN : 0-scavenger-16, 0-scavengerelite-5
+(Saint)OFFSCREEN : 0-scavenger-12
 {!MSC}IDDC_B03 : 3-Salamander
 {MSC}IDDC_B03 : 3-EelLizard
-IDDC_B04 : 3-Cicada-3, 3-Polliwog-3
 {!MSC}IDDC_B05 : 3-BlueLizard, 3-Cicada-3 5-Leech-7
 {MSC}IDDC_B05 : 3-EelLizard, 3-Cicada-3, 5-Leech-7
 {!MSC}LINEAGE : IDDC_B05 : 5 : Salamander-0.8, NONE-0.5, WaterSpitter-0.01, MonsterKelp-0
 {MSC}LINEAGE : IDDC_B05 : 5 : Salamander-0.8, NONE-0.5, EelLizard-0.3, WaterSpitter-0.01, MonsterKelp-0
-IDDC_B06 : 2-Cicada-2
-IDDC_B07 : 2-Leech-7, 2-Salamander
-IDDC_B08 : 3-Polliwog-3, 4-Snail-2
-IDDC_B09 : 3-Polliwog-3, 4-Leech-9
-IDDC_B10 : 3-Snail-3, 4-Salamander
-IDDC_B11 : 3-Dropwig
-IDDC_B13 : 4-WhiteLizard, 3-SurfaceSwimmer
-IDDC_B14 : 2-GreenLizard
-IDDC_B15 : 4-Leech-8, 3-Polliwog-2
-IDDC_B16 : 4-Leech-5, 3-White-1
-
-IDDC_C01 : 3-PinkLizard, 4-Leech-11
-IDDC_C02 : 3-PinkLizard, 5-Leech-8, 4-SurfaceSwimmer
-IDDC_C03 : 3-Cicada-2
-IDDC_C04 : 3-Leech-14
-IDDC_C05 : 2-TentaclePlant, 3-Eggbug
-LINEAGE : IDDC_C06 : 3 : BlueLizard-0.5, WaterSpitter-0
-
-//White and red
-(White, Red)IDDC_B12 : 3-Polliwog-4
-
-//MSC slugs
 {MSC}IDDC_B05 : 4-EelLizard
-
 END CREATURES
