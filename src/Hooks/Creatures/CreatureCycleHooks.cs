@@ -31,7 +31,7 @@ public static class CreatureCycleHooks
         {
             if (cycle != null)
             {
-                if (MiscUtils.RegionOutSideCycle(self.world))
+                if (MiscUtils.IsRegionOutSideCycle(self.world))
                 {
                     Cycle cycle2 = cycle;
                     cycle2 = null;
@@ -46,7 +46,7 @@ public static class CreatureCycleHooks
     {
         orig(self, world, creatureTemplate, realizedCreature, pos, ID);
 
-        if (MiscUtils.RegionOutSideCycle(world))
+        if (MiscUtils.IsRegionOutSideCycle(world))
         {
             return;
         }

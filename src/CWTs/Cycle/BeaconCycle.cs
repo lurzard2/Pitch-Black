@@ -34,7 +34,7 @@ public class BeaconCycle
     public void Update()
     {
         // Stopsplayer ripples and thanatosis
-        if (MiscUtils.RegionOutSideCycle(owner.abstractCreature.world))
+        if (MiscUtils.IsRegionOutSideCycle(owner.abstractCreature.world))
         {
             return;
         }

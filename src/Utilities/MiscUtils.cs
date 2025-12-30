@@ -6,20 +6,21 @@ namespace PitchBlack;
 
 public static class MiscUtils
 {
-    // Beacon checks for various contexts
+    #region Beacon Checks
     public static bool IsBeacon(GameSession session) => (session is StoryGameSession s) && IsBeacon(s.saveStateNumber);
     public static bool IsBeacon(Creature crit) => (crit is Player player) && IsBeacon(player.slugcatStats.name);
     public static bool IsBeacon(SlugcatStats.Name name) => name != null && name == Enums.SlugcatStatsName.Beacon;
     public static bool IsBeacon(SlugcatStats.Timeline time) => time != null && time == Enums.Timeline.Beacon;
+    #endregion
 
+    #region Creature Checks
     public static bool IsNightTerror(this CreatureTemplate creatureTemplate) => creatureTemplate.type == Enums.CreatureTemplateType.NightTerror;
     // Might be a better way to further check specific creatures a bajillion times
     public static bool IsCreature(this CreatureTemplate creatureTemplate, CreatureTemplate.Type type) => type != null && creatureTemplate.type == type;
+    #endregion
 
-    // For NT tracking
-    public static bool ValidTrackRoom(this Room room) => room != null && !room.abstractRoom.shelter && !room.abstractRoom.gate;
-
-    public static bool RegionOutSideCycle(this World world)
+    #region Region Checks
+    public static bool IsRegionOutSideCycle(this World world)
     {
         bool isPBSBRegion = world.name.ToLowerInvariant() == "pbsb";
         bool watcherCondition = Region.IsAncientUrbanRegion(world.name) || Region.IsDaemonRegion(world.name);
@@ -35,11 +36,17 @@ public static class MiscUtils
     }
 
     public static bool IsVhosRegion(string name) => name.ToLowerInvariant() == "vv";
+    #endregion
 
+    #region Room Checks
     // Regions that make Beacon squint regardless of room darkness
-    public static bool MakeBeaconCloseEyesHere(Player self, string region, string room)
+    public static bool MakeBeaconCloseEyesHere(Player self, string region, string roomName)
     {
-        bool vhosOverride = room == "vv_e01" || room == "vv_b06" || room == "vv_b08" || room == "vv_c02" || room == "vv_c01";
+        bool vhosOverride = roomName == "vv_e01"
+            || roomName == "vv_b06"
+            || roomName == "vv_b08"
+            || roomName == "vv_c02"
+            || roomName == "vv_c01";
         bool vhosCondition = region == "vv";
         bool placeIsBright = self.room.Darkness(self.mainBodyChunk.pos) < 0.15f;
         bool presentGhostMode = self.room.game.cameras[0].ghostMode > 0.40f;
@@ -63,6 +70,11 @@ public static class MiscUtils
         return false;
     }
 
+    // For NT tracking
+    public static bool ValidTrackRoom(this Room room) => room != null && !room.abstractRoom.shelter && !room.abstractRoom.gate;
+    #endregion
+
+    #region DreamSpawn
     public static bool IsVariant(VoidSpawn self, VoidSpawn.SpawnType variant)
     {
         if (self.variant == variant)
@@ -128,6 +140,7 @@ public static class MiscUtils
         spawn.PlaceInRoom(room);
         spawn.ChangeRippleLayer(rippleLayer, true);
     }
+    #endregion
 
     public static void AddHUDMessage(HUD.HUD hud, bool clear, string text, int wait, int time, bool darken, bool hideHUD)
     {
