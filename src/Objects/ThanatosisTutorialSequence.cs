@@ -11,8 +11,8 @@ public class ThanatosisTutorialSequence
 {
     #region Prompts
     public InGameTranslator Translator => room.world.game.manager.rainWorld.inGameTranslator;
-    public string SequenceText => Translator.Translate("Hold SPECIAL to maintain stasis, but if it gets too close...");
-    public string SequenceInvertedText => Translator.Translate("The tides are shifting. And If it gets too far...");
+    public string SequenceText => Translator.Translate("Hold SPECIAL to maintain stasis, but only if it gets too close...");
+    public string SequenceInvertedText => Translator.Translate("The tides are shifting...");
     public string CycleDisplayText => Translator.Translate($"Cycle {cycle.saveState.cycleNumber} ~ {Region.GetRegionFullName(cycle.owner.room.world.region.name, SlugcatStats.Name.White)}");
     public string SequenceCompleteText => Translator.Translate("Hold SPECIAL to enter and exit a state of thanatosis");
     #endregion
@@ -365,16 +365,16 @@ public class ThanatosisTutorialSequence
         {
             ChangePhase(Phase.PassPersistEventHorizon_NoLongerNeedsInput);
         }
-
-        if (lastIntensity < 0.1f || lastIntensity > 0.8f)
-        {
-            // For now, before I rewrite it.
-            cycle.owner.Die();
-        }
     }
 
     private void FightDeathUpdate()
     {
+        if (cycle.owner.rippleDeathIntensity <= 0.15f || cycle.owner.rippleDeathIntensity >= 0.75f)
+        {
+            // For now, before I rewrite it.
+            cycle.owner.Die();
+        }
+
         bool holdingInput = false;
 
         int inputCount = cycle.specInputCounter;
