@@ -1,5 +1,6 @@
 Template: NONE
-BkgDroneVolume: 0.2569565
+BkgDroneVolume: 0
+BkgDroneNoThreatVolume: 0
 EffectColorB: 18
 Effects: Flies-0.1304348-1-138, ModifyEffectColorB-0,0.25,0.05434782-20-20, Sentient Rot Spores-0.3043478-289-103, 
 PlacedObjects: CustomDecal><162.4202><270.3166><0~54~58~59~60~-9~211~-142~0~1~0~scavmark ghost~0.1521739~0~0.1521739~0~0.1521739~0.326087~0.1521739~0.5543478, FlareBomb><1160.45><1258.995><0~0~2~3, FlareBomb><1089.898><1170.134><0~0~2~3, FlareBomb><1924.132><1224.662><0~0~2~3, Corruption><297.6404><1131.392><0~100, Corruption><69.93683><1058.571><0~100, Corruption><42.94388><1317.951><0~100, Corruption><231.5475><628.8057><0~100, Corruption><161.9181><265.6083><3~147, Corruption><295.0327><184.1973><2~77, CorruptionDarkness><149.5637><292.8229><0~100, CorruptionDarkness><33.39709><1066.115><0~100, 
