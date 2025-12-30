@@ -4,8 +4,6 @@
 [ADD]CRID
 // Industrial Outflow
 [ADD]IDDC
-// group A
-[ADD]PBA1
 //Rotten regions
 [ADD]PBLF
 [ADD]PBSB

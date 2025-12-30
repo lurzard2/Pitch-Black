@@ -1,0 +1,4 @@
+Grime: 0.423913
+PlacedObjects: Corruption><292.0265><372.0518><0~71, CorruptionDarkness><289.6994><371.1935><0~100, 
+FadePalette: 8, 0.3152174
+MorePalette0: 10, 1
