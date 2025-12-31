@@ -123,7 +123,9 @@ class  Plugin : BaseUnityPlugin
                 LMLLHooks.Apply();
                 if (!MultiplayerUnlocks.CreatureUnlockList.Contains(Enums.SandboxUnlockID.LMiniLongLegs))
                     MultiplayerUnlocks.CreatureUnlockList.Add(Enums.SandboxUnlockID.LMiniLongLegs);
-                
+
+                Content.Register(new RotDeerCritob());
+                RotDeerHooks.Apply();
 
                 Content.Register(new RotRatCritob());
                 RotRatHooks.Apply();
