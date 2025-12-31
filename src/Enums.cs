@@ -56,6 +56,7 @@ public static class Enums
         [AllowNull] public static CreatureTemplate.Type NightTerror = new(nameof(NightTerror), true);
         [AllowNull] public static CreatureTemplate.Type Rotrat = new(nameof(Rotrat), true);
         [AllowNull] public static CreatureTemplate.Type Citizen = new(nameof(Citizen), true);
+        [AllowNull] public static CreatureTemplate.Type RotDeer = new(nameof(RotDeer), true);
 
         public static void UnregisterValues()
         {
