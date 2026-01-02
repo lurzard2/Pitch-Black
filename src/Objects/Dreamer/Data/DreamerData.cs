@@ -104,7 +104,7 @@ public class DreamerData : PlacedObject.Data
         return SaveUtils.AppendUnrecognizedStringAttrs(text, "~", unrecognizedAttributes);
     }
 
-    public WarpPoint.WarpPointData CreateWarpPointData(Room room)
+    public WarpPoint.WarpPointData CreateWarpPointDataForRift(Room room)
     {
         WarpPoint.WarpPointData warpPointData = new WarpPoint.WarpPointData(null);
         warpPointData.destPos = destPos;

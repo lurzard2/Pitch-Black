@@ -51,6 +51,13 @@ public static class WarpPointHooks_ForRift
             switch (dreamAssociation)
             {
                 case 1:
+                    // Override cosmetics and current shader
+                    if (rift.Data.destRegion == "pblf")
+                    {
+                        rift.Data.effectSettings.badWarpCosmetic = true;
+                        newShader = Custom.rainWorld.Shaders["WarpTearBad"];
+                        break;
+                    }
                     newShader = Custom.rainWorld.Shaders["DreamWarpTear"];
                     break;
                 case 2:

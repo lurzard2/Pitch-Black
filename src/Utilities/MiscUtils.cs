@@ -1,7 +1,4 @@
 ﻿using UnityEngine;
-using HUD;
-using System.Linq;
-using Watcher;
 
 namespace PitchBlack;
 
@@ -176,13 +173,18 @@ public static class MiscUtils
         }
     }
 
-    public static void PlaceRift(RiftManager riftManager, bool triggerNow)
+    public static Rift PlaceRift(RiftManager riftManager, Rift replacementRift, bool triggerNow)
     {
         riftManager.room.AddObject(riftManager);
+        if (replacementRift != null)
+        {
+            riftManager.placedRift = replacementRift;
+        }
         // The object takes care of adding a rift to the room, but there are cases where it shouldn't and be given new values
-        if (!riftManager.selfSufficient)
+        else if (!riftManager.selfSufficient)
         {
             riftManager.placedRift = new(riftManager.room, riftManager.placedObj, triggerNow);
         }
+        return riftManager.placedRift;
     }
 }

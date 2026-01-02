@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.SqlTypes;
 
 namespace PitchBlack;
 
@@ -16,7 +17,7 @@ public class RiftManager : UpdatableAndDeletable
     public List<AbstractPhysicalObject.AbstractObjectType> whitelistedObjectTypes;
 
     public Rift placedRift;
-    bool stopManaging;
+    bool jobDone;
     public bool selfSufficient;
 
     public RiftManager(Room room, PlacedObject placedObj, bool selfSufficient)
@@ -33,10 +34,10 @@ public class RiftManager : UpdatableAndDeletable
         if (selfSufficient)
         {
             placedRift = selfSufficient ? GenerateRift() : null;
-            if (placedRift != null && !stopManaging)
+            if (placedRift != null && !jobDone)
             {
                 room.AddObject(placedRift);
-                stopManaging = true;
+                jobDone = true;
             }
         }
         else
@@ -44,10 +45,10 @@ public class RiftManager : UpdatableAndDeletable
             if (placedRift != null)
             {
                 room.AddObject(placedRift);
-                stopManaging = true;
+                jobDone = true;
             }
         }
-        if (stopManaging)
+        if (jobDone)
         {
             Destroy();
         }
@@ -115,24 +116,31 @@ public class RiftManager : UpdatableAndDeletable
     }
 
     // For Code Spawning, self-ufficient warp generating and place
-    public Rift GenerateScriptedRift(SlugcatStats.Timeline newTimeline, string newRegion, string newRoom)
+    public Rift ScriptedRift(SlugcatStats.Timeline newTimeline, string newRegion, string newRoom)
     {
         Rift rift = GenerateRift();
-        rift.overrideData.destTimeline = newTimeline;
-        rift.overrideData.destRegion = newRegion;
-        rift.overrideData.destRoom = newRoom;
+        rift.Data.destTimeline = newTimeline;
+        rift.Data.destRegion = newRegion;
+        rift.Data.destRoom = newRoom;
 
         // Find the pos from an object in the destRoom
+        bool foundExit = false;
         foreach (PlacedObject placedObject in new RoomSettings(newRoom, null, false, false, room.world.game.TimelinePoint, room.world.game).placedObjects)
         {
-            if (placedObject.type == PlacedObject.Type.DynamicWarpTarget)
+            if (placedObject.type == Enums.PlacedObjectType.RiftExitTarget)
             {
-                rift.overrideData.destPos = new UnityEngine.Vector2?(placedObject.pos);
+                rift.Data.destPos = new UnityEngine.Vector2?(placedObject.pos);
+                foundExit = true;
                 break;
             }
         }
+        if (!foundExit)
+        {
+            rift.Data.destPos = UnityEngine.Vector2.zero;
+        }
 
-        room.AddObject(rift);
+        rift.Data.destCam = WarpPoint.GetDestCam(rift.Data);
+
         return rift;
     }
 }

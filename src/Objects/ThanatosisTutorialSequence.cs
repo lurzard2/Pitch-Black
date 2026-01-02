@@ -381,7 +381,7 @@ public class ThanatosisTutorialSequence
 
     private void FightDeathUpdate()
     {
-        if (cycle.owner.rippleDeathIntensity <= 0.07f || cycle.owner.rippleDeathIntensity >= 0.79f)
+        if (cycle.owner.rippleDeathIntensity <= 0.11f || cycle.owner.rippleDeathIntensity >= 0.79f)
         {
             TickDeath();
         }

@@ -1,4 +1,5 @@
 ﻿using HUD;
+using IL.Menu.Remix.MixedUI.ValueTypes;
 using IL.ScavengerCosmetic;
 using Newtonsoft.Json.Linq;
 using RWCustom;
@@ -1194,32 +1195,47 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     #endregion
 
     #region WarpPoints
+    // For Dreamer-originating rift
     private void SpawnWarp()
     {
-        DreamerData dreamerData = SpecialData;
-        if (dreamerData == null)
+        DreamerData data = SpecialData;
+        if (data == null)
         {
             return;
         }
-        if (dreamerData.destRoom == null)
+        if (data.destRoom == null)
         {
             return;
         }
 
-        PlacedObject placedObj = new PlacedObject(PlacedObject.Type.WarpPoint, dreamerData.CreateWarpPointData(room));
+        PlacedObject placedObj = new PlacedObject(PlacedObject.Type.WarpPoint, data.CreateWarpPointDataForRift(room));
         placedObj.pos = pos;
 
         // Reset warp counter so it may open
         room.world.game.Players[0].world.game.GetStorySession.warpsTraversedThisCycle = 0;
 
-        // Spawn object
-        RiftManager riftSpawner = new(room, placedObj, true);
-        MiscUtils.PlaceRift(riftSpawner, true);
+        var riftManager = new RiftManager(room, placedObj, false);
+        bool makeOneWay = false;
+        if (BeaconSaveData.GetDreamerEncountersNumber(room.world.game.GetStorySession.saveState) == 3)
+        {
+            riftManager.placedRift = riftManager.ScriptedRift(Enums.Timeline.Beacon, "pblf", "pblf_c07");
+            makeOneWay = true;
+        }
+
+        if (makeOneWay)
+        {
+            riftManager.placedRift.Data.oneWay = true;
+            riftManager.placedRift.Data.oneWayEntrance = true;
+            riftManager.placedRift.Data.oneWayEntranceIdentified = true;
+        }
+
+        MiscUtils.PlaceRift(riftManager, riftManager.placedRift, true);
     }
 
+    // For DevTools-originating rift
     public static void SpawnBackupWarpPoint(Room room, PlacedObject oldPlacedObj)
     {
-        WarpPoint.WarpPointData warpPointData = (oldPlacedObj.data as DreamerData).CreateWarpPointData(room);
+        WarpPoint.WarpPointData warpPointData = (oldPlacedObj.data as DreamerData).CreateWarpPointDataForRift(room);
         PlacedObject newPlacedObj = new PlacedObject(Enums.PlacedObjectType.RiftSpot, warpPointData);
         newPlacedObj.pos = oldPlacedObj.pos;
         bool flag = false;
@@ -1234,9 +1250,24 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         if (!flag)
         {
             var riftManager = new RiftManager(room, newPlacedObj, false);
-            MiscUtils.PlaceRift(riftManager, false);
+            bool makeOneWay = false;
+            if (BeaconSaveData.GetDreamerEncountersNumber(room.world.game.GetStorySession.saveState) == 3)
+            {
+                riftManager.placedRift = riftManager.ScriptedRift(Enums.Timeline.Beacon, "pblf", "pblf_c07");
+                makeOneWay = true;
+            }
+
+            if (makeOneWay)
+            {
+                riftManager.placedRift.Data.oneWay = true;
+                riftManager.placedRift.Data.oneWayEntrance = true;
+                riftManager.placedRift.Data.oneWayEntranceIdentified = true;
+            }
+
+            MiscUtils.PlaceRift(riftManager, riftManager.placedRift, false);
         }
     }
+
     #endregion
 
     #region Encountering and Removing
