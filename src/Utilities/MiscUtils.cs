@@ -40,10 +40,12 @@ public static class MiscUtils
 
     public static int RiftAssociatedWithDreamscape(Room room, Rift rift)
     {
+        // Currently In VV
         if (IsVhosRegion(room.world.name.ToLowerInvariant()))
         {
             return 1;
         }
+        // Rift leads to VV
         if (IsVhosRegion(rift.Data.destRegion.ToLowerInvariant()))
         {
             return 2;
