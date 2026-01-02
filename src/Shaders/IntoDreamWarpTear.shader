@@ -1,4 +1,4 @@
-Shader "Futile/DreamWarpTear" 
+Shader "Futile/IntoDreamWarpTear" 
 {
 	Properties 
 	{
@@ -170,15 +170,14 @@ half4 frag (v2f i) : SV_Target
 
     float2 distortion = dir;
 
-    fixed4 bgPortalCol = fixed4(.92,.86,1,1);
+    fixed4 bgPortalCol = fixed4(.45,.4,1,1);
 #if outer
     bgPortalCol = lerp(bgPortalCol,fixed4(0.3,0.35,.3,1),riftOpen);
 #elif bad
     bgPortalCol = lerp(bgPortalCol,fixed4(0.2,0.05,.3,1),riftOpen);
 #endif
     fixed4 portalCol = bgPortalCol*depth01*(1+grain*.2);
-    // Modified the fixed4 inline to be very white
-    portalCol = lerp(portalCol,fixed4(.9,.95,1,1)*.1,smoothstep(.11*riftOpen,(0.01+depth01*.08)*riftOpen,dist+tearMap.x*.04));
+    portalCol = lerp(portalCol,fixed4(0.85,0.80,.9,1)*.9,smoothstep(.11*riftOpen,(0.01+depth01*.08)*riftOpen,dist+tearMap.x*.04));
     portalCol = lerp(portalCol,weaverCol,weaverMask*5+weaverBlock+goldMask*(1+depth01));
     float grainBoost = 0;
 #if outer 
@@ -201,13 +200,14 @@ half4 frag (v2f i) : SV_Target
 #else
     colNoise.x *= .7;
     colNoise.y *= .5;
+    colNoise *= fixed4(.9,.9,.9,1);
 #endif
     colNoise = lerp(colNoise,weaverCol,weaverMask*(2+depth01*2)+goldMask*depth01);
     float4 colNoiseRaw = colNoise;
     fixed playerLayerHighlight = pulse(depth,5,3);
     fixed poleLayer = pulse (depth,4,6.0);
     fixed4 otherSideCol = saturate(iLerp(15,0,depth))*colNoise;
-    otherSideCol = lerp(portalCol,otherSideCol,.75);
+    otherSideCol = lerp(portalCol,otherSideCol,.40);
     otherSideCol = lerp(otherSideCol,0,sky-goldMask);
     otherSideCol = lerp(colNoise,otherSideCol,saturate(fg));
     otherSideCol = lerp(otherSideCol,portalCol,entrance*.7);
