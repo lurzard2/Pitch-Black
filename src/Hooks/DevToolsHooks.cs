@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DevInterface;
+using Watcher;
 using RWCustom;
 using UnityEngine;
 using static PitchBlack.Plugin;
@@ -71,6 +72,10 @@ public static class DevObjectHooks
         {
             rep = new DreamerSpotRepresentation(self.owner, tp.ToString() + "_Rep", self, pObj, tp.ToString());
         }
+        if (tp == Enums.PlacedObjectType.RiftSpot)
+        {
+            rep = new WarpPointToRoomRepresentation(self.owner, tp.ToString() + "_Rep", self, pObj, tp.ToString());
+        }
 
         if (rep != null)
         {
@@ -89,12 +94,18 @@ public static class DevObjectHooks
         {
             self.data = new DreamerData(self);
         }
+        if (self.type == Enums.PlacedObjectType.RiftSpot)
+        {
+            self.data = new WarpPoint.WarpPointData(self);
+        }
     }
 
     private static ObjectsPage.DevObjectCategories AddToDevObjectCatagory(On.DevInterface.ObjectsPage.orig_DevObjectGetCategoryFromPlacedType orig, ObjectsPage self, PlacedObject.Type type)
     {
         ObjectsPage.DevObjectCategories res = orig(self, type);
-        if (type == Enums.PlacedObjectType.DreamerSpot)
+        if (type == Enums.PlacedObjectType.DreamerSpot
+            || type == Enums.PlacedObjectType.RiftSpot
+            || type == Enums.PlacedObjectType.RiftExitTarget)
         {
             res = Enums.PlacedObjectType.PitchBlackCatagory;
         }
@@ -140,30 +151,40 @@ public class DevToolsHooks
     {
         for (int objects = 0; objects < self.roomSettings.placedObjects.Count; objects++)
         {
-            if (self.roomSettings.placedObjects[objects].type == Enums.PlacedObjectType.DreamerSpot
-                && self.game.IsStorySession
-                && dreamerPresence.TryGetValue(self.world, out var dreamerPresences))
-            {
-                if (BeaconSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState).Contains(self.abstractRoom.name))
-                {
-                    PlaceWarp(self, objects);
-                }
+            var obj = self.roomSettings.placedObjects[objects];
 
-                for (int i = 0; i < dreamerPresences.Count; i++)
+            if (self.game.IsStorySession)
+            {
+                if (obj.type == Enums.PlacedObjectType.DreamerSpot
+                && dreamerPresence.TryGetValue(self.world, out var dreamerPresences))
                 {
-                    // Presence exists, which means it needs a dreamer
-                    if (dreamerPresences[i].presenceSpawned && dreamerPresences[i].dreamerRoom == self.abstractRoom)
+                    if (BeaconSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState).Contains(self.abstractRoom.name))
                     {
-                        PlaceDreamer(self, objects, dreamerPresences[i]);
-                        
-                        /* Prevent duplicates
-                        * We can do this because its per room, and there is meant to be 1 instantiated Dreamer per encounter
-                        */
-                        if (dreamerPresences[i].myDreamer.obj != null)
+                        PlaceWarp(self, objects);
+                    }
+
+                    for (int j = 0; j < dreamerPresences.Count; j++)
+                    {
+                        // Presence exists, which means it needs a dreamer
+                        if (dreamerPresences[j].presenceSpawned && dreamerPresences[j].dreamerRoom == self.abstractRoom)
                         {
-                            break;
+                            PlaceDreamer(self, objects, dreamerPresences[j]);
+
+                            /* Prevent duplicates
+                            * We can do this because its per room, and there is meant to be 1 instantiated Dreamer per encounter
+                            */
+                            if (dreamerPresences[j].myDreamer.obj != null)
+                            {
+                                break;
+                            }
                         }
                     }
+                }
+
+                if (obj.type == Enums.PlacedObjectType.RiftSpot)
+                {
+                    RiftManager riftSpawner = new(self, obj);
+                    self.AddObject(riftSpawner);
                 }
             }
         }
@@ -173,10 +194,12 @@ public class DevToolsHooks
     private static void PlaceDreamer(Room self, int objects, DreamerPresence presence)
     {
         logger.LogDebug($"DreamerSpot: Adding Dreamer to room since presence exists and presence room is loaded");
+
         Dreamer dreamer = new(self, self.roomSettings.placedObjects[objects]);
         self.AddObject(dreamer);
         presence.dreamerSpawned = true;
         presence.myDreamer = new(presence.dreamerRoom, presence.dreamerSpawned, dreamer);
+
         logger.LogDebug($"DreamerPresence: Dreamer active - {presence.dreamerSpawned}");
         logger.LogDebug($"DreamerSpawner: ROOM:{presence.myDreamer.abstractRoom.name} - {presence.myDreamer.hasSpawned} - {presence.myDreamer.obj}");
     }
@@ -184,6 +207,7 @@ public class DevToolsHooks
     private static void PlaceWarp(Room self, int objects)
     {
         logger.LogDebug($"DreamerSpot: Dreamer already encountered and can spawn warp - Placing warp");
+
         Dreamer.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
     }
     #endregion

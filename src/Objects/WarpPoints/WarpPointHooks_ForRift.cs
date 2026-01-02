@@ -1,0 +1,72 @@
+﻿using EffExt;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Watcher;
+using RWCustom;
+
+namespace PitchBlack;
+
+public static class WarpPointHooks_ForRift
+{
+    public static void Apply()
+    {
+        On.Player.ApplyWarpFatigue += Player_ApplyWarpFatigue_MODIFY;
+        // Temp removing warp fatigue completely from Beacon
+        On.Region.HasWarpFatigueResistance += HasWarpFatigueResistence_MODIFY;
+        On.Watcher.WarpTear.DrawSprites += WarpTear_DrawSprites_RIFT;
+    }
+
+    private static void WarpTear_DrawSprites_RIFT(On.Watcher.WarpTear.orig_DrawSprites orig, WarpTear self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, UnityEngine.Vector2 camPos)
+    {
+        orig(self, sLeaser, rCam, timeStacker, camPos);
+
+        Rift rift = null;
+
+        for (int i = 0; i < self.room.warpPoints.Count; i++)
+        {
+            var warpPoint = self.room.warpPoints[i];
+            if (warpPoint is Rift target)
+            {
+                target = warpPoint as Rift;
+                rift = target;
+
+            }
+        }
+
+        if (rift != null)
+        {
+            int dreamAssociation = MiscUtils.RiftAssociatedWithDreamscape(self.room, rift);
+            FShader newShader = null;
+            switch (dreamAssociation)
+            {
+                case 1: //newShader = Custom.rainWorld.Shaders["DreamRiftTear"];
+                    break;
+                case 2:
+                    //newShader = Custom.rainWorld.Shaders["DreamRiftTear"];
+                    break;
+                default: break;
+            }
+            sLeaser.sprites[0].shader = newShader != null ? newShader : sLeaser.sprites[0].shader;
+        }
+    }
+
+    private static bool HasWarpFatigueResistence_MODIFY(On.Region.orig_HasWarpFatigueResistance orig, string name)
+    {
+        return Region.IsAncientUrbanRegion(name) || Region.IsDaemonRegion(name) || MiscUtils.IsVhosRegion(name);
+    }
+
+    private static void Player_ApplyWarpFatigue_MODIFY(On.Player.orig_ApplyWarpFatigue orig, Player self, RainWorldGame game)
+    {
+        if (MiscUtils.IsBeacon(self))
+        {
+            self.warpExhausionTime = 0;
+        }
+        else
+        {
+            orig(self, game);
+        }
+    }
+}

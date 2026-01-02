@@ -1213,7 +1213,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         room.world.game.Players[0].world.game.GetStorySession.warpsTraversedThisCycle = 0;
 
         // Spawn object
-        WarpPoint warp = room.TrySpawnWarpPoint(placedObject, true);
+        Rift warp = room.TrySpawnWarpPoint(placedObject, true) as Rift;
         if (warp != null)
         {
             warp.triggerTime = (float)((int)(warp.triggerActivationTime - 1f));

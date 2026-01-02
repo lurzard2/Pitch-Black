@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿    using System.Diagnostics.CodeAnalysis;
 using DevInterface;
 using Menu;
 
@@ -135,6 +135,8 @@ public static class Enums
     {
         public static ObjectsPage.DevObjectCategories PitchBlackCatagory = new("Pitch-Black", true);
         public static PlacedObject.Type DreamerSpot = new("DreamerSpot", true);
+        public static PlacedObject.Type RiftSpot = new("RiftSpot", true);
+        public static PlacedObject.Type RiftExitTarget = new(nameof(RiftExitTarget), true);
 
         public static void UnregisterValues()
         {
@@ -147,6 +149,16 @@ public static class Enums
             {
                 DreamerSpot.Unregister();
                 DreamerSpot = null;
+            }
+            if (RiftSpot  != null)
+            {
+                RiftSpot.Unregister();
+                RiftSpot = null;
+            }
+            if (RiftExitTarget  != null)
+            {
+                RiftExitTarget.Unregister();
+                RiftExitTarget = null;
             }
         }
     }

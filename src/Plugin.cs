@@ -80,7 +80,7 @@ class  Plugin : BaseUnityPlugin
 
         CreatureCycleHooks.Apply();
         DreamerHooks.Apply();
-        WarpPointHooks.Apply();
+        WarpPointHooks_ForRift.Apply();
         RotImmunity.Apply();
         CreatureHooks.Apply();
 
@@ -163,6 +163,9 @@ class  Plugin : BaseUnityPlugin
 
 			// Haizlbliek Pitch Black Assets
 			self.Shaders["PitchBlackBackgroundBuildings"] = FShader.CreateShader("PitchBlackBackgroundBuildings", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/haizlbliekpitchblack")).LoadAsset<Shader>("Assets/Shaders/PBBackgroundBuildings.shader"));
+
+            // Rift Assets
+            //self.Shaders["DreamRiftTear"] = FShader.CreateShader("dreamrifttear", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamrifttear")).LoadAsset<Shader>("Assets/Shaders/DreamRiftTear.shader"));
 
             init = true;
         }
