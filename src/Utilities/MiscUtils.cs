@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using HUD;
 using System.Linq;
+using Watcher;
 
 namespace PitchBlack;
 
@@ -36,6 +37,20 @@ public static class MiscUtils
     }
 
     public static bool IsVhosRegion(string name) => name.ToLowerInvariant() == "vv";
+
+    public static int RiftAssociatedWithDreamscape(Room room, Rift rift)
+    {
+        if (IsVhosRegion(room.world.name))
+        {
+            return 1;
+        }
+        if (IsVhosRegion(rift.Data.destRegion))
+        {
+            return 2;
+        }
+        return 0;
+    }
+
     #endregion
 
     #region Room Checks
@@ -152,8 +167,7 @@ public static class MiscUtils
         }
 
         // Add message to list
-        // "time" is +10 in the AddMessage line because it must be longer than the actual time, and we override time after.
-        prompt.AddMessage(text, wait, time + 10, darken, hideHUD);
+        prompt.AddMessage(text, wait, time, darken, hideHUD);
         if (prompt.messages.Count > 0 && prompt.messages[0].text == text)
         {
             prompt.messages[0].time = time;
