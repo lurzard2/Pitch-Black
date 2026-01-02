@@ -12,9 +12,17 @@ namespace PitchBlack;
 public class Rift : WarpPoint
 {
     string s = "Rift:";
+    bool triggersInstantly;
 
-    public Rift(Room room, PlacedObject placedObject) : base(room, placedObject)
+    public Rift(Room room, PlacedObject placedObject, bool triggersInstantly = false) : base(room, placedObject)
     {
+        this.triggersInstantly = triggersInstantly;
+        if (triggersInstantly)
+        {
+            triggerTime = (float)((int)(triggerActivationTime - 1f));
+            strongPull = true;
+            guaranteeTrigger = true;
+        }
     }
 
     public override void Update(bool eu)

@@ -183,8 +183,8 @@ public class DevToolsHooks
 
                 if (obj.type == Enums.PlacedObjectType.RiftSpot)
                 {
-                    RiftManager riftSpawner = new(self, obj);
-                    self.AddObject(riftSpawner);
+                    RiftManager riftManager = new(self, obj, true);
+                    MiscUtils.PlaceRift(riftManager, false);
                 }
             }
         }

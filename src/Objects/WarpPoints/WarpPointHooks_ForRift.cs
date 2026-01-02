@@ -17,6 +17,13 @@ public static class WarpPointHooks_ForRift
         // Temp removing warp fatigue completely from Beacon
         On.Region.HasWarpFatigueResistance += HasWarpFatigueResistence_MODIFY;
         On.Watcher.WarpTear.DrawSprites += WarpTear_DrawSprites_RIFT;
+        On.Region.IsSentientRotRegion += Region_IsSentientRotRegion;
+    }
+
+    private static bool Region_IsSentientRotRegion(On.Region.orig_IsSentientRotRegion orig, string name)
+    {
+        return orig(name)
+            || name == "pblf";
     }
 
     private static void WarpTear_DrawSprites_RIFT(On.Watcher.WarpTear.orig_DrawSprites orig, WarpTear self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, UnityEngine.Vector2 camPos)
@@ -25,6 +32,7 @@ public static class WarpPointHooks_ForRift
 
         Rift rift = null;
 
+        // Find rift
         for (int i = 0; i < self.room.warpPoints.Count; i++)
         {
             var warpPoint = self.room.warpPoints[i];
@@ -42,12 +50,14 @@ public static class WarpPointHooks_ForRift
             FShader newShader = null;
             switch (dreamAssociation)
             {
-                case 1: newShader = Custom.rainWorld.Shaders["DreamWarpTear"];
+                case 1:
+                    newShader = Custom.rainWorld.Shaders["DreamWarpTear"];
                     break;
                 case 2:
                     newShader = Custom.rainWorld.Shaders["IntoDreamWarpTear"];
                     break;
-                default: break;
+                default:
+                    break;
             }
             sLeaser.sprites[0].shader = newShader != null ? newShader : sLeaser.sprites[0].shader;
         }
@@ -55,7 +65,8 @@ public static class WarpPointHooks_ForRift
 
     private static bool HasWarpFatigueResistence_MODIFY(On.Region.orig_HasWarpFatigueResistance orig, string name)
     {
-        return Region.IsAncientUrbanRegion(name) || Region.IsDaemonRegion(name) || MiscUtils.IsVhosRegion(name);
+        return orig(name)
+            || MiscUtils.IsVhosRegion(name);
     }
 
     private static void Player_ApplyWarpFatigue_MODIFY(On.Player.orig_ApplyWarpFatigue orig, Player self, RainWorldGame game)

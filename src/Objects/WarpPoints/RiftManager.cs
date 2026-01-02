@@ -17,24 +17,36 @@ public class RiftManager : UpdatableAndDeletable
 
     public Rift placedRift;
     bool stopManaging;
+    public bool selfSufficient;
 
-    public RiftManager(Room room, PlacedObject placedObj)
+    public RiftManager(Room room, PlacedObject placedObj, bool selfSufficient)
     {
         this.room = room;
         this.placedObj = placedObj;
+        this.selfSufficient = selfSufficient;
     }
 
     public override void Update(bool eu)
     {
         base.Update(eu);
 
-        placedRift = GenerateRift();
-        if (placedRift != null && !stopManaging)
+        if (selfSufficient)
         {
-            room.AddObject(placedRift);
-            stopManaging = true;
+            placedRift = selfSufficient ? GenerateRift() : null;
+            if (placedRift != null && !stopManaging)
+            {
+                room.AddObject(placedRift);
+                stopManaging = true;
+            }
         }
-
+        else
+        {
+            if (placedRift != null)
+            {
+                room.AddObject(placedRift);
+                stopManaging = true;
+            }
+        }
         if (stopManaging)
         {
             Destroy();
@@ -110,6 +122,7 @@ public class RiftManager : UpdatableAndDeletable
         rift.overrideData.destRegion = newRegion;
         rift.overrideData.destRoom = newRoom;
 
+        // Find the pos from an object in the destRoom
         foreach (PlacedObject placedObject in new RoomSettings(newRoom, null, false, false, room.world.game.TimelinePoint, room.world.game).placedObjects)
         {
             if (placedObject.type == PlacedObject.Type.DynamicWarpTarget)

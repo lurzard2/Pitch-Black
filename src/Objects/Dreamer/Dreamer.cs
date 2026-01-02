@@ -1196,41 +1196,36 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     #region WarpPoints
     private void SpawnWarp()
     {
-        DreamerData data = SpecialData;
-        if (data == null)
+        DreamerData dreamerData = SpecialData;
+        if (dreamerData == null)
         {
             return;
         }
-        if (data.destRoom == null)
+        if (dreamerData.destRoom == null)
         {
             return;
         }
 
-        PlacedObject placedObject = new PlacedObject(PlacedObject.Type.WarpPoint, data.CreateWarpPointData(room));
-        placedObject.pos = pos;
+        PlacedObject placedObj = new PlacedObject(PlacedObject.Type.WarpPoint, dreamerData.CreateWarpPointData(room));
+        placedObj.pos = pos;
 
         // Reset warp counter so it may open
         room.world.game.Players[0].world.game.GetStorySession.warpsTraversedThisCycle = 0;
 
         // Spawn object
-        Rift warp = room.TrySpawnWarpPoint(placedObject, true) as Rift;
-        if (warp != null)
-        {
-            warp.triggerTime = (float)((int)(warp.triggerActivationTime - 1f));
-            warp.strongPull = true;
-            warp.guaranteeTrigger = true;
-        }
+        RiftManager riftSpawner = new(room, placedObj, true);
+        MiscUtils.PlaceRift(riftSpawner, true);
     }
 
-    public static void SpawnBackupWarpPoint(Room room, PlacedObject o)
+    public static void SpawnBackupWarpPoint(Room room, PlacedObject oldPlacedObj)
     {
-        WarpPoint.WarpPointData warpPointData = (o.data as DreamerData).CreateWarpPointData(room);
-        PlacedObject placedObject = new PlacedObject(PlacedObject.Type.WarpPoint, warpPointData);
-        placedObject.pos = o.pos;
+        WarpPoint.WarpPointData warpPointData = (oldPlacedObj.data as DreamerData).CreateWarpPointData(room);
+        PlacedObject newPlacedObj = new PlacedObject(Enums.PlacedObjectType.RiftSpot, warpPointData);
+        newPlacedObj.pos = oldPlacedObj.pos;
         bool flag = false;
-        foreach (WarpPoint warpPoint in room.warpPoints)
+        foreach (Rift rift in room.warpPoints)
         {
-            if (warpPoint.Data.destRoom == warpPointData.destRoom && Vector2.Distance(warpPoint.pos, placedObject.pos) < 10f)
+            if (rift.Data.destRoom == warpPointData.destRoom && Vector2.Distance(rift.pos, newPlacedObj.pos) < 10f)
             {
                 flag = true;
                 break;
@@ -1238,7 +1233,8 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         }
         if (!flag)
         {
-            room.TrySpawnWarpPoint(placedObject, true);
+            var riftManager = new RiftManager(room, newPlacedObj, false);
+            MiscUtils.PlaceRift(riftManager, false);
         }
     }
     #endregion

@@ -175,4 +175,14 @@ public static class MiscUtils
             prompt.messages[0].time = time;
         }
     }
+
+    public static void PlaceRift(RiftManager riftManager, bool triggerNow)
+    {
+        riftManager.room.AddObject(riftManager);
+        // The object takes care of adding a rift to the room, but there are cases where it shouldn't and be given new values
+        if (!riftManager.selfSufficient)
+        {
+            riftManager.placedRift = new(riftManager.room, riftManager.placedObj, triggerNow);
+        }
+    }
 }
