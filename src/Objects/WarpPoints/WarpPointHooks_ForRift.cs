@@ -42,10 +42,10 @@ public static class WarpPointHooks_ForRift
             FShader newShader = null;
             switch (dreamAssociation)
             {
-                case 1: //newShader = Custom.rainWorld.Shaders["DreamRiftTear"];
+                case 1: newShader = Custom.rainWorld.Shaders["DreamWarpTear"];
                     break;
                 case 2:
-                    //newShader = Custom.rainWorld.Shaders["DreamRiftTear"];
+                    newShader = Custom.rainWorld.Shaders["DreamWarpTear"];
                     break;
                 default: break;
             }

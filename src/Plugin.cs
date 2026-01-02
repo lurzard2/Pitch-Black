@@ -165,7 +165,7 @@ class  Plugin : BaseUnityPlugin
 			self.Shaders["PitchBlackBackgroundBuildings"] = FShader.CreateShader("PitchBlackBackgroundBuildings", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/haizlbliekpitchblack")).LoadAsset<Shader>("Assets/Shaders/PBBackgroundBuildings.shader"));
 
             // Rift Assets
-            //self.Shaders["DreamRiftTear"] = FShader.CreateShader("dreamrifttear", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamrifttear")).LoadAsset<Shader>("Assets/Shaders/DreamRiftTear.shader"));
+            self.Shaders["DreamWarpTear"] = FShader.CreateShader("DreamWarpTear", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/riftcosmetics")).LoadAsset<Shader>("Assets/Shaders/DreamWarpTear.shader"));
 
             init = true;
         }
