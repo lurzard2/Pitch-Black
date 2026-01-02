@@ -195,7 +195,7 @@ public class DevToolsHooks
     {
         logger.LogDebug($"DreamerSpot: Adding Dreamer to room since presence exists and presence room is loaded");
 
-        Dreamer dreamer = new(self, self.roomSettings.placedObjects[objects]);
+        DreamerEntity dreamer = new(self, self.roomSettings.placedObjects[objects]);
         self.AddObject(dreamer);
         presence.dreamerSpawned = true;
         presence.myDreamer = new(presence.dreamerRoom, presence.dreamerSpawned, dreamer);

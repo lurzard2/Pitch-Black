@@ -162,7 +162,7 @@ public static class DreamerMode_Hooks
                     // Dreamer in room mode
                     if (currentPresence.myDreamer.hasSpawned && currentPresence.myDreamer.obj != null && self.room.abstractRoom == currentPresence.myDreamer.abstractRoom)
                     {
-                        if (currentPresence.myDreamer.obj.conversation != null)
+                        if (currentPresence.myDreamer.obj.behaviorModule.conversation != null)
                         {
                             targetGhostMode = 1f;
                             //logger.LogDebug($"{s} MODE:Dreamer Conversation");

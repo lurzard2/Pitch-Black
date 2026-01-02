@@ -103,12 +103,12 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
     {
         this.placedObject = placedObject;
         pos = placedObject.pos;
+        headPos = pos;
         dreamSpawnCaught = BeaconSaveData.GetDreamerEncountersNumber(room.world.game.GetStorySession.saveState);
         for (int i = 0; i < dreamSpawnCaught; i++)
         {
             MiscUtils.MaterializeDreamSpawn(room, headPos, Enums.DreamSpawnSource.Dreamcatcher, default, true);
         }
-        headPos = pos;
 
         scale = 0.5f;
         UnityEngine.Random.State state = UnityEngine.Random.state;

@@ -15,7 +15,8 @@ namespace PitchBlack;
 
 public abstract class PBEntity : UpdatableAndDeletable
 {
-    public GraphicsModule graphicsModule;
+    // visibleEntity must be added to the room within the entity class
+    public GraphicsModule visibleEntity;
     public BehaviorModule behaviorModule;
 
     public bool flaggedAsReadyForDeletion = false;
@@ -56,9 +57,11 @@ public abstract class PBEntity : UpdatableAndDeletable
         if (deleteMe)
         {
             slatedForDeletetion = true;
+            visibleEntity.slatedForDeletetion = true;
         }
     }
 
+    // Making this a CosmeticSprite means its: a UAD and has IDrawable AND IRunDuringDialog which are all super important!
     public abstract class GraphicsModule : CosmeticSprite
     {
         public PBEntity owner;
