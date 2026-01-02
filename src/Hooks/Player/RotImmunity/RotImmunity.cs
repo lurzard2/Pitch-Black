@@ -28,7 +28,6 @@ public class RotImmunity
     private static void DaddyTentacle_Touch_IMMUNITY(On.DaddyTentacle.orig_Touch orig, DaddyTentacle self)
     {
         // We gotta access the player in a convoluted way :heart:
-        bool flag = false;
         for (int i = 0; i < self.room.abstractRoom.creatures.Count; i++)
         {
             if (self.room.abstractRoom.creatures[i].realizedCreature != null

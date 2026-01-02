@@ -25,7 +25,6 @@ public class Rift : WarpPoint
 
         base.Update(eu);
 
-
         // Every encounter past the 1st should trigger instantly, 1st gets aura
         if (triggersInstantly && BeaconSaveData.GetDreamerEncountersNumber(room.game.GetStorySession.saveState) > 1)
         {
