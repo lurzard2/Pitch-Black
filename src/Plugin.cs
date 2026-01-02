@@ -165,11 +165,12 @@ class  Plugin : BaseUnityPlugin
 			self.Shaders["PitchBlackBackgroundBuildings"] = FShader.CreateShader("PitchBlackBackgroundBuildings", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/haizlbliekpitchblack")).LoadAsset<Shader>("Assets/Shaders/PBBackgroundBuildings.shader"));
 
             // Rift Assets
-            self.Shaders["DreamWarpTear"] = FShader.CreateShader("DreamWarpTear", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/riftcosmetics")).LoadAsset<Shader>("Assets/Shaders/DreamWarpTear.shader"));
+            self.Shaders["DreamWarpTear"] = FShader.CreateShader("DreamWarpTear", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamwarptear")).LoadAsset<Shader>("Assets/Shaders/DreamWarpTear.shader"));
+            self.Shaders["IntoDreamWarpTear"] = FShader.CreateShader("IntoDreamWarpTear", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/intodreamwarptear")).LoadAsset<Shader>("Assets/Shaders/IntoDreamWarpTear.shader"));
 
             init = true;
         }
-    }
+    }   
 
     // Unregistering
     private void DisableMod(On.RainWorld.orig_OnModsDisabled orig, RainWorld self, ModManager.Mod[] newlyDisabledMods)

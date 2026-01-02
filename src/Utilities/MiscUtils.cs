@@ -40,11 +40,11 @@ public static class MiscUtils
 
     public static int RiftAssociatedWithDreamscape(Room room, Rift rift)
     {
-        if (IsVhosRegion(room.world.name))
+        if (IsVhosRegion(room.world.name.ToLowerInvariant()))
         {
             return 1;
         }
-        if (IsVhosRegion(rift.Data.destRegion))
+        if (IsVhosRegion(rift.Data.destRegion.ToLowerInvariant()))
         {
             return 2;
         }

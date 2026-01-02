@@ -45,7 +45,7 @@ public static class WarpPointHooks_ForRift
                 case 1: newShader = Custom.rainWorld.Shaders["DreamWarpTear"];
                     break;
                 case 2:
-                    newShader = Custom.rainWorld.Shaders["DreamWarpTear"];
+                    newShader = Custom.rainWorld.Shaders["IntoDreamWarpTear"];
                     break;
                 default: break;
             }
