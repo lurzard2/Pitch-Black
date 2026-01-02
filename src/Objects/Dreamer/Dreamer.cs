@@ -1219,6 +1219,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
         if (BeaconSaveData.GetDreamerEncountersNumber(room.world.game.GetStorySession.saveState) == 3)
         {
             riftManager.placedRift = riftManager.ScriptedRift(Enums.Timeline.Beacon, "pblf", "pblf_c07");
+            riftManager.placedRift.Data.effectSettings.badWarpCosmetic = true;
             makeOneWay = true;
         }
 
@@ -1254,6 +1255,7 @@ public class Dreamer : CosmeticSprite, Conversation.IOwnAConversation
             if (BeaconSaveData.GetDreamerEncountersNumber(room.world.game.GetStorySession.saveState) == 3)
             {
                 riftManager.placedRift = riftManager.ScriptedRift(Enums.Timeline.Beacon, "pblf", "pblf_c07");
+                riftManager.placedRift.Data.effectSettings.badWarpCosmetic = true;
                 makeOneWay = true;
             }
 
