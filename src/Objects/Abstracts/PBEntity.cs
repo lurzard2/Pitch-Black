@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace PitchBlack;
 
 // For later
-public class PBEntity : UpdatableAndDeletable
+public class PBEntity : CosmeticSprite
 {
     public PBEntity() { }
 }

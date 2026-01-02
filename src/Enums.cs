@@ -138,6 +138,7 @@ public static class Enums
         public static PlacedObject.Type DreamerSpot = new("DreamerSpot", true);
         public static PlacedObject.Type RiftSpot = new("RiftSpot", true);
         public static PlacedObject.Type RiftExitTarget = new(nameof(RiftExitTarget), true);
+        public static PlacedObject.Type StillbornSpot = new(nameof(StillbornSpot), true);
 
         public static void UnregisterValues()
         {
@@ -160,6 +161,11 @@ public static class Enums
             {
                 RiftExitTarget.Unregister();
                 RiftExitTarget = null;
+            }
+            if (StillbornSpot != null)
+            {
+                StillbornSpot.Unregister();
+                StillbornSpot = null;
             }
         }
     }

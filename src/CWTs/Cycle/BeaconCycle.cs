@@ -36,6 +36,17 @@ public class BeaconCycle
         // Stopsplayer ripples and thanatosis
         if (MiscUtils.IsRegionOutSideCycle(owner.abstractCreature.world))
         {
+            // Indicator for being unable to use Thanatosis
+            if (owner.input[0].spec)
+            {
+                specInputCounter.Tick();
+            }
+            if (specInputCounter == 80)
+            {
+                owner.Stun(80);
+                specInputCounter.Reset();
+                owner.room.AddObject(new Watcher.RippleRing(owner.mainBodyChunk.pos, 60, 0.4f, 0.6f));
+            }
             return;
         }
 
