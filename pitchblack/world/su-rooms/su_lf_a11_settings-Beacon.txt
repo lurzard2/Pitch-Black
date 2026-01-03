@@ -1,0 +1,9 @@
+Template: NONE
+BkgDroneVolume: 0
+BkgDroneNoThreatVolume: 0
+Effects: Sentient Rot Spores-0.2065217-20-20, 
+PlacedObjects: PuffBall><405.908><603.6227><0~0~2~3, PuffBall><368.561><614.6847><0~0~2~3, PuffBall><355.1954><595.7075><0~0~2~3, PuffBall><152.6519><609.9243><0~0~2~3, PuffBall><167.8628><621.1652><0~0~2~3, PuffBall><206.5112><601.9497><0~0~2~3, InsectGroup><711.6779><307.8134><-117~-12~0~0~Beetle~0.5, Corruption><626.1577><542.123><0~100, Corruption><760><414><3~109, 
+AmbientSounds: OMNI><AM_ENV-Outside.ogg><741.1677><300.359><0.2608696><0.823913, OMNI><AM_ENV-LightWind.ogg><648.1544><635.3772><0.3152174><0.6673913, OMNI><RWPB_ElseTree_Voiceless.ogg><738.491><501.4498><0.1086956><1, OMNI><rwtw_rotamb_deep.ogg><733.6996><427.2615><0.3043478><1, 
+FadePalette: 8, 0.3152174
+MorePalette0: 10, 1
+MorePalette1: 14, 0.1086956

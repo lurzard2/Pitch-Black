@@ -2,6 +2,8 @@ Template: NONE
 Grime: 0.423913
 BkgDroneVolume: 0
 BkgDroneNoThreatVolume: 0
+Effects: Sentient Rot Spores-0.2065217-20-20, 
 PlacedObjects: Corruption><292.0265><372.0518><0~71, CorruptionDarkness><289.6994><371.1935><0~100, 
+AmbientSounds: OMNI><am_env-lightwind.ogg><715.8002><370.7581><0.25><1, OMNI><RWPB_ElseTree_Voiceless.ogg><743.8263><508.1849><0.1086956><1, OMNI><rwtw_rotamb_deep.ogg><728.9227><586.351><0.3043478><1, 
 FadePalette: 8, 0.3152174
 MorePalette0: 10, 1

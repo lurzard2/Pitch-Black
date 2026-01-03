@@ -7,9 +7,9 @@ BkgDroneNoThreatVolume: 0
 Palette: 0
 EffectColorA: 2
 EffectColorB: 18
-Effects: ModifyEffectColorB-0,0.25,0.05434782-294-71, 
-PlacedObjects: CustomDecal><115.6615><186.618><-31~94~55~126~74~14~137~-323~0.2826087~1~0~scavmark deer~0.09782609~0~0.09782609~0~0.09782609~0~0.09782609~0.8913044, CustomDecal><115.177><186.5638><-31~94~55~126~74~14~-121~-321~0.3152174~1~0~scavmark deer~0.1086956~0~0.1086956~0~0~0~0.1086956~0.5978261, NoSpearStickZone><464.6483><241.8658><-244~118, CorruptionDarkness><479.8333><408.0681><6~-194, CorruptionDarkness><480><120><0~-110, CorruptionDarkness><297><114><0~-110, CorruptionDarkness><666><121><0~-110, CorruptionDarkness><301><385><6~-194, CorruptionDarkness><658><382><6~-194, 
-AmbientSounds: OMNI><am_env-lightwind.ogg><713.5851><367.6367><0.3152174><0.823913, 
+Effects: ModifyEffectColorB-0,0.25,0.05434782-294-71, Sentient Rot Spores-0.1086956-20-20, 
+PlacedObjects: CustomDecal><115.6615><186.618><-31~94~55~126~74~14~137~-323~0.2826087~1~0~scavmark deer~0.09782609~0~0.09782609~0~0.09782609~0~0.09782609~0.8913044, CustomDecal><115.177><186.5638><-31~94~55~126~74~14~-121~-321~0.3152174~1~0~scavmark deer~0.1086956~0~0.1086956~0~0~0~0.1086956~0.5978261, NoSpearStickZone><464.6483><241.8658><-244~118, CorruptionDarkness><479.8333><408.0681><4~-116, CorruptionDarkness><480><120><0~-110, CorruptionDarkness><297><114><0~-110, CorruptionDarkness><666><121><0~-110, CorruptionDarkness><301><385><1~-117, CorruptionDarkness><658><382><-1~-119, Corruption><475.1571><381.1772><5~-154, 
+AmbientSounds: OMNI><am_env-lightwind.ogg><713.5851><367.6367><0.3152174><0.823913, OMNI><rwtw_rotamb_deep.ogg><710.1589><445.6285><0.2065217><1, OMNI><RWPB_ElseTree_Voiceless.ogg><713.5587><522.9418><0.05434782><1, 
 FadePalette: 14, 0.7173913
 MorePalette0: 10, 1
 MorePalette1: 14, 0.07608695
