@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace PitchBlack;
 
-public class DreamerEntity : PBEntity
+public class Dreamer : PBEntity
 {
     public PlacedObject placedObject;
     public DreamerData SpecialData => placedObject.data as DreamerData;
@@ -18,7 +18,7 @@ public class DreamerEntity : PBEntity
     public bool convoFinished;
     public bool encounterFinished;
 
-    public DreamerEntity(Room room, PlacedObject placedObject) : base(room, placedObject)
+    public Dreamer(Room room, PlacedObject placedObject) : base(room, placedObject)
     {
         this.placedObject = placedObject;
 

@@ -83,9 +83,9 @@ public class DreamerPresence : World.IMigrationInfluence
     {
         public AbstractRoom abstractRoom;
         public bool hasSpawned;
-        public DreamerEntity obj;
+        public Dreamer obj;
         public bool songPlaying;
-        public MyDreamer(AbstractRoom abstractRoom, bool hasSpawned, DreamerEntity obj)
+        public MyDreamer(AbstractRoom abstractRoom, bool hasSpawned, Dreamer obj)
         {
             this.abstractRoom = abstractRoom;
             this.hasSpawned = hasSpawned;

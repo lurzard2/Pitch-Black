@@ -12,7 +12,7 @@ namespace PitchBlack;
 
 public class DreamerBehavior : PBEntity.BehaviorModule
 {
-    public DreamerEntity Dreamer => owner as DreamerEntity;
+    public Dreamer Dreamer => owner as Dreamer;
     public Counter onScreenCounter = new Counter(120, 0, true);
     public Counter afterConversationCounter = new Counter(280, 0, true);
     public virtual bool OnScreen()
@@ -40,7 +40,7 @@ public class DreamerBehavior : PBEntity.BehaviorModule
         public static readonly EncounterType Nightmare = new(nameof(Nightmare), true);
     }
 
-    public DreamerBehavior(DreamerEntity owner, EncounterType encounterType) : base(owner)
+    public DreamerBehavior(Dreamer owner, EncounterType encounterType) : base(owner)
     {
         this.owner = owner;
         this.encounterType = encounterType;

@@ -14,17 +14,17 @@ public class  DreamSpawnBehavior
             get
             {
                 // Defaults
-                DreamerEntity target = null;
+                Dreamer target = null;
                 float distance = 0f;
 
                 // Assigning
-                if (owner.room is not null && owner.room.updateList.FirstOrDefault(x => x is DreamerEntity) is DreamerEntity dummyTarget)
+                if (owner.room is not null && owner.room.updateList.FirstOrDefault(x => x is Dreamer) is Dreamer dummyTarget)
                 {
                     for (int i = 0; i < owner.room.updateList.Count; i++)
                     {
-                        if (owner.room.updateList[i] is DreamerEntity)
+                        if (owner.room.updateList[i] is Dreamer)
                         {
-                            dummyTarget = owner.room.updateList[i] as DreamerEntity;
+                            dummyTarget = owner.room.updateList[i] as Dreamer;
                         }
                         if (dummyTarget != null
                             && dummyTarget.room != null

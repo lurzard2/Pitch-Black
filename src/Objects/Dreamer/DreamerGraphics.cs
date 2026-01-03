@@ -11,7 +11,7 @@ namespace PitchBlack;
 
 public class DreamerGraphics : PBEntity.GraphicsModule
 {
-    public DreamerEntity Dreamer => owner as DreamerEntity;
+    public Dreamer Dreamer => owner as Dreamer;
 
     #region Sprite Gets
     public int LightSprite
@@ -106,7 +106,7 @@ public class DreamerGraphics : PBEntity.GraphicsModule
     public int DreamSpawnCaught => BeaconSaveData.GetDreamerEncountersNumber(Dreamer.room.world.game.GetStorySession.saveState);
     private bool spawnedWorms = false;
 
-    public DreamerGraphics(DreamerEntity owner) : base(owner)
+    public DreamerGraphics(Dreamer owner) : base(owner)
     {
         this.owner = owner;
         pos = Dreamer.Pos;
