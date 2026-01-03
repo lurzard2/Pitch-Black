@@ -8,18 +8,17 @@ using UnityEngine;
 
 namespace PitchBlack;
 
-public class DreamerConversation : Conversation
+public class DreamerConversation : PBEntity.BehaviorModule.BehaviorConversation
 {
-    private Dreamer owner;
+    public DreamerBehavior Owner => owner as DreamerBehavior;
     private Counter timeSinceLastSound = new Counter(120, 0, true);
-    private string s = "";
     private int switchSpeakerEvents = 0;
     private bool wasVoiceSwitched;
     private List<string> switchSpeakerStrings = new List<string>();
     public bool SpeakerSwitched => switchSpeakerEvents > 0;
     public string CurrentTextEvent => (events[0] as TextEvent).text;
 
-    public DreamerConversation(Dreamer owner, ID id, DialogBox dialogBox) : base(owner, id, dialogBox)
+    public DreamerConversation(DreamerBehavior owner, ID id, DialogBox dialogBox) : base(owner, id, dialogBox)
     {
         this.owner = owner;
         AddEvents();
@@ -112,14 +111,14 @@ public class DreamerConversation : Conversation
             volume = Random.Range(0.75f, 1f);
             pitch = Random.Range(0.80f, 1.25f);
         }
-        owner.room.PlaySound(VoiceID(), 0.5f, volume, pitch);
+       Owner.Dreamer.room.PlaySound(VoiceID(), 0.5f, volume, pitch);
     }
 
     public SoundID VoiceID()
     {
         if (SpeakerSwitched)
         {
-            if (BeaconSaveData.GetMaxSpiralLevel(owner.room.game.GetStorySession.saveState) > 4f)
+            if (BeaconSaveData.GetMaxSpiralLevel(Owner.Dreamer.room.game.GetStorySession.saveState) > 4f)
             {
                 return Enums.SoundID.Beacon_Hybrid_Voice;
             }
@@ -129,16 +128,8 @@ public class DreamerConversation : Conversation
     }
     #endregion
 
-    private DialogueEvent Text(string text, int linger = 0, int initial = 0)
+    public override void GetEvents(List<DialogueEvent> e)
     {
-        TextEvent t = new(this, initial, text, linger);
-        return t;
-    }
-
-    private List<DialogueEvent> GetEvents()
-    {
-        List<DialogueEvent> e = [];
-
         if (id == Enums.ConversationID.Dreamer_PH)
         {
             e.Add(Text("...", 40));
@@ -216,156 +207,156 @@ public class DreamerConversation : Conversation
                 Text("Then, come and find me, when you finally wake.")
             ]);
         }
-
-        return e;
     }
 
-    private void SetEvents(List<DialogueEvent> events)
-    {
-        for (int i = 0; i < events.Count; i++)
-        {
-            this.events.Add(events[i]);
-        }
-    }
+    #region Old shi
+    //private void SetEvents(List<DialogueEvent> events)
+    //{
+    //    for (int i = 0; i < events.Count; i++)
+    //    {
+    //        this.events.Add(events[i]);
+    //    }
+    //}
 
-    public override void AddEvents()
-    {
-        List<DialogueEvent> l = GetEvents();
-        SetEvents(l);
-        return;
+    //public override void AddEvents()
+    //{
+    //    List<DialogueEvent> l = GetEvents();
+    //    SetEvents(l);
+    //    return;
 
-        #region old
-        //if (id == Enums.ConversationID.Dreamer_PH)
-        //{
-        //    s = "...";
-        //    l.Add(new TextEvent(this, 0, s, 40));
-        //}
+    //    #region old
+    //    //if (id == Enums.ConversationID.Dreamer_PH)
+    //    //{
+    //    //    s = "...";
+    //    //    l.Add(new TextEvent(this, 0, s, 40));
+    //    //}
 
-        //if (id == Enums.ConversationID.Dreamer_1)
-        //{
-        //    s = "...";
-        //    l.Add(new TextEvent(this, 0, s, 40));
-        //    s = "I see... I see...";
-        //    l.Add(new TextEvent(this, 0, s, 20));
-        //    s = "Indeed, you are somewhere.";
-        //    l.Add(new TextEvent(this, 0, s, 20));
-        //    s = "Here, somewhere?";
-        //    l.Add(new TextEvent(this, 0, s, 20));
-        //    s = "...";
-        //    l.Add(new TextEvent(this, 0, s, 40));
-        //    s = "Do you feel lost?";
-        //    l.Add(new TextEvent(this, 0, s, 10));
-        //    s = "Sound asleep...";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "Yet wide awake!";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "But the dream lingers...";
-        //    l.Add(new TextEvent(this, 0, s, 10));
-        //    s = "I'm seeing bright towers, concrete with holes";
-        //    l.Add(new TextEvent(this, 0, s, 10));
-        //    s = "The dream lingers, a will wakes.";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "A will to percieve and act";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "A dream of a web. A tangle, strangled!";
-        //    l.Add(new TextEvent(this, 0, s, 10));
-        //    s = "A strangle in selves";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "Forever Somewhere";
-        //    l.Add(new TextEvent(this, 0, s, 10));
-        //    s = "Somewhere Else.";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    return;
-        //}
+    //    //if (id == Enums.ConversationID.Dreamer_1)
+    //    //{
+    //    //    s = "...";
+    //    //    l.Add(new TextEvent(this, 0, s, 40));
+    //    //    s = "I see... I see...";
+    //    //    l.Add(new TextEvent(this, 0, s, 20));
+    //    //    s = "Indeed, you are somewhere.";
+    //    //    l.Add(new TextEvent(this, 0, s, 20));
+    //    //    s = "Here, somewhere?";
+    //    //    l.Add(new TextEvent(this, 0, s, 20));
+    //    //    s = "...";
+    //    //    l.Add(new TextEvent(this, 0, s, 40));
+    //    //    s = "Do you feel lost?";
+    //    //    l.Add(new TextEvent(this, 0, s, 10));
+    //    //    s = "Sound asleep...";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "Yet wide awake!";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "But the dream lingers...";
+    //    //    l.Add(new TextEvent(this, 0, s, 10));
+    //    //    s = "I'm seeing bright towers, concrete with holes";
+    //    //    l.Add(new TextEvent(this, 0, s, 10));
+    //    //    s = "The dream lingers, a will wakes.";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "A will to percieve and act";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "A dream of a web. A tangle, strangled!";
+    //    //    l.Add(new TextEvent(this, 0, s, 10));
+    //    //    s = "A strangle in selves";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "Forever Somewhere";
+    //    //    l.Add(new TextEvent(this, 0, s, 10));
+    //    //    s = "Somewhere Else.";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    return;
+    //    //}
 
-        //if (id == Enums.ConversationID.Dreamer_2)
-        //{
-        //    s = "The little sleeper follows the tide once more";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "Drifting smoothly to someplace forever familiar";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "...";
-        //    l.Add(new TextEvent(this, 0, s, 40));
-        //    s = "You, aquainted with this placewhere";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "Eager to squirm your way back in?";
-        //    l.Add(new TextEvent(this, 0, s, 10));
-        //    s = "I suppose...";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "After this where's conception";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "There were holes left, cracks, windows...";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "Assuming you will find more...";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "These won't be the only visits?";
-        //    l.Add(new TextEvent(this, 0, s, 20));
-        //    s = "...";
-        //    l.Add(new TextEvent(this, 0, s, 40));
-        //    s = "Yes, there will be more";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "From the web you'll find more trailing threads";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "You'll certainly find a way...";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "So, I'll be waiting here in my where";
-        //    l.Add(new TextEvent(this, 0, s, 10));
-        //    s = "For another when and another you";
-        //    l.Add(new TextEvent(this, 0, s, 10));
-        //    s = "Another visit.";
-        //    l.Add(new TextEvent(this, 0, s, 10));
-        //    return;
-        //}
+    //    //if (id == Enums.ConversationID.Dreamer_2)
+    //    //{
+    //    //    s = "The little sleeper follows the tide once more";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "Drifting smoothly to someplace forever familiar";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "...";
+    //    //    l.Add(new TextEvent(this, 0, s, 40));
+    //    //    s = "You, aquainted with this placewhere";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "Eager to squirm your way back in?";
+    //    //    l.Add(new TextEvent(this, 0, s, 10));
+    //    //    s = "I suppose...";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "After this where's conception";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "There were holes left, cracks, windows...";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "Assuming you will find more...";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "These won't be the only visits?";
+    //    //    l.Add(new TextEvent(this, 0, s, 20));
+    //    //    s = "...";
+    //    //    l.Add(new TextEvent(this, 0, s, 40));
+    //    //    s = "Yes, there will be more";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "From the web you'll find more trailing threads";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "You'll certainly find a way...";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "So, I'll be waiting here in my where";
+    //    //    l.Add(new TextEvent(this, 0, s, 10));
+    //    //    s = "For another when and another you";
+    //    //    l.Add(new TextEvent(this, 0, s, 10));
+    //    //    s = "Another visit.";
+    //    //    l.Add(new TextEvent(this, 0, s, 10));
+    //    //    return;
+    //    //}
 
-        //if (id == Enums.ConversationID.Dreamer_3)
-        //{
-        //    s = "...";
-        //    l.Add(new TextEvent(this, 0, s, 40));
-        //    s = "Ah... You see Another?";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "You and these...";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "Now that you're here, is that what its like to be spun like a thread?";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "Spun and caught in twine, in a web?...";
-        //    l.Add(new TextEvent(this, 0, s, 10));
-        //    s = "...Do you hear me?";
-        //    l.Add(new TextEvent(this, 0, s, 10));
-        //    s = "Do you understand that?";
-        //    l.Add(new TextEvent(this, 0, s, 20));
-        //    s = "Can you answer me?";
-        //    l.Add(new TextEvent(this, 0, s, 30));
-        //    s = "...";
-        //    l.Add(new TextEvent(this, 0, s, 50));
-        //    s = "Hmm...";
-        //    l.Add(new TextEvent(this, 0, s, 20));
-        //    s = "Still tied down to the scope of the body, I see...";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "I am too";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "...";
-        //    l.Add(new TextEvent(this, 0, s, 10));
-        //    s = "But I can see your reflections, writhing";
-        //    l.Add(new TextEvent(this, 0, s, 10));
-        //    s = "I can see where the window is";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "And I can feel the twine tightening...";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "You're dying";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "And the suffocation is getting worse";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "I'm afraid there's not much time left for you there, friend";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "If you can bear a responsibility for me";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "When I let you back out of this limbo state";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "Find shelter and die peacefully";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //    s = "Then come and find me";
-        //    l.Add(new TextEvent(this, 0, s, 0));
-        //}
-        #endregion
-    }
+    //    //if (id == Enums.ConversationID.Dreamer_3)
+    //    //{
+    //    //    s = "...";
+    //    //    l.Add(new TextEvent(this, 0, s, 40));
+    //    //    s = "Ah... You see Another?";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "You and these...";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "Now that you're here, is that what its like to be spun like a thread?";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "Spun and caught in twine, in a web?...";
+    //    //    l.Add(new TextEvent(this, 0, s, 10));
+    //    //    s = "...Do you hear me?";
+    //    //    l.Add(new TextEvent(this, 0, s, 10));
+    //    //    s = "Do you understand that?";
+    //    //    l.Add(new TextEvent(this, 0, s, 20));
+    //    //    s = "Can you answer me?";
+    //    //    l.Add(new TextEvent(this, 0, s, 30));
+    //    //    s = "...";
+    //    //    l.Add(new TextEvent(this, 0, s, 50));
+    //    //    s = "Hmm...";
+    //    //    l.Add(new TextEvent(this, 0, s, 20));
+    //    //    s = "Still tied down to the scope of the body, I see...";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "I am too";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "...";
+    //    //    l.Add(new TextEvent(this, 0, s, 10));
+    //    //    s = "But I can see your reflections, writhing";
+    //    //    l.Add(new TextEvent(this, 0, s, 10));
+    //    //    s = "I can see where the window is";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "And I can feel the twine tightening...";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "You're dying";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "And the suffocation is getting worse";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "I'm afraid there's not much time left for you there, friend";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "If you can bear a responsibility for me";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "When I let you back out of this limbo state";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "Find shelter and die peacefully";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //    s = "Then come and find me";
+    //    //    l.Add(new TextEvent(this, 0, s, 0));
+    //    //}
+    //    #endregion
+    //}
+    #endregion
 }

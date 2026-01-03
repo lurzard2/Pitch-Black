@@ -208,7 +208,7 @@ public class DevToolsHooks
     {
         logger.LogDebug($"DreamerSpot: Dreamer already encountered and can spawn warp - Placing warp");
 
-        Dreamer.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
+        DreamerBehavior.SpawnBackupWarpPoint(self, self.roomSettings.placedObjects[objects]);
     }
     #endregion
 }

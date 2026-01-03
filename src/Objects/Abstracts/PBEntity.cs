@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,14 +51,22 @@ public abstract class PBEntity : UpdatableAndDeletable
         {
             OnDestroy();
         }
+        else
+        {
+            if (visibleEntity != null)
+            {
+                visibleEntity.Destroy();
+            }
+            Destroy();
+        }
     }
 
     public virtual void OnDestroy()
     {
         if (deleteMe)
         {
-            slatedForDeletetion = true;
             visibleEntity.slatedForDeletetion = true;
+            slatedForDeletetion = true;
         }
     }
 
@@ -71,13 +80,16 @@ public abstract class PBEntity : UpdatableAndDeletable
             this.owner = owner;
         }
 
-        public abstract class Part
+        public void LoadElement(string elementName)
         {
-            public PBEntity owner;
-            public Part(PBEntity owner)
+            if (Futile.atlasManager.GetAtlasWithName(elementName) != null)
             {
-                this.owner = owner;
+                return;
             }
+            string str = AssetManager.ResolveFilePath("Illustrations" + Path.DirectorySeparatorChar.ToString() + elementName + ".png");
+            Texture2D texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+            AssetManager.SafeWWWLoadTexture(ref texture, "file:///" + str, false, true);
+            Futile.atlasManager.LoadAtlasFromTexture(elementName, texture, false);
         }
     }
 
@@ -85,7 +97,7 @@ public abstract class PBEntity : UpdatableAndDeletable
     {
         public PBEntity owner;
         public BehaviorConversation conversation;
-
+        public bool addedEvents = false;
         public string ReplaceParts(string s) => s;
 
         public void SpecialEvent(string eventName) { }
@@ -117,19 +129,26 @@ public abstract class PBEntity : UpdatableAndDeletable
 
             public override void AddEvents()
             {
-                List<DialogueEvent> l = GetEvents();
-                SetEvents(l);
-                return;
+                // Otherwise duplicates, due to it running once per instance
+                if (!owner.addedEvents)
+                {
+                    List<DialogueEvent> l = [];
+                    GetEvents(l);
+                    SetEvents(l);
+                    owner.addedEvents = true;
+                }
             }
-            public virtual List<DialogueEvent> GetEvents()
+            public virtual void GetEvents(List<DialogueEvent> l)
             {
-                return null;
             }
             public void SetEvents(List<DialogueEvent> events)
             {
-                for (int i = 0; i < events.Count; i++)
+                if (events != null)
                 {
-                    events.Add(events[i]);
+                    for (int i = 0; i < events.Count; i++)
+                    {
+                        this.events.Add(events[i]);
+                    }
                 }
             }
         }

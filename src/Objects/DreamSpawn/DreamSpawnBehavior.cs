@@ -14,23 +14,23 @@ public class  DreamSpawnBehavior
             get
             {
                 // Defaults
-                Dreamer target = null;
+                DreamerEntity target = null;
                 float distance = 0f;
 
                 // Assigning
-                if (owner.room is not null && owner.room.updateList.FirstOrDefault(x => x is Dreamer) is Dreamer dummyTarget)
+                if (owner.room is not null && owner.room.updateList.FirstOrDefault(x => x is DreamerEntity) is DreamerEntity dummyTarget)
                 {
                     for (int i = 0; i < owner.room.updateList.Count; i++)
                     {
-                        if (owner.room.updateList[i] is Dreamer)
+                        if (owner.room.updateList[i] is DreamerEntity)
                         {
-                            dummyTarget = owner.room.updateList[i] as Dreamer;
+                            dummyTarget = owner.room.updateList[i] as DreamerEntity;
                         }
                         if (dummyTarget != null
                             && dummyTarget.room != null
                             && dummyTarget.room.abstractRoom.index == owner.room.abstractRoom.index)
                         {
-                            float distanceFromTarget = Vector2.Distance(owner.firstChunk.pos, dummyTarget.pos);
+                            float distanceFromTarget = Vector2.Distance(owner.firstChunk.pos, dummyTarget.Pos);
                             if (target == null || distanceFromTarget < distance)
                             {
                                 target = dummyTarget;
@@ -43,7 +43,7 @@ public class  DreamSpawnBehavior
                 {
                     return new Vector2(owner.mainBody[0].pos.x, owner.mainBody[1].pos.y);
                 }
-                return target.pos;
+                return target.Pos;
 
             }
         }
