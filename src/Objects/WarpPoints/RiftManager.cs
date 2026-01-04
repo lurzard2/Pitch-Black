@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlTypes;
+using BepInEx.Logging;
 
 namespace PitchBlack;
 
@@ -132,12 +133,14 @@ public class RiftManager : UpdatableAndDeletable
             {
                 rift.Data.destPos = placedObject.pos;
                 foundExit = true;
+                Plugin.logger.LogDebug($"Rift: Found exit pos in {rift.Data.destRoom} - {rift.Data.destPos}");
                 break;
             }
         }
         if (!foundExit)
         {
             rift.Data.destPos = UnityEngine.Vector2.zero;
+            Plugin.logger.LogDebug($"Rift: Couldn't find exit pos in {rift.Data.destRoom} - {rift.Data.destPos}");
         }
 
         rift.Data.destCam = WarpPoint.GetDestCam(rift.Data);

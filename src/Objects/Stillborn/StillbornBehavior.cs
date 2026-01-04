@@ -114,7 +114,11 @@ public class StillbornBehavior : PBEntity.BehaviorModule
                             if (nightmareRiftManager == null)
                             {
                                 beacon.playerCycle.owner.room.AddObject(spasmer);
-                                nightmareRiftManager = new RiftManager(Stillborn.room, Stillborn.placedObject, true);
+                                nightmareRiftManager = new RiftManager(Stillborn.room, Stillborn.placedObject, false);
+                                if (encounterType == EncounterType.Ghost)
+                                {
+                                    nightmareRiftManager.placedRift = nightmareRiftManager.ScriptedRift(Enums.Timeline.Beacon, "ud", "ud_test");
+                                }
                                 var nmRift = nightmareRiftManager.placedRift;
                                 nmRift.Data.effectSettings.badWarpCosmetic = true;
                                 nmRift.Data.effectSettings.spawnBigRift = true;
