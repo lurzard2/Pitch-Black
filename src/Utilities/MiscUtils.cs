@@ -183,13 +183,16 @@ public static class MiscUtils
         riftManager.room.AddObject(riftManager);
         if (replacementRift != null)
         {
+            Plugin.logger.LogDebug("PlaceRift: Replacing Rift with the passed one");
             return riftManager.placedRift = replacementRift;
         }
         // The object takes care of adding a rift to the room, but there are cases where it shouldn't and be given new values
         else if (!riftManager.selfSufficient)
         {
+            Plugin.logger.LogDebug("PlaceRift: RiftManager not self sufficient, creating a new rift");
             return riftManager.placedRift = new(riftManager.room, riftManager.placedObj, triggerNow);
         }
+        Plugin.logger.LogDebug($"PlaceRift: Rift is {(riftManager.placedRift != null ? "Active" : "null")}");
         return riftManager.placedRift;
     }
 }

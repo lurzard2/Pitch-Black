@@ -12,7 +12,7 @@ namespace PitchBlack;
 public class Rift : WarpPoint
 {
     string s = "Rift:";
-    bool triggersInstantly;
+    public bool triggersInstantly;
 
     public Rift(Room room, PlacedObject placedObject, bool triggersInstantly = false) : base(room, placedObject)
     {
@@ -28,7 +28,6 @@ public class Rift : WarpPoint
 
     public override void Update(bool eu)
     {
-        logger.LogDebug($"{s} IM HERE!!! AND IM WORKING!!!");
         base.Update(eu);
     }
 

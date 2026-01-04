@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlTypes;
 using BepInEx.Logging;
+using static PitchBlack.Plugin;
 
 namespace PitchBlack;
 
@@ -59,7 +60,6 @@ public class RiftManager : UpdatableAndDeletable
     public Rift GenerateRift()
     {
         Rift rift = new(room, placedObj);
-
         WarpPoint.WarpPointData warpPointData = placedObj.data as WarpPoint.WarpPointData;
         string key = WarpPoint.IdentifyingString(room.game, warpPointData, room.abstractRoom);
 
@@ -118,9 +118,9 @@ public class RiftManager : UpdatableAndDeletable
     }
 
     // For Code Spawning, self-ufficient warp generating and place
-    public Rift ScriptedRift(SlugcatStats.Timeline newTimeline, string newRegion, string newRoom)
+    public Rift ScriptedRift(SlugcatStats.Timeline newTimeline, string newRegion, string newRoom, Rift newRift = null)
     {
-        Rift rift = GenerateRift();
+        Rift rift = newRift == null ? GenerateRift() : newRift;
         rift.Data.destTimeline = newTimeline;
         rift.Data.destRegion = newRegion;
         rift.Data.destRoom = newRoom;
@@ -133,16 +133,23 @@ public class RiftManager : UpdatableAndDeletable
             {
                 rift.Data.destPos = placedObject.pos;
                 foundExit = true;
-                Plugin.logger.LogDebug($"Rift: Found exit pos in {rift.Data.destRoom} - {rift.Data.destPos}:{placedObject.pos}");
+                logger.LogDebug($"Rift: Found exit pos in {rift.Data.destRoom} - {rift.Data.destPos}:{placedObject.pos}");
                 break;
             }
         }
         if (!foundExit)
         {
-            Plugin.logger.LogDebug($"Rift: Couldn't find exit pos in {rift.Data.destRoom} - {rift.Data.destPos}");
+            logger.LogDebug($"Rift: Couldn't find exit pos in {rift.Data.destRoom} - {rift.Data.destPos}");
         }
 
         rift.Data.destCam = WarpPoint.GetDestCam(rift.Data);
+
+        logger.LogDebug($"ScriptedRift: Rift values are -");
+        logger.LogDebug($"> TIMELINE: {rift.Data.destTimeline.value}");
+        logger.LogDebug($"> REGION: {rift.Data.destRegion}");
+        logger.LogDebug($"> ROOM: {rift.Data.destRoom}");
+        logger.LogDebug($"> POS: {rift.Data.destPos}");
+        logger.LogDebug($"> CAM: {rift.Data.destCam}");
 
         return rift;
     }

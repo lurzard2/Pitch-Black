@@ -69,11 +69,11 @@ public static class DevObjectHooks
 
         PlacedObjectRepresentation rep = null;
 
-        if (tp == Enums.PlacedObjectType.DreamerSpot)
+        if (tp == Enums.PlacedObjectType.DreamerSpot || tp == Enums.PlacedObjectType.StillbornSpot)
         {
             rep = new EntityWarpRepresentation(self.owner, tp.ToString() + "_Rep", self, pObj, tp.ToString());
         }
-        if (tp == Enums.PlacedObjectType.RiftSpot || tp == Enums.PlacedObjectType.StillbornSpot)
+        if (tp == Enums.PlacedObjectType.RiftSpot)
         {
             rep = new WarpPointToRoomRepresentation(self.owner, tp.ToString() + "_Rep", self, pObj, tp.ToString());
         }
@@ -91,7 +91,7 @@ public static class DevObjectHooks
     private static void PlacedObject_GenerateEmptyData(On.PlacedObject.orig_GenerateEmptyData orig, PlacedObject self)
     {
         orig(self);
-        if (self.type == Enums.PlacedObjectType.DreamerSpot)
+        if (self.type == Enums.PlacedObjectType.DreamerSpot || self.type == Enums.PlacedObjectType.StillbornSpot)
         {
             self.data = new EntityWarpData(self);
         }

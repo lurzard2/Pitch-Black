@@ -17,5 +17,4 @@ WaterReflectionAlpha: 1
 Palette: 1001
 EffectColorA: 16
 EffectColorB: 0
-Effects: RippleSpawn-1-43-85, RippleMelt-0.6086956-42-139, 
 AmbientSounds: OMNI><RWTW_RippleSpace_04.ogg><753.4446><307.5578><0.1521739><0.3347826, OMNI><RWTW_DeepRumble_01.ogg><745.4495><174.2351><0.3913043><1, OMNI><RWTW_AR_SynthHell.ogg><534.8177><253.8324><0.2391304><1, OMNI><RWTW_AR_ErrorBop.ogg><738.301><431.5203><0.3586957><0.1586957, 

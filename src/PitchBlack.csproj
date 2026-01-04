@@ -14,6 +14,7 @@
     </ItemGroup>
     
     <ItemGroup>
+      <Folder Include="Objects\Dreamer\Data\" />
       <Folder Include="Shaders\" />
     </ItemGroup>
     

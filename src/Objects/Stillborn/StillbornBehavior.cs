@@ -16,11 +16,11 @@ public class StillbornBehavior : PBEntity.BehaviorModule
     public EtherealGraphics GhostGraphics => Stillborn.visibleEntity as EtherealGraphics;
     public EncounterType encounterType;
     public Counter visibleCounter = new(100, 0, true);
-    private float deathFac = 0.015f;
-    private Counter deathCount = new(35, 0, true);
+    private float deathFac = 0.01f;
+    private Counter deathCount = new(30, 0, true);
     private CreatureSpasmer spasmer = null;
-    private RiftManager nightmareRiftManager = null;
     private bool readyToKill = false;
+    private bool riftSpawned = false;
     public class EncounterType : ExtEnum<EncounterType>
     {
         public EncounterType(string value, bool register) : base(value, register) { }
@@ -86,7 +86,7 @@ public class StillbornBehavior : PBEntity.BehaviorModule
                             beacon.playerCycle.owner.Stun(deathCount > 15 ? 80 : 40);
                         }
                     }
-                    if (deathCount > 25)
+                    if (deathCount > 17)
                     {
                         if (Stillborn.RoomCamera.ghostMode <= 0.5f)
                         {
@@ -111,29 +111,10 @@ public class StillbornBehavior : PBEntity.BehaviorModule
                         }
                         else
                         {
-                            if (nightmareRiftManager == null)
+                            if (!riftSpawned)
                             {
+                                SpawnRift();
                                 beacon.playerCycle.owner.room.AddObject(spasmer);
-                                nightmareRiftManager = new RiftManager(Stillborn.room, Stillborn.placedObject, false);
-                                var nmRift = nightmareRiftManager.placedRift;
-                                if (encounterType == EncounterType.Ghost)
-                                {
-                                    nmRift = nightmareRiftManager.ScriptedRift(Enums.Timeline.Beacon, "ud", "ud_test");
-                                }
-                                nmRift.Data.effectSettings.badWarpCosmetic = true;
-                                nmRift.Data.effectSettings.spawnBigRift = true;
-                                //nmRift.triggerTime = (float)((int)(nmRift.triggerActivationTime - 1f));
-                                nmRift.strongPull = true;
-                                nmRift.guaranteeTrigger = true;
-                                // Make completely one way
-                                nmRift.Data.oneWay = true;
-                                nmRift.Data.oneWayEntrance = true;
-                                nmRift.Data.oneWayEntranceIdentified = true;
-                                // Pass it off
-                                MiscUtils.PlaceRift(nightmareRiftManager, nmRift, false);
-                            }
-                            if (nightmareRiftManager?.placedRift.currentState == WarpPoint.State.EnterWarp)
-                            {
                                 beacon.playerCycle.owner.controller = null;
                             }
                         }
@@ -141,6 +122,44 @@ public class StillbornBehavior : PBEntity.BehaviorModule
                 }
             }
         }
+    }
+
+    private void SpawnRift()
+    {
+        EntityWarpData data = Stillborn.SpecialData;
+        if (data == null)
+        {
+            return;
+        }
+        if (data.destRoom == null)
+        {
+            return;
+        }
+
+        PlacedObject placedObj = new PlacedObject(PlacedObject.Type.WarpPoint, data.CreateWarpPointDataForRift(Stillborn.room));
+        placedObj.pos = Stillborn.Pos;
+
+        var riftManager = new RiftManager(Stillborn.room, placedObj, false);
+        var rift = riftManager.GenerateRift();
+
+        rift.Data.oneWay = true;
+        rift.Data.oneWayEntrance = true;
+        rift.Data.oneWayEntranceIdentified = true;
+        rift.Data.effectSettings.badWarpCosmetic = true;
+        rift.Data.effectSettings.spawnBigRift = true;
+        rift.strongPull = true;
+        rift.guaranteeTrigger = true;
+        // Make completely one way
+        rift.Data.oneWay = true;
+        rift.Data.oneWayEntrance = true;
+        rift.Data.oneWayEntranceIdentified = true;
+
+        if (encounterType == EncounterType.Ghost)
+        {
+            riftManager.ScriptedRift(Enums.Timeline.Beacon, "ud", "ud_test", rift);
+        }
+        MiscUtils.PlaceRift(riftManager, rift, true);
+        riftSpawned = true;
     }
 
     private Player.InputPackage GetInput()

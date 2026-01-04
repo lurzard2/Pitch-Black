@@ -39,7 +39,7 @@ public class Stillborn : PBEntity
         }
 
         StillbornBehavior.EncounterType type = null;
-        if (room != null && room.world.region.name.ToLowerInvariant() == "pbsb")
+        if (room.world != null && room.world.name.ToLowerInvariant() == "pbsb")
         {
             type = StillbornBehavior.EncounterType.Ghost;
             visibleEntity = new EtherealGraphics(this);
@@ -47,8 +47,6 @@ public class Stillborn : PBEntity
         if (!spawned && visibleEntity != null && type != null)
         {
             room.AddObject(visibleEntity);
-
-            placedObject.data = new Watcher.WarpPoint.WarpPointData(placedObject);
             behaviorModule = new StillbornBehavior(this, type);
             spawned = true;
         }
