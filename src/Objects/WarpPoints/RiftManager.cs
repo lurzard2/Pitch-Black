@@ -133,13 +133,12 @@ public class RiftManager : UpdatableAndDeletable
             {
                 rift.Data.destPos = placedObject.pos;
                 foundExit = true;
-                Plugin.logger.LogDebug($"Rift: Found exit pos in {rift.Data.destRoom} - {rift.Data.destPos}");
+                Plugin.logger.LogDebug($"Rift: Found exit pos in {rift.Data.destRoom} - {rift.Data.destPos}:{placedObject.pos}");
                 break;
             }
         }
         if (!foundExit)
         {
-            rift.Data.destPos = UnityEngine.Vector2.zero;
             Plugin.logger.LogDebug($"Rift: Couldn't find exit pos in {rift.Data.destRoom} - {rift.Data.destPos}");
         }
 

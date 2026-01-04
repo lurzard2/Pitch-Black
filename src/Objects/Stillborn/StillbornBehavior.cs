@@ -16,8 +16,8 @@ public class StillbornBehavior : PBEntity.BehaviorModule
     public EtherealGraphics GhostGraphics => Stillborn.visibleEntity as EtherealGraphics;
     public EncounterType encounterType;
     public Counter visibleCounter = new(100, 0, true);
-    private float deathFac = 0.01f;
-    private Counter deathCount = new(50, 0, true);
+    private float deathFac = 0.015f;
+    private Counter deathCount = new(35, 0, true);
     private CreatureSpasmer spasmer = null;
     private RiftManager nightmareRiftManager = null;
     private bool readyToKill = false;
@@ -68,7 +68,7 @@ public class StillbornBehavior : PBEntity.BehaviorModule
                     if (!readyToKill)
                     {
                         // Right below them
-                        if (distance < 322f)
+                        if (distance < 321f)
                         {
                             beacon.playerCycle.owner.controller ??= new InputController(this);
                             readyToKill = true;
@@ -115,11 +115,11 @@ public class StillbornBehavior : PBEntity.BehaviorModule
                             {
                                 beacon.playerCycle.owner.room.AddObject(spasmer);
                                 nightmareRiftManager = new RiftManager(Stillborn.room, Stillborn.placedObject, false);
+                                var nmRift = nightmareRiftManager.placedRift;
                                 if (encounterType == EncounterType.Ghost)
                                 {
-                                    nightmareRiftManager.placedRift = nightmareRiftManager.ScriptedRift(Enums.Timeline.Beacon, "ud", "ud_test");
+                                    nmRift = nightmareRiftManager.ScriptedRift(Enums.Timeline.Beacon, "ud", "ud_test");
                                 }
-                                var nmRift = nightmareRiftManager.placedRift;
                                 nmRift.Data.effectSettings.badWarpCosmetic = true;
                                 nmRift.Data.effectSettings.spawnBigRift = true;
                                 //nmRift.triggerTime = (float)((int)(nmRift.triggerActivationTime - 1f));
@@ -130,7 +130,7 @@ public class StillbornBehavior : PBEntity.BehaviorModule
                                 nmRift.Data.oneWayEntrance = true;
                                 nmRift.Data.oneWayEntranceIdentified = true;
                                 // Pass it off
-                                MiscUtils.PlaceRift(nightmareRiftManager, nmRift, true);
+                                MiscUtils.PlaceRift(nightmareRiftManager, nmRift, false);
                             }
                             if (nightmareRiftManager?.placedRift.currentState == WarpPoint.State.EnterWarp)
                             {

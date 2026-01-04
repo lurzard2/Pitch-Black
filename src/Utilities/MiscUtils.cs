@@ -183,12 +183,12 @@ public static class MiscUtils
         riftManager.room.AddObject(riftManager);
         if (replacementRift != null)
         {
-            riftManager.placedRift = replacementRift;
+            return riftManager.placedRift = replacementRift;
         }
         // The object takes care of adding a rift to the room, but there are cases where it shouldn't and be given new values
         else if (!riftManager.selfSufficient)
         {
-            riftManager.placedRift = new(riftManager.room, riftManager.placedObj, triggerNow);
+            return riftManager.placedRift = new(riftManager.room, riftManager.placedObj, triggerNow);
         }
         return riftManager.placedRift;
     }
