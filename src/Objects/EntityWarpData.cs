@@ -9,7 +9,7 @@ using UnityEngine;
 using Watcher;
 
 namespace PitchBlack;
-public class DreamerData : PlacedObject.Data
+public class EntityWarpData : PlacedObject.Data
 {
     public string RegionString
     {
@@ -34,7 +34,7 @@ public class DreamerData : PlacedObject.Data
         }
     }
 
-    public DreamerData(PlacedObject owner) : base(owner)
+    public EntityWarpData(PlacedObject owner) : base(owner)
     {
     }
 

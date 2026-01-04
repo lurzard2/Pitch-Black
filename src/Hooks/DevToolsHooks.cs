@@ -17,6 +17,7 @@ namespace PitchBlack;
 
 public static class DevEffectHooks
 {
+
     public static void Inject()
     {
         On.DevInterface.RoomSettingsPage.DevEffectGetCategoryFromEffectType += AddToDevEffectCatagory;
@@ -70,9 +71,9 @@ public static class DevObjectHooks
 
         if (tp == Enums.PlacedObjectType.DreamerSpot)
         {
-            rep = new DreamerSpotRepresentation(self.owner, tp.ToString() + "_Rep", self, pObj, tp.ToString());
+            rep = new EntityWarpRepresentation(self.owner, tp.ToString() + "_Rep", self, pObj, tp.ToString());
         }
-        if (tp == Enums.PlacedObjectType.RiftSpot)
+        if (tp == Enums.PlacedObjectType.RiftSpot || tp == Enums.PlacedObjectType.StillbornSpot)
         {
             rep = new WarpPointToRoomRepresentation(self.owner, tp.ToString() + "_Rep", self, pObj, tp.ToString());
         }
@@ -92,7 +93,7 @@ public static class DevObjectHooks
         orig(self);
         if (self.type == Enums.PlacedObjectType.DreamerSpot)
         {
-            self.data = new DreamerData(self);
+            self.data = new EntityWarpData(self);
         }
         if (self.type == Enums.PlacedObjectType.RiftSpot)
         {
@@ -105,7 +106,8 @@ public static class DevObjectHooks
         ObjectsPage.DevObjectCategories res = orig(self, type);
         if (type == Enums.PlacedObjectType.DreamerSpot
             || type == Enums.PlacedObjectType.RiftSpot
-            || type == Enums.PlacedObjectType.RiftExitTarget)
+            || type == Enums.PlacedObjectType.RiftExitTarget
+            || type == Enums.PlacedObjectType.StillbornSpot)
         {
             res = Enums.PlacedObjectType.PitchBlackCatagory;
         }
@@ -115,6 +117,7 @@ public static class DevObjectHooks
 
 public class DevToolsHooks
 {
+
     public static void Apply()
     {
         DevEffectHooks.Inject(); 
@@ -171,7 +174,7 @@ public class DevToolsHooks
                             PlaceDreamer(self, objects, dreamerPresences[j]);
 
                             /* Prevent duplicates
-                            * We can do this because its per room, and there is meant to be 1 instantiated Dreamer per encounter
+                            * We can do this because its per room, and there is meant to be 1 instantiated Dreamer per encounte
                             */
                             if (dreamerPresences[j].myDreamer.obj != null)
                             {
@@ -185,6 +188,12 @@ public class DevToolsHooks
                 {
                     RiftManager riftManager = new(self, obj, true);
                     MiscUtils.PlaceRift(riftManager, null, false);
+                }
+
+                if (obj.type == Enums.PlacedObjectType.StillbornSpot)
+                {
+                    Stillborn stillBorn = new(self, obj);
+                    self.AddObject(stillBorn);
                 }
             }
         }

@@ -1,10 +1,11 @@
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 	
 // Upgrade NOTE: replaced 'samplerRECT' with 'sampler2D'
 
 //from http://forum.unity3d.com/threads/68402-Making-a-2D-game-for-iPhone-iPad-and-need-better-performance
 
-Shader "Futile/DreamerSkin" //Unlit Transparent Vertex Colored Additive 
+Shader "Futile/EtherealRag" //Unlit Transparent Vertex Colored Additive 
 {
 Properties 
 	{
@@ -52,13 +53,11 @@ CGPROGRAM
 
 //float4 _Color;
 sampler2D _MainTex;
-sampler2D _LevelTex;
+//sampler2D _LevelTex;
 sampler2D _NoiseTex;
-sampler2D _NoiseTex2;
-sampler2D _CloudsTex;
 sampler2D _PalTex;
-uniform float _fogAmount;
-uniform half4 _AboveCloudsAtmosphereColor;
+
+//uniform float _fogAmount;
 //uniform float _waterPosition;
 
 //#if defined(SHADER_API_PSSL)
@@ -67,11 +66,10 @@ uniform half4 _AboveCloudsAtmosphereColor;
 //sampler2D _GrabTexture : register(s0);
 //#endif
 
-uniform float _RAIN;
+//uniform float _RAIN;
 
-uniform float4 _spriteRect;
-uniform float2 _screenSize;
-
+//uniform float4 _spriteRect;
+//uniform float2 _screenSize;
 
 struct v2f {
     float4  pos : SV_POSITION;
@@ -92,35 +90,45 @@ v2f vert (appdata_full v)
     return o;
 }
 
+uniform half4 _GhostSkinColor;
 
 half4 frag (v2f i) : SV_Target
 {
 rippleClip(i.scrPos);
-	
-half2 getPos = half2((i.uv.x - 0.5 - lerp(-1, 1, i.clr.y))*lerp(0.05, 1, i.clr.x), i.uv.y*2.7);
-//getPos.x -= ;
-getPos.x = floor(getPos.x*32.0)/32.0;
-getPos.y = floor(getPos.y*64.0)/64.0;
 
-half4 texCol = tex2D(_MainTex, getPos);
+half random = (i.clr.w * 1000.0) - floor(i.clr.w * 1000.0);
 
-//int hello = (int)(texCol.x * 256.0);
+half n = 1-tex2D(_NoiseTex, half2(i.uv.x*0.5 + 0.5*random, i.uv.y*lerp(3, 10, i.clr.w) + random));
 
-half glimmer = 0;
-if(texCol.x > 0) 
-//glimmer = frac(texCol.x*7343.5434 + cos(texCol.x *2.2)*3.2) * 0.6 + 0.4*sin((texCol.x*232.4231 + i.clr.y + _RAIN*0.02)*72.2);
-glimmer = tex2D(_NoiseTex2, half2(texCol.x, _RAIN*0.02 + i.clr.y*0.2 + i.clr.w*0.3)).x;
-glimmer = max(0, glimmer - i.clr.z);
+//n = min(1, n + 0.1);
+//n -= pow(i.uv.x, 1.5);
 
+half dist = abs(i.uv.x - 0.5)*2;
+if(i.uv.y > 0.5) dist = distance(i.uv, half2(0.5, 0.5))*2;
+
+//dist = pow(dist, 2);
+
+if(dist > 0.5)
+n -= dist-0.5;
+else
+n = pow(n, dist + 0.5);
+
+
+
+if(n < 0.25)
+return half4(0,0,0,0);
+
+half clr = 0;
+
+if(pow((n - 0.25) * 1.5, lerp(1, 2, i.uv.y)) < 0.2 * (i.uv.y-0.1))
+clr = 1;
+else if(pow((n - 0.25) * 1.5, lerp(3, 1, i.uv.y)) < 0.25 * (i.uv.y-0.1))
+clr = 0.5;
 //Where color is assigned.
-return lerp(lerp(tex2D(_PalTex, half2(2.5/32.0, 7.5/8.0)), half4(1,1,1,1), 0.87), half4(0.525, 0.180, 0.282, 1), glimmer);
+return lerp(lerp(tex2D(_PalTex, half2(2.5/32.0, 7.5/8.0)), _GhostSkinColor, 0.87), half4(i.clr.xyz, 1), clr);
 
-return half4(glimmer, 0, 0, 1);
 
 }
-
-
-
 ENDCG
 				
 				
@@ -129,3 +137,25 @@ ENDCG
 		} 
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -78,7 +78,7 @@ public static class WorldLoaderHooks
                     break;
                 }
                 // Inject DreamerSpot check
-                bool isDreamerSpot = self.roomSettings.placedObjects[i].type == Enums.PlacedObjectType.DreamerSpot && (self.roomSettings.placedObjects[i].data as DreamerData).destRoom == warpPointData?.destRoom;
+                bool isDreamerSpot = self.roomSettings.placedObjects[i].type == Enums.PlacedObjectType.DreamerSpot && (self.roomSettings.placedObjects[i].data as EntityWarpData).destRoom == warpPointData?.destRoom;
                 if (isDreamerSpot)
                 {
                     flag = true;

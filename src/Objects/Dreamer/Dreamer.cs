@@ -12,7 +12,7 @@ namespace PitchBlack;
 public class Dreamer : PBEntity
 {
     public PlacedObject placedObject;
-    public DreamerData SpecialData => placedObject.data as DreamerData;
+    public EntityWarpData SpecialData => placedObject.data as EntityWarpData;
     public Vector2 Pos => placedObject.pos;
     public bool convoActive;
     public bool convoFinished;
@@ -22,7 +22,7 @@ public class Dreamer : PBEntity
     {
         this.placedObject = placedObject;
 
-        visibleEntity = new DreamerGraphics(this);
+        visibleEntity = new EtherealGraphics(this);
         room.AddObject(visibleEntity);
 
         DreamerBehavior.EncounterType type = null;
@@ -36,6 +36,10 @@ public class Dreamer : PBEntity
             {
                 type = DreamerBehavior.EncounterType.Dream;
             }
+        }
+        if (MiscUtils.IsNightmareRegion(room.world.name))
+        {
+            type = DreamerBehavior.EncounterType.Nightmare;
         }
 
         behaviorModule = new DreamerBehavior(this, type);

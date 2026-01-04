@@ -16,6 +16,7 @@ public static class Enums
     public static class Timeline
     {
         public static readonly SlugcatStats.Timeline Beacon = new("Beacon", true);
+        public static readonly SlugcatStats.Timeline Dreamer = new(nameof(Dreamer), true);
     }
 
     public static class DreamSpawnType

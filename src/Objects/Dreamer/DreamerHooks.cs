@@ -221,7 +221,7 @@ public static class DreamerMode_Hooks
 	private static void On_RoomCamera_ApplyFade(On.RoomCamera.orig_ApplyFade orig, RoomCamera self)
 	{
 		Texture2D ghostFadeTex = self.ghostFadeTex;
-		if (currentTarget != null) {
+		if (currentTarget != null || MiscUtils.IsBeacon(self.game.GetStorySession)) {
 			self.ghostFadeTex = dreamerFadeTex;
 		}
 

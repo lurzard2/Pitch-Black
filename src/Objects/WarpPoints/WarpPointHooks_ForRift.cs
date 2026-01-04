@@ -23,7 +23,7 @@ public static class WarpPointHooks_ForRift
     private static bool Region_IsSentientRotRegion(On.Region.orig_IsSentientRotRegion orig, string name)
     {
         return orig(name)
-            || name == "pblf";
+            || MiscUtils.IsDissolvedFieldsRegion(name);
     }
 
     private static void WarpTear_DrawSprites_RIFT(On.Watcher.WarpTear.orig_DrawSprites orig, WarpTear self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, UnityEngine.Vector2 camPos)
@@ -52,7 +52,7 @@ public static class WarpPointHooks_ForRift
             {
                 case 1:
                     // Override cosmetics and current shader
-                    if (rift.Data.destRegion == "pblf")
+                    if (MiscUtils.IsDissolvedFieldsRegion(rift.Data.destRegion))
                     {
                         rift.Data.effectSettings.badWarpCosmetic = true;
                         newShader = Custom.rainWorld.Shaders["WarpTearBad"];

@@ -52,7 +52,11 @@ class  Plugin : BaseUnityPlugin
     // - Implemented in Hooks\Player\PBSlugBaseFeatures.cs
     // [Lur]
     public static readonly PlayerFeature<float> FlipBoost = PlayerFloat("pb/flip_boost");
-    
+
+    public static readonly int ShadPropGhostSkinColor = Shader.PropertyToID("_GhostSkinColor");
+    public static readonly int ShadPropGhostSkinHighlightColor = Shader.PropertyToID("_GhostSkinHighlightColor");
+    public static readonly int ShadPropGhostDistortionColor = Shader.PropertyToID("_GhostDistortionColor");
+
     // Rotund World stuff [WW]
     internal static bool RotundWorldEnabled => _rotundWorldEnabled;
     private static bool _rotundWorldEnabled;
@@ -146,15 +150,15 @@ class  Plugin : BaseUnityPlugin
             Futile.atlasManager.LoadAtlas("atlases/nightTerroratlas");
 
             // Dreamer
-            self.Shaders["DreamerRag"] = FShader.CreateShader("dreamerrag", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerrag")).LoadAsset<Shader>("Assets/Shaders/DreamerRag.shader"), new string[]
+            self.Shaders["EtherealRag"] = FShader.CreateShader("etherealrag", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/etherealrag")).LoadAsset<Shader>("Assets/Shaders/EtherealRag.shader"), new string[]
             {
                 "ripple_both_sides"
             });
-            self.Shaders["DreamerSkin"] = FShader.CreateShader("dreamerskin", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerskin")).LoadAsset<Shader>("Assets/Shaders/DreamerSkin.shader"), new string[]
+            self.Shaders["EtherealSkin"] = FShader.CreateShader("etherealskin", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/etherealskin")).LoadAsset<Shader>("Assets/Shaders/EtherealSkin.shader"), new string[]
             {
                 "ripple_both_sides"
             });
-            self.Shaders["DreamerDistortion"] = FShader.CreateShader("dreamerdistortion", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamerdistortion")).LoadAsset<Shader>("Assets/Shaders/DreamerDistortion.shader"), new string[]
+            self.Shaders["EtherealDistortion"] = FShader.CreateShader("etherealdistortion", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/etherealdistortion")).LoadAsset<Shader>("Assets/Shaders/EtherealDistortion.shader"), new string[]
             {
                 "ripple_both_sides"
             });

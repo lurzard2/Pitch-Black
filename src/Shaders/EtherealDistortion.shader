@@ -5,7 +5,7 @@
 
 //from http://forum.unity3d.com/threads/68402-Making-a-2D-game-for-iPhone-iPad-and-need-better-performance
 
-Shader "Futile/DreamerDistortion" //Unlit Transparent Vertex Colored Additive 
+Shader "Futile/EtherealDistortion" //Unlit Transparent Vertex Colored Additive 
 {
 Properties 
 	{
@@ -85,7 +85,7 @@ v2f vert (appdata_full v)
     return o;
 }
 
-
+uniform half4 _GhostDistortionColor;
 
 half4 frag (v2f i) : SV_Target
 {
@@ -121,7 +121,7 @@ textCoord.y /= _spriteRect.w - _spriteRect.y;
      
      
      half4 grabCol = tex2D(_GrabTexture, grabPos);
-     half4 scr = half4(max(grabCol.x, -66.0/255.0), max(grabCol.y,203.0/255.0), max(grabCol.z,130.0/255.0), 1);
+     half4 scr = _GhostDistortionColor;
      grabCol = lerp(grabCol, scr, (1.0-dist)*0.5);
      
      return grabCol;

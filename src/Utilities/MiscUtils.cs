@@ -23,7 +23,10 @@ public static class MiscUtils
         bool isPBSBRegion = world.name.ToLowerInvariant() == "pbsb";
         bool watcherCondition = Region.IsAncientUrbanRegion(world.name) || Region.IsDaemonRegion(world.name);
 
-        if (IsVhosRegion(world.name) || isPBSBRegion || watcherCondition)
+        if (IsVhosRegion(world.name)
+            || IsNightmareRegion(world.name)
+            || isPBSBRegion
+            || watcherCondition)
         {
             return true;
         }
@@ -34,6 +37,8 @@ public static class MiscUtils
     }
 
     public static bool IsVhosRegion(string name) => name.ToLowerInvariant() == "vv";
+    public static bool IsNightmareRegion(string name) => name.ToLowerInvariant() == "ud";
+    public static bool IsDissolvedFieldsRegion(string name) => name.ToLowerInvariant() == "pblf";
 
     public static int RiftAssociatedWithDreamscape(Room room, Rift rift)
     {

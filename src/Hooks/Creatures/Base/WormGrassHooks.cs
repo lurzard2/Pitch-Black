@@ -13,7 +13,7 @@ public class WormGrassHooks
     {
         bool isDissolvedFieldsRegion = self.room != null
             && self.room.world.region != null
-            && self.room.world.region.name.ToLowerInvariant() == "pblf";
+            && MiscUtils.IsDissolvedFieldsRegion(self.room.world.name);
 
         // Remake orig, but include conditional coloring.
 

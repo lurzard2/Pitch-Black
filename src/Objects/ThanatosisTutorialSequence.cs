@@ -298,7 +298,7 @@ public class ThanatosisTutorialSequence
             cycle.owner.room.PlaySound(Enums.SoundID.Player_Deactivated_Thanatosis, 0.5f, 1f, 0.9f);
             cycle.owner.room.PlaySound(Enums.SoundID.Player_Activated_Thanatosis, 0.5f, 1f, 0.9f);
             BeaconSaveData.SetCanUseThanatosis(cycle.saveState, true);
-            cycle.ToggleThanatosis();
+            cycle.ToggleThanatosis(true);
             markedAsDead = false;
             cycle.owner.Stun(80);
             ChangePhase(Phase.Thanatosis);
@@ -326,7 +326,7 @@ public class ThanatosisTutorialSequence
 
             BeaconSaveData.SetHasUsedThanatosis(cycle.saveState, true);
             // Do not make them do that whole thing over again
-            RainWorldGame.ForceSaveNewDenLocation(cycle.owner.room.world.game, cycle.owner.room.abstractRoom.name, false);
+            RainWorldGame.ForceSaveNewDenLocation(cycle.owner.room.world.game, cycle.owner.room.abstractRoom.name, true);
             cycle.cycle.spawnRipples = false;
             // Ends sequence
             ChangePhase(Phase.UsedThanatosis);

@@ -30,6 +30,10 @@ public abstract class PBEntity : UpdatableAndDeletable
 
     public override void Update(bool eu)
     {
+        if (room == null || room.world == null)
+        {
+            return;
+        }
         if (flaggedAsReadyForDeletion)
         {
             DestroyUpdate();

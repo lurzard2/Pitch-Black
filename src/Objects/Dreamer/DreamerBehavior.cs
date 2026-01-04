@@ -52,20 +52,6 @@ public class DreamerBehavior : PBEntity.BehaviorModule
         var room = Dreamer.room;
         var pos = Dreamer.Pos;
 
-        // Makes player look at them
-        foreach (AbstractCreature abstractCreature in room.game.Players)
-        {
-            Player player = abstractCreature.realizedCreature as Player;
-            if (player != null && player.room == room)
-            {
-                PlayerGraphics playerGraphics = player.graphicsModule as PlayerGraphics;
-                if (playerGraphics != null)
-                {
-                    playerGraphics.LookAtPoint(pos, 10000f);
-                }
-            }
-        }
-
         // Todo: Move all this to a Behavior object like VW, then let that handle different encounter types :)
         if (OnScreen())
         {
@@ -118,7 +104,7 @@ public class DreamerBehavior : PBEntity.BehaviorModule
         {
             for (int i = 0; i < afterConversationCounter; i++)
             {
-                (Dreamer.visibleEntity as DreamerGraphics).AfterEncounteredVisual();
+                (Dreamer.visibleEntity as EtherealGraphics).AfterEncounteredVisual();
             }
         }
     }
@@ -170,7 +156,7 @@ public class DreamerBehavior : PBEntity.BehaviorModule
     // For Dreamer-originating rift
     private void SpawnWarp()
     {
-        DreamerData data = Dreamer.SpecialData;
+        EntityWarpData data = Dreamer.SpecialData;
         if (data == null)
         {
             return;
@@ -188,27 +174,28 @@ public class DreamerBehavior : PBEntity.BehaviorModule
 
         var riftManager = new RiftManager(Dreamer.room, placedObj, false);
         bool makeOneWay = false;
+        var rift = riftManager.placedRift;
         if (BeaconSaveData.GetDreamerEncountersNumber(Dreamer.room.world.game.GetStorySession.saveState) == 3)
         {
-            riftManager.placedRift = riftManager.ScriptedRift(Enums.Timeline.Beacon, "pblf", "pblf_c07");
-            riftManager.placedRift.Data.effectSettings.badWarpCosmetic = true;
+            rift = riftManager.ScriptedRift(Enums.Timeline.Beacon, "pblf", "pblf_c07");
+            rift.Data.effectSettings.badWarpCosmetic = true;
             makeOneWay = true;
         }
 
         if (makeOneWay)
         {
-            riftManager.placedRift.Data.oneWay = true;
-            riftManager.placedRift.Data.oneWayEntrance = true;
-            riftManager.placedRift.Data.oneWayEntranceIdentified = true;
+            rift.Data.oneWay = true;
+            rift.Data.oneWayEntrance = true;
+            rift.Data.oneWayEntranceIdentified = true;
         }
 
-        MiscUtils.PlaceRift(riftManager, riftManager.placedRift, true);
+        MiscUtils.PlaceRift(riftManager, rift, true);
     }
 
     // For DevTools-originating rift
     public static void SpawnBackupWarpPoint(Room room, PlacedObject oldPlacedObj)
     {
-        WarpPoint.WarpPointData warpPointData = (oldPlacedObj.data as DreamerData).CreateWarpPointDataForRift(room);
+        WarpPoint.WarpPointData warpPointData = (oldPlacedObj.data as EntityWarpData).CreateWarpPointDataForRift(room);
         PlacedObject newPlacedObj = new PlacedObject(Enums.PlacedObjectType.RiftSpot, warpPointData);
         newPlacedObj.pos = oldPlacedObj.pos;
         bool flag = false;
@@ -251,7 +238,7 @@ public class DreamerBehavior : PBEntity.BehaviorModule
         {
             return;
         }
-        DreamerData data = Dreamer.SpecialData;
+        EntityWarpData data = Dreamer.SpecialData;
         if (data == null)
         {
             return;

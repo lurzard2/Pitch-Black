@@ -1,4 +1,4 @@
-﻿using DevInterface;
+﻿ using DevInterface;
 using RWCustom;
 using System;
 using System.Collections.Generic;
@@ -7,19 +7,19 @@ using UnityEngine;
 using Watcher;
 
 namespace PitchBlack;
-public class DreamerSpotRepresentation : PlacedObjectRepresentation
+public class EntityWarpRepresentation : PlacedObjectRepresentation
 {
-    public DreamerSpotRepresentation(DevUI owner, string IDstring, DevUINode parentNode, PlacedObject pObj, string name) : base(owner, IDstring, parentNode, pObj, pObj.type.ToString())
+    public EntityWarpRepresentation(DevUI owner, string IDstring, DevUINode parentNode, PlacedObject pObj, string name) : base(owner, IDstring, parentNode, pObj, pObj.type.ToString())
     {
         controlPanel = new DreamerPanel(owner, this, new Vector2(0f, 100f));
         subNodes.Add(controlPanel);
-        controlPanel.pos = (pObj.data as DreamerData).panelPos;
+        controlPanel.pos = (pObj.data as EntityWarpData).panelPos;  
     }
 
     public override void Refresh()
     {
         base.Refresh();
-        (pObj.data as DreamerData).panelPos = (subNodes[subNodes.Count - 1] as Panel).pos;
+        (pObj.data as EntityWarpData).panelPos = (subNodes[subNodes.Count - 1] as Panel).pos;
     }
 
     private DreamerPanel controlPanel;
@@ -27,11 +27,11 @@ public class DreamerSpotRepresentation : PlacedObjectRepresentation
 
 public class DreamerPanel : Panel, IDevUISignals
 {
-    public DreamerData Data
+    public EntityWarpData Data
     {
         get
         {
-            return (parentNode as DreamerSpotRepresentation).pObj.data as DreamerData;
+            return (parentNode as EntityWarpRepresentation).pObj.data as EntityWarpData;
         }
     }
 

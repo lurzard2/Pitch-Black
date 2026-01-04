@@ -129,7 +129,7 @@ public class BeaconCycle
             //logger.LogDebug($"Thanatosis: Doing input - {specInputCounter}");
             if (specInputCounter == 24)
             {
-                ToggleThanatosis();
+                ToggleThanatosis(true);
             }
             if (cycle.idleRipplesToSpawn == 0)
             {
@@ -241,7 +241,7 @@ public class BeaconCycle
 
     #endregion
 
-    public void ToggleThanatosis()
+    public void ToggleThanatosis(bool layerSwitches)
     {
         deathToggle = isDead;
         isDead = !isDead;
@@ -265,7 +265,10 @@ public class BeaconCycle
             cycle.AddRipple(rippleSource);
             cycle.ChangeState(cycleState);
             owner.room.PlaySound(soundEffect, owner.mainBodyChunk);
-            cycle.abstractOwner.rippleLayer = isDead ? 1 : 0;
+            if (layerSwitches)
+            {
+                cycle.abstractOwner.rippleLayer = isDead ? 1 : 0;
+            }
 
             // Rot immunity
             cycle.abstractOwner.tentacleImmune = isDead;

@@ -95,15 +95,16 @@ public class RiftManager : UpdatableAndDeletable
             for (int i = 0; i < room.roomSettings.placedObjects.Count; i++)
             {
                 var roomObj = room.roomSettings.placedObjects[i];
-                if (roomObj.type == Enums.PlacedObjectType.RiftSpot && (roomObj.data as WarpPoint.WarpPointData).destRoom == warpPointData.destRoom)
+                if (roomObj.type == Enums.PlacedObjectType.RiftSpot
+                    || roomObj.type == Enums.PlacedObjectType.DreamerSpot
+                    || roomObj.type == Enums.PlacedObjectType.StillbornSpot)
                 {
-                    flag = true;
-                    break;
-                }
-                if (roomObj.type == Enums.PlacedObjectType.DreamerSpot && (roomObj.data as DreamerData).destRoom == warpPointData.destRoom)
-                {
-                    flag = true;
-                    break;
+                    if ((roomObj.data is WarpPoint.WarpPointData rData && rData.destRoom == warpPointData.destRoom)
+                        || (roomObj.data is EntityWarpData dData && dData.destRoom == warpPointData.destRoom))
+                    {
+                        flag = true;
+                        break;
+                    }
                 }
             }
             if (!flag)
@@ -129,7 +130,7 @@ public class RiftManager : UpdatableAndDeletable
         {
             if (placedObject.type == Enums.PlacedObjectType.RiftExitTarget)
             {
-                rift.Data.destPos = new UnityEngine.Vector2?(placedObject.pos);
+                rift.Data.destPos = placedObject.pos;
                 foundExit = true;
                 break;
             }

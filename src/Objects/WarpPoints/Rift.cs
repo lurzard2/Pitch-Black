@@ -17,21 +17,19 @@ public class Rift : WarpPoint
     public Rift(Room room, PlacedObject placedObject, bool triggersInstantly = false) : base(room, placedObject)
     {
         this.triggersInstantly = triggersInstantly;
-    }
 
-    public override void Update(bool eu)
-    {
-        logger.LogDebug($"{s} IM HERE!!! AND IM WORKING!!!");
-
-        base.Update(eu);
-
-        // Every encounter past the 1st should trigger instantly, 1st gets aura
         if (triggersInstantly && BeaconSaveData.GetDreamerEncountersNumber(room.game.GetStorySession.saveState) > 1)
         {
             triggerTime = (float)((int)(triggerActivationTime - 1f));
             strongPull = true;
             guaranteeTrigger = true;
         }
+    }
+
+    public override void Update(bool eu)
+    {
+        logger.LogDebug($"{s} IM HERE!!! AND IM WORKING!!!");
+        base.Update(eu);
     }
 
     public void AddToBlacklist(List<CreatureTemplate.Type> critBList, List<AbstractPhysicalObject.AbstractObjectType> objBList)
