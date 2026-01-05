@@ -13,11 +13,6 @@
         </Reference>
     </ItemGroup>
     
-    <ItemGroup>
-      <Folder Include="Objects\Dreamer\Data\" />
-      <Folder Include="Shaders\" />
-    </ItemGroup>
-    
     <Target Name="GenerateMod" AfterTargets="PostBuildEvent">
 		<ItemGroup>
 			<RemovePlugins Include="../pitchblack/newest/plugins/pitchblack.dll" />
