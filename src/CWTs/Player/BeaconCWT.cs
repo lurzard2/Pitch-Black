@@ -22,6 +22,7 @@ public class BeaconCWT : ScugCWT
     //flashbangs to recover after respawning in jollycoop
     public int coopRefund = 0;
 
+    // Cycle module
     public BeaconCycle playerCycle;
 
     public BeaconCWT(Player player) : base()
