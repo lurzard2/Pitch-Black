@@ -147,7 +147,7 @@ public static class Crafting
                              && !(Plugin.individualFoodEnabled && ModManager.CoopAvailable))
                     {
                         // not enough food, show warning
-                        FlareStorage.foodWarning = 20;
+                        FlareStorageHooks.foodWarning = 20;
                     }
                 }
             }

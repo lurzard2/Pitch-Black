@@ -6,31 +6,8 @@ using static PitchBlack.Plugin;
 
 namespace PitchBlack;
 
-public static class FlareStorage
-{
-    /// <summary>
-    /// Function that drops all stored flares from storage
-    /// </summary>
-    private static void DropAllFlares(Player self)
-    {
-        if (Plugin.scugCWT.TryGetValue(self, out ScugCWT scugCWT)
-            && scugCWT is BeaconCWT beaconCWT
-            && beaconCWT.storage != null)
-        {
-            while (beaconCWT.storage.storedFlares.Count > 0)
-            {
-                FlareBomb fb = beaconCWT.storage.storedFlares.Pop();
-                BeaconCWT.AbstractStoredFlare af = beaconCWT.storage.abstractFlare.Pop();
-                if (fb != null)
-                {
-                    fb.firstChunk.vel = self.mainBodyChunk.vel + Custom.RNV() * 3f * Random.value;
-                    fb.ChangeMode(Weapon.Mode.Free);
-                }
-                af?.Deactivate();
-            }
-        }
-    }
-    
+public static class FlareStorageHooks
+{   
     // For making the food meter flash red
     public static int foodWarning = 0;
     
@@ -178,7 +155,7 @@ public static class FlareStorage
     {
         if (self is Player player && player.slugcatStats?.name == Enums.SlugcatStatsName.Beacon)
         {
-            DropAllFlares(player);
+            FlareStorage.DropAllFlares(player);
         }
         orig(self);
     }
@@ -197,14 +174,14 @@ public static class FlareStorage
             {
                 if (player.realizedCreature is Player p && scugCWT.TryGetValue(p, out ScugCWT c) && c is BeaconCWT beaconCWT)
                 {
-                    for (int i = 0; i < beaconCWT.coopRefund; i++)
+                    for (int i = 0; i < beaconCWT.coopRefundFlares; i++)
                     {
                         AbstractConsumable item = new(self.room.world, AbstractPhysicalObject.AbstractObjectType.FlareBomb, null, self.room.LocalCoordinateOfNode(0), self.room.game.GetNewID(), -1, -1, null);
                         self.room.abstractRoom.AddEntity(item);
                         item.RealizeInRoom();
                         self.room.AddObject(item.realizedObject);
                     }
-                    beaconCWT.coopRefund = 0;
+                    beaconCWT.coopRefundFlares = 0;
                 }
             }
         }
@@ -220,11 +197,11 @@ public static class FlareStorage
         if (ModManager.CoopAvailable && scugCWT.TryGetValue(self, out var c) && c is BeaconCWT cwt && cwt.storage != null)
         {
             // refund amount of flares that were in storage
-            cwt.coopRefund = Mathf.Max(cwt.coopRefund, cwt.storage.storedFlares.Count);
+            cwt.coopRefundFlares = Mathf.Max(cwt.coopRefundFlares, cwt.storage.storedFlares.Count);
         }
         
         // on death, all of beacon's stored flarebombs gets popped off -spinch
-        DropAllFlares(self);
+        FlareStorage.DropAllFlares(self);
         
         // but do that BEFORE orig in case our death unrealizes us -WW
         
@@ -308,7 +285,7 @@ public static class FlareStorage
             {
                 // dont take flarebomb from storage if holding food or eating
                 bCWT.storage.interactionLocked = true;
-                bCWT.storage.counter = 0;
+                bCWT.storage.storageCounter.Reset();
             }
 
             if (bCWT.heldCraft && !self.input[0].pckp)

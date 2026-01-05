@@ -98,7 +98,7 @@ class  Plugin : BaseUnityPlugin
         PBSlugBaseFeatures.Apply();
         ScugHooks.Apply();
         ScugGraphics.Apply();
-        FlareStorage.Apply();
+        FlareStorageHooks.Apply();
         Crafting.Apply();
 
         logger.LogDebug("Hooks successfully applied!");

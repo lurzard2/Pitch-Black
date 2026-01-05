@@ -11,8 +11,8 @@ public class RotImmunity
     {
         if (scugCWT.TryGetValue(player, out var c)
             && c is BeaconCWT cwt
-            && cwt.playerCycle != null
-            && cwt.playerCycle.thanatosisLerp > 0.05f)
+            && cwt.beaconCycle != null
+            && cwt.beaconCycle.thanatosisLerp > 0.05f)
         {
             return true;
         }

@@ -17,11 +17,7 @@ public static class ScugGraphics
     /// - DrawSprites : Rendering the added sprites onto the screen (frontend stuff)
     /// - ApplyPalette : Function dedicated to coloring the sprites when drawn by DrawSprites
     ///
-    /// - Hat sprite : Initiate, AddToContainer, Draw.
-    /// - Whiskers sprites have their own functions from the Whiskers class that are injected into each of these hooks respectively.
-    ///
     /// Beacon coloring is done in DrawSprites.
-    /// Squinting is done in Update + DrawSprites.
     /// [Lur]
     /// </summary>
     
@@ -96,7 +92,7 @@ public static class ScugGraphics
             if (c is BeaconCWT cwt)
             {
                 // Squinting
-                if (cwt.brightSquint > 10)
+                if (cwt.squinter.squintTick > 10)
                 {
                     if (self.blink <= 0 && Random.value < 0.35f) self.player.Blink(Mathf.FloorToInt(Mathf.Lerp(3f, 8f, Random.value)));
                     self.head.vel -= self.lookDirection * 3f;
@@ -182,13 +178,13 @@ public static class ScugGraphics
             skinColor = Color.Lerp(DecidedBaseColor, Colors.BeaconFullColor, flares / (float)4);
             eyeColor = Colors.BeaconEyeColor;
             
-            if (bCWT.playerCycle != null
-                && (bCWT.playerCycle.cycle.state == Cycle.State.Thanatosis
-                    || bCWT.playerCycle.cycle.state == Cycle.State.ExitThanatosis
-                    || bCWT.playerCycle.thanatosisLerp > 0f))
+            if (bCWT.beaconCycle != null
+                && (bCWT.beaconCycle.cycle.state == Cycle.State.Thanatosis
+                    || bCWT.beaconCycle.cycle.state == Cycle.State.ExitThanatosis
+                    || bCWT.beaconCycle.thanatosisLerp > 0f))
             {
-                bCWT.currentSkinColor = Color.Lerp(skinColor, DecidedSkinColor, bCWT.playerCycle.thanatosisLerp);
-                bCWT.currentEyeColor = Color.Lerp(eyeColor, DecidedEyeColor, bCWT.playerCycle.thanatosisLerp);
+                bCWT.currentSkinColor = Color.Lerp(skinColor, DecidedSkinColor, bCWT.beaconCycle.thanatosisLerp);
+                bCWT.currentEyeColor = Color.Lerp(eyeColor, DecidedEyeColor, bCWT.beaconCycle.thanatosisLerp);
             }
             else
             {
@@ -204,7 +200,7 @@ public static class ScugGraphics
                 }
                 else
                 {
-                    if (bCWT.playerCycle.isDead || (bCWT.playerCycle.thanatosisTutorialSequence != null && bCWT.playerCycle.thanatosisTutorialSequence.markedAsDead))
+                    if (bCWT.beaconCycle.isDead || (bCWT.beaconCycle.thanatosisTutorialSequence != null && bCWT.beaconCycle.thanatosisTutorialSequence.markedAsDead))
                     {
                         sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName("FaceDead");
                     }
@@ -214,16 +210,7 @@ public static class ScugGraphics
 
             //<Lantern Mouse flickering>
 
-            // Squinting
-            if (bCWT.brightSquint > (40 * 3.5f))
-            {
-                sLeaser.sprites[9].element = Futile.atlasManager.GetElementWithName("FaceStunned");
-            }
-            if (bCWT.brightSquint > 10)
-            {
-                sLeaser.sprites[9].x -= self.lookDirection.x * 2;
-                sLeaser.sprites[9].y -= self.lookDirection.y * 2;
-            }
+            bCWT.squinter.DrawSprites(self, sLeaser);
 
             if (ModOptions.UsesHatSprite && self.player.room != null && self.player.room.game.session is StoryGameSession session && !MiscUtils.IsBeacon(session.saveStateNumber))
             {
