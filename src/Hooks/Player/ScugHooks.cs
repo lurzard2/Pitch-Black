@@ -1,7 +1,6 @@
 ﻿using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RWCustom;
-using SlugBase.SaveData;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,59 +29,34 @@ public static class ScugHooks
         }
 
         // Check here if it's Beacon
-        if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
+        if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beacon)
         {
-            if (cwt.playerCycle != null)
+            if (beacon.beaconCycle != null)
             {
-                cwt.playerCycle.Update();
+                beacon.beaconCycle.Update();
             }
-
-            if (cwt.dontThrowTimer > 0)
+            if (beacon.squinter != null)
             {
-                cwt.dontThrowTimer--;
+                beacon.squinter.Update();
             }
-            
-            // Detect darkness for beacon squinting if room is too bright -WW
-            // A little bit of the code for squinting is also in Player\Graphics\ScugGraphics.cs -Lur
-            if (self.room != null)
+            if (beacon.dontThrowTimer > 0)
             {
-                if (MiscUtils.MakeBeaconCloseEyesHere(self, self.room.world.region.name.ToLowerInvariant(), self.room.abstractRoom.name.ToLowerInvariant()))
-                {
-                    if (cwt.brightSquint == 0)
-                    {
-                        cwt.brightSquint = 40 * 6;
-                        self.Blink(8);
-                    }
-
-                    // Tick down, but not all the way
-                    if (cwt.brightSquint > 1)
-                    {
-                        cwt.brightSquint--;   
-                    }
-                    else if (cwt.brightSquint == 1)
-                    {
-                        self.Blink(5);   
-                    }
-                }
-                // Otherwise, tick down
-                else if (cwt.brightSquint > 0)
-                {
-                    cwt.brightSquint--;
-                }
+                beacon.dontThrowTimer--;
             }
         }
     }
 
     public static void Apply()
     {
-        On.SlugcatStats.SlugcatToTimeline += SlugcatStats_SlugcatToTimeline;
+        On.SlugcatStats.SlugcatToTimeline += SlugcatToTimeline_MODIFY;
         On.Player.ctor += Player_ctor;
         On.Player.Update += Player_Update;
         On.SlugcatHand.EngageInMovement += SlugcatHand_EngageInMovement;
-        IL.Player.checkInput += IL_Player_checkInput;
+        IL.Player.checkInput += IL_Player_checkInput_SPECIALONLY;
     }
 
-    private static void IL_Player_checkInput(ILContext il)
+    // Allowing for special input without any others in certain circumstances
+    private static void IL_Player_checkInput_SPECIALONLY(ILContext il)
     {
         ILCursor cursor = new ILCursor(il);
         try
@@ -98,7 +72,7 @@ public static class ScugHooks
                 if (Plugin.scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beaconCWT)
                 {
                     //var state = (self.room.game.session as StoryGameSession).saveState;
-                    if (beaconCWT.playerCycle.thanatosisTutorialSequence != null && beaconCWT.playerCycle.thanatosisTutorialSequence.markedAsDead)
+                    if (beaconCWT.beaconCycle.thanatosisTutorialSequence != null && beaconCWT.beaconCycle.thanatosisTutorialSequence.markedAsDead)
                     {
                         // Create new inputs
                         Player.InputPackage newInputs = new Player.InputPackage(self.room.game.rainWorld.options.controls[num].gamePad, self.room.game.rainWorld.options.controls[num].GetActivePreset(), 0, 0, false, false, false, false, false, originalInputs.spec);
@@ -112,14 +86,13 @@ public static class ScugHooks
                 // If the prior condition is not met, just return the original inputs to the stack.
                     return originalInputs;
             });
-            Plugin.logger.LogDebug($"PB {nameof(IL_Player_checkInput)} applied successfully");
+            Plugin.logger.LogDebug($"PB {nameof(IL_Player_checkInput_SPECIALONLY)} applied successfully");
         }
         catch (Exception err)
         {
-            Plugin.logger.LogDebug($"PB {nameof(IL_Player_checkInput)} could not match IL.\n{err}");
+            Plugin.logger.LogDebug($"PB {nameof(IL_Player_checkInput_SPECIALONLY)} could not match IL.\n{err}");
         }
     }
-
 
     /// <summary>
     /// Moves hand above head when squinting if a room is too bright
@@ -127,15 +100,15 @@ public static class ScugHooks
     /// </summary>
     private static bool SlugcatHand_EngageInMovement(On.SlugcatHand.orig_EngageInMovement orig, SlugcatHand self)
     {
-        Player player = self.owner.owner as Player;
+        var player = self.owner.owner as Player;
         
-        if (scugCWT.TryGetValue(player, out ScugCWT c) && c is BeaconCWT cwt && cwt.brightSquint > 1)
+        if (scugCWT.TryGetValue(player, out ScugCWT c) && c is BeaconCWT beacon && beacon.squinter.squintTick > 1)
         {
-            PlayerGraphics graf = player.graphicsModule as PlayerGraphics;
+            PlayerGraphics pGraphics = player.graphicsModule as PlayerGraphics;
 
             // OKAY WE HAVE NO ACCESS TO EYE POSITION SO WE GOTTA DO THIS...
             // NEVERMIND IT'D BE WAY LESS WORK TO JUST TRANSFER THE EYE POS
-            Vector2 shieldDir = graf.lookDirection;
+            Vector2 shieldDir = pGraphics.lookDirection;
             if (Mathf.Abs(shieldDir.x) <= 0.3 || player.input[0].x != 0)
                 shieldDir.x = player.flipDirection;
             shieldDir.y = Mathf.Clamp(shieldDir.y, 0.35f, 0.75f) - 0.2f;
@@ -145,8 +118,8 @@ public static class ScugHooks
             {
                 self.mode = Limb.Mode.HuntAbsolutePosition;
                 self.huntSpeed = 15f;
-                Vector2 targPos = (player.graphicsModule as PlayerGraphics).head.pos + (shieldDir * 15) + (player.graphicsModule as PlayerGraphics).head.vel;
-                self.absoluteHuntPos = targPos - Custom.DirVec(player.bodyChunks[0].pos, targPos) * 3f;
+                Vector2 targetPos = (player.graphicsModule as PlayerGraphics).head.pos + (shieldDir * 15) + (player.graphicsModule as PlayerGraphics).head.vel;
+                self.absoluteHuntPos = targetPos - Custom.DirVec(player.bodyChunks[0].pos, targetPos) * 3f;
                 return false;
             }
 
@@ -161,7 +134,6 @@ public static class ScugHooks
     private static void Player_Update(On.Player.orig_Update orig, Player self, bool eu)
     {
         BeaconUpdate(self);
-        
         orig(self, eu);
     }
     
@@ -181,17 +153,19 @@ public static class ScugHooks
                 scugCWT.Add(self, new BeaconCWT(self));
             }
             
+            // Adding back flares
             if (self.room.abstractRoom.shelter 
-                && scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt) {
+                && scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beacon)
+            {
                 foreach (List<PhysicalObject> thingQuar in self.room.physicalObjects) {
                     foreach (PhysicalObject item in thingQuar) {
-                        if (item is FlareBomb flare && cwt.storage.storedFlares.Count < cwt.storage.capacity) {
+                        if (item is FlareBomb flare && beacon.storage.storedFlares.Count < beacon.storage.capacity) {
                             foreach (var player in self.room.PlayersInRoom) {
-                                if (player != null && scugCWT.TryGetValue(player, out var op) && op is BeaconCWT otherPlayer && otherPlayer.storage.storedFlares.Contains(flare)) {
+                                if (player != null && scugCWT.TryGetValue(player, out var op) && op is BeaconCWT otherBeacon && otherBeacon.storage.storedFlares.Contains(flare)) {
                                     goto SkipAddingFlare;
                                 }
                             }
-                            cwt.storage.FlarebombtoStorage(flare);
+                            beacon.storage.FlarebombtoStorage(flare);
                             SkipAddingFlare:;
                         }
                     }
@@ -203,7 +177,7 @@ public static class ScugHooks
     /// <summary>
     /// Beacon slugcat set to correspond with the Beacon timeline.
     /// </summary>
-    private static SlugcatStats.Timeline SlugcatStats_SlugcatToTimeline(On.SlugcatStats.orig_SlugcatToTimeline orig, SlugcatStats.Name slugcat)
+    private static SlugcatStats.Timeline SlugcatToTimeline_MODIFY(On.SlugcatStats.orig_SlugcatToTimeline orig, SlugcatStats.Name slugcat)
     {
         orig(slugcat);
         

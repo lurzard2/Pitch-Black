@@ -8,34 +8,49 @@ using Watcher;
 
 namespace PitchBlack;
 
-// - TODO -
-// - Caching implementation
-// - Cachespace
-// - Thanatosis migration
-// - Cosmetic visuals
-// - (More later)
-
 public class Cycle
 {
     public AbstractCreature abstractOwner;
-
-    // Representation of abstract creature in room
-    public Creature RealizedOwner
-    {
-        get
-        {
-            return abstractOwner.realizedCreature;
-        }
-    }
+    public Creature RealizedOwner => abstractOwner.realizedCreature;
 
     public State state;
+    #region State
+    public void ChangeState(State newState)
+    {
+        state = newState;
+        cycleStateTime.Reset();
+    }
+
+    public class State : ExtEnum<State>
+    {
+        public State(string value, bool register) : base(value, register) { }
+
+        public static readonly State Init = new(nameof(Init), true);
+        public static readonly State Alive = new(nameof(Alive), true);
+        public static readonly State Thanatosis = new(nameof(Thanatosis), true);
+        public static readonly State ExitThanatosis = new(nameof(ExitThanatosis), true);
+        public static readonly State PersistThroughCache = new(nameof(PersistThroughCache), true);
+        public static readonly State MarkedForCache = new(nameof(MarkedForCache), true);
+        public static readonly State Cached = new(nameof(Cached), true);
+    }
+    #endregion
+
+    public int idleRipplesToSpawn;
+    public bool spawnRipples;
+    public class CycleRippleSource : ExtEnum<CycleRippleSource>
+    {
+        public CycleRippleSource(string value, bool register) : base(value, register) { }
+
+        public static readonly CycleRippleSource Idle = new(nameof(Idle), true);
+        public static readonly CycleRippleSource Thanatosis = new(nameof(Thanatosis), true);
+        public static readonly CycleRippleSource Cache = new(nameof(Cache), true);
+    }
+
     // Time existing
     public Counter cycleTime = new(Int32.MaxValue, 0, true);
     // Time per state
     public Counter cycleStateTime = new(Int32.MaxValue, 0, true);
     public bool active => cycleTime > 0;
-    public int idleRipplesToSpawn;
-    public bool spawnRipples;
 
     public Cycle(AbstractCreature abstractOwner)
     {
@@ -181,34 +196,4 @@ public class Cycle
         ChangeState(State.Cached);
     }
     #endregion
-
-    #region State
-    public void ChangeState(State newState)
-    {
-        state = newState;
-        cycleStateTime.Reset();
-    }
-
-    public class State : ExtEnum<State>
-    {
-        public State(string value, bool register) : base(value, register) { }
-
-        public static readonly State Init = new(nameof(Init), true);
-        public static readonly State Alive = new(nameof(Alive), true);
-        public static readonly State Thanatosis = new(nameof(Thanatosis), true);
-        public static readonly State ExitThanatosis = new(nameof(ExitThanatosis), true);
-        public static readonly State PersistThroughCache = new(nameof(PersistThroughCache), true);
-        public static readonly State MarkedForCache = new(nameof(MarkedForCache), true);
-        public static readonly State Cached = new(nameof(Cached), true);
-    }
-    #endregion
-
-    public class CycleRippleSource : ExtEnum<CycleRippleSource>
-    {
-        public CycleRippleSource(string value, bool register) : base(value, register) { }
-
-        public static readonly CycleRippleSource Idle = new(nameof(Idle), true);
-        public static readonly CycleRippleSource Thanatosis = new(nameof(Thanatosis), true);
-        public static readonly CycleRippleSource Cache = new(nameof(Cache), true);
-    }
 }

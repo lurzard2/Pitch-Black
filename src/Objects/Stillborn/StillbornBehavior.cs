@@ -60,17 +60,17 @@ public class StillbornBehavior : PBEntity.BehaviorModule
         {
             if (Plugin.scugCWT.TryGetValue(target, out var c) && c is BeaconCWT beacon)
             {
-                if (beacon.playerCycle != null)
+                if (beacon.beaconCycle != null)
                 {
                     // Remove controls
-                    var distance = UnityEngine.Vector2.Distance(Stillborn.Pos, beacon.playerCycle.owner.mainBodyChunk.pos);
+                    var distance = UnityEngine.Vector2.Distance(Stillborn.Pos, beacon.beaconCycle.owner.mainBodyChunk.pos);
                     Plugin.logger.LogDebug($"{distance}");
                     if (!readyToKill)
                     {
                         // Right below them
                         if (distance < 321f)
                         {
-                            beacon.playerCycle.owner.controller ??= new InputController(this);
+                            beacon.beaconCycle.owner.controller ??= new InputController(this);
                             readyToKill = true;
                         }
                         return;
@@ -82,8 +82,8 @@ public class StillbornBehavior : PBEntity.BehaviorModule
                         {
                             deathFac += 0.001f;
                             deathCount.Tick();
-                            beacon.playerCycle.ToggleThanatosis(false);
-                            beacon.playerCycle.owner.Stun(deathCount > 15 ? 80 : 40);
+                            beacon.beaconCycle.ToggleThanatosis(false);
+                            beacon.beaconCycle.owner.Stun(deathCount > 15 ? 80 : 40);
                         }
                     }
                     if (deathCount > 17)
@@ -99,10 +99,10 @@ public class StillbornBehavior : PBEntity.BehaviorModule
                         // "Kill"
                         if (spasmer == null)
                         {
-                            spasmer = new CreatureSpasmer(beacon.playerCycle.owner, true, 666);
-                            if (!beacon.playerCycle.isDead)
+                            spasmer = new CreatureSpasmer(beacon.beaconCycle.owner, true, 666);
+                            if (!beacon.beaconCycle.isDead)
                             {
-                                beacon.playerCycle.ToggleThanatosis(false);
+                                beacon.beaconCycle.ToggleThanatosis(false);
                             }
                         }
                         if (Stillborn.RoomCamera.ghostMode < 1)
@@ -114,8 +114,8 @@ public class StillbornBehavior : PBEntity.BehaviorModule
                             if (!riftSpawned)
                             {
                                 SpawnRift();
-                                beacon.playerCycle.owner.room.AddObject(spasmer);
-                                beacon.playerCycle.owner.controller = null;
+                                beacon.beaconCycle.owner.room.AddObject(spasmer);
+                                beacon.beaconCycle.owner.controller = null;
                             }
                         }
                     }

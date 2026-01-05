@@ -1,6 +1,5 @@
 ﻿using RWCustom;
 using System;
-using System.Security.Policy;
 using UnityEngine;
 using static PitchBlack.Plugin;
 
@@ -11,6 +10,7 @@ public class BeaconCycle
     public Cycle cycle;
     public Player owner;
     public SaveState saveState;
+    // Not a UAD yet
     public ThanatosisTutorialSequence thanatosisTutorialSequence;
 
     // Thanatosis

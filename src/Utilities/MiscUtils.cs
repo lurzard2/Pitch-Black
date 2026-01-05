@@ -58,37 +58,6 @@ public static class MiscUtils
     #endregion
 
     #region Room Checks
-    // Regions that make Beacon squint regardless of room darkness
-    public static bool MakeBeaconCloseEyesHere(Player self, string region, string roomName)
-    {
-        bool vhosOverride = roomName == "vv_e01"
-            || roomName == "vv_b06"
-            || roomName == "vv_b08"
-            || roomName == "vv_c02"
-            || roomName == "vv_c01";
-        bool vhosCondition = region == "vv";
-        bool placeIsBright = self.room.Darkness(self.mainBodyChunk.pos) < 0.15f;
-        bool presentGhostMode = self.room.game.cameras[0].ghostMode > 0.40f;
-
-        if (vhosOverride)
-        {
-            return false;
-        }
-        else if (presentGhostMode)
-        {
-            return false;
-        }
-        else if (vhosCondition)
-        {
-            return true;
-        }
-        else if (placeIsBright)
-        {
-            return true;
-        }
-        return false;
-    }
-
     // For NT tracking
     public static bool ValidTrackRoom(this Room room) => room != null && !room.abstractRoom.shelter && !room.abstractRoom.gate;
     #endregion
