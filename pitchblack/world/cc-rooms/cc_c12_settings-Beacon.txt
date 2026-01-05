@@ -5,6 +5,7 @@ Grime: 0.3804348
 BkgDroneVolume: 0.2869565
 Palette: 6
 Effects: Fog-0.326087-20-20, FireFlies-0.2608696-293-50, 
+PlacedObjects: RiftSpot><821.3877><2036.416><0~0~NULL~Beacon~VV~vv_b09~1590~270~7af1dfa7-44ee-467b-a8c9-9d0cff07b223~WatcherOnly~0~6~8~4~8~4~4~4~7~150~150~-1~0~0~true~false~false~false~false~0~-1~false, 
 AmbientSounds: OMNI><AM_WIN-HowlingWnd.ogg><745.0768><264.9001><0.2173913><0.6282609, 
 FadePalette: 33, 0.8043478, 0.8478259, 0.8478262
 MorePalette0: 379, 1, 1, 1

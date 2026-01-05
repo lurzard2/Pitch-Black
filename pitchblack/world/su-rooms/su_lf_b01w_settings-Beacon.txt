@@ -1,8 +1,8 @@
 Template: NONE
 EffectColorB: 19
 Effects: Sentient Rot Spores-0.3801953-268-70, ModifyEffectColorB-0,0.25,0.05434782-20-20, 
-PlacedObjects: InsectGroup><706.5507><312.2668><-391~238~0~0~RedSwarmer~0.1847826, CustomDecal><643.9451><1200.058><-9~67~44~80~50~10~-90~-456~0~1~0~scavmark ghost~0.07608695~0~0.07608695~0~0.07608695~0.3369565~0.07608695~0.6304348, Rainbow><425.6837><1252.561><-136~200~-352~-73~0,0,0.01086957,0.01086957,0.7826087,0.3369565, Corruption><347.9637><1059.863><5~132, Corruption><521.8746><964.4819><0~100, WarpPoint><484.8794><1254.09><0~0~Beacon~Beacon~VV~vv_d01~1750~610~d5b9c1a9-4182-487e-8234-5076f1607be6~WatcherOnly~0~6~8~4~8~4~4~4~7~150~150~-1~0~0~false~false~false~false~false~0~-1~false~-1~false~-1~false, 
-AmbientSounds: OMNI><AM_ENV-Outside.ogg><833.7><648.9951><0.3695652><0.9217392, SPOT><AM_ENV-WindGrass.ogg><776.0961><412.1754><0.423913><1><744.0961><171.1754><-256.3553><-11.35535><0><0.5673915, DIR><RWPB_ElseTree_Voiceless.ogg><742.44><502.0625><0.2065217><1><180><0, DIR><rwtw_rotamb_deep.ogg><750.1946><307.204><0.4021739><1><180><0, 
+PlacedObjects: InsectGroup><706.5507><312.2668><-391~238~0~0~RedSwarmer~0.1847826, CustomDecal><643.9451><1200.058><-9~67~44~80~50~10~-90~-456~0~1~0~scavmark ghost~0.07608695~0~0.07608695~0~0.07608695~0.3369565~0.07608695~0.6304348, Rainbow><425.6837><1252.561><-136~200~-352~-73~0,0,0.01086957,0.01086957,0.7826087,0.3369565, Corruption><347.9637><1059.863><5~132, Corruption><521.8746><964.4819><0~100, RiftSpot><485.2891><1257.054><0~0~Beacon~Beacon~VV~vv_d01~1430~670~aedea041-fc7d-4c97-8947-cf329a3f4ac6~WatcherOnly~0~6~8~4~8~4~4~4~7~150~150~-1~0~0~true~false~true~true~false~0~-1~false~-1~false~-1~false, 
+AmbientSounds: OMNI><AM_ENV-Outside.ogg><833.7><648.9951><0.3695652><0.9217392, SPOT><AM_ENV-WindGrass.ogg><776.0961><412.1754><0.423913><1><744.0961><171.1754><-256.3553><-11.35535><0><0.5673915, DIR><RWPB_ElseTree_Voiceless.ogg><742.44><502.0625><0.2065217><1><-180><0, DIR><rwtw_rotamb_deep.ogg><750.1946><307.204><0.4021739><1><-180><0, 
 MorePalette0: 10, 1, 1
 MorePalette1: 35, 0.1521739, 0.1521739
 MorePalette2: 371, 0.05434782, 0.05434782
