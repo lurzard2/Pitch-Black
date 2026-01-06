@@ -33,7 +33,7 @@ class  Plugin : BaseUnityPlugin
 
     // Dev bool for testing and/or hardcoding values
     public static bool devMode = true;
-    public static bool updatedSaveDataOnceForRemix = false;
+    public static bool remixUpdatedSaveData = false;
     
     // CWTs
     public static readonly ConditionalWeakTable<Player, ScugCWT> scugCWT = new();
@@ -234,7 +234,11 @@ class  Plugin : BaseUnityPlugin
     private static void RainWorldGame_Update(On.RainWorldGame.orig_Update orig, RainWorldGame self)
     {
         orig(self);
-
+        if (devMode && !remixUpdatedSaveData)
+        {
+            MiscUtils.RemixUpdateSaveData(self);
+            remixUpdatedSaveData = true;
+        }
         if (pursuerTracker.TryGetValue(self, out List<NTTracker> trackers)) foreach (NTTracker tracker in trackers) tracker.Update();
     }
     private static void RainWorldGame_ctor(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)

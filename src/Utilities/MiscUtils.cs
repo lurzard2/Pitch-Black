@@ -165,4 +165,48 @@ public static class MiscUtils
         logger.LogDebug($"PlaceRift: Rift is {(riftManager.placedRift != null ? "Active" : "null")}");
         return riftManager.placedRift;
     }
+
+    public static void RemixUpdateSaveData(RainWorldGame game)
+    {
+        var saveState = game.GetStorySession.saveState;
+        if (devMode)
+        {
+            if (ModOptions.DreamerEncounters > 0)
+            {
+                BeaconSaveData.SetDreamerEncountersNumber(saveState, ModOptions.DreamerEncounters);
+            }
+
+            if (ModOptions.ThanatosisEnabled)
+            {
+                BeaconSaveData.SetCanUseThanatosis(saveState, true);
+                if (ModOptions.SkipThanatosisSequence)
+                {
+                    BeaconSaveData.SetHasUsedThanatosis(saveState, true);
+                }
+
+                switch (ModOptions.ThanatosisVariant)
+                {
+                    case 1:
+                        BeaconSaveData.SetMaxSpiralLevel(saveState, 1f);
+                        BeaconSaveData.SetSpiralLevel(saveState, 1f);
+                        break;
+                    case 2:
+                        BeaconSaveData.SetMaxSpiralLevel(saveState, 2f);
+                        BeaconSaveData.SetSpiralLevel(saveState, 2f);
+                        break;
+                    case 3:
+                        BeaconSaveData.SetMaxSpiralLevel(saveState, 5f);
+                        BeaconSaveData.SetMaxSpiralLevel(saveState, 5f);
+                        break;
+                    default: break;
+                }
+            }
+
+            if (ModOptions.UsesFlareMechanics)
+            {
+                BeaconSaveData.GetOrSetBool(saveState, BeaconSaveData.canCraftFlares, true);
+                BeaconSaveData.GetOrSetBool(saveState, BeaconSaveData.canStoreFlares, true);
+            }
+        }
+    }
 }

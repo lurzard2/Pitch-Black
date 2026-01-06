@@ -1,5 +1,6 @@
 ﻿using Menu.Remix.MixedUI;
 using Menu.Remix.MixedUI.ValueTypes;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace PitchBlack;
@@ -27,8 +28,18 @@ public class ModOptions : OptionInterface
     private static Configurable<bool> spoiler_RippleLayerDropsFlares;
     public static bool RippleLayerDropsFlares => spoiler_RippleLayerDropsFlares.Value;
 
-    public static Configurable<int> progressMilestone;
-    public static int ProgressMilestone => progressMilestone.Value;
+    public static Configurable<bool> thanatosisEnabaled;
+    public static bool ThanatosisEnabled => thanatosisEnabaled.Value;
+    public static Configurable<int> thanatosisVariant;
+    public static int ThanatosisVariant => thanatosisVariant.Value;
+    public static Configurable<bool> skipThanatosisSequence;
+    public static bool SkipThanatosisSequence => skipThanatosisSequence.Value;
+
+    public static Configurable<int> dreamerEncounters;
+    public static int DreamerEncounters => dreamerEncounters.Value;
+
+    public static Configurable<bool> usesFlareMechanics;
+    public static bool UsesFlareMechanics => usesFlareMechanics.Value;
 
     public ModOptions()
     {
@@ -43,7 +54,13 @@ public class ModOptions : OptionInterface
 
         spoiler_RippleLayerDropsFlares = config.Bind(nameof(spoiler_RippleLayerDropsFlares), true);
 
-        progressMilestone = config.Bind("ProgressMilestone", 0);
+        thanatosisEnabaled = config.Bind("ThanatosisEnabled", false);
+        thanatosisVariant = config.Bind("ThanatosisVariant", 0);
+        skipThanatosisSequence = config.Bind("SkipThanatosisSequence", false);
+
+        dreamerEncounters = config.Bind("DreamerEncounters", 0);
+
+        usesFlareMechanics = config.Bind("UsesFlareMechanics", false);
     }
     public override void Initialize()
     {
@@ -90,28 +107,40 @@ public class ModOptions : OptionInterface
 
             // Make the text at the bottom
 	        // NOTE: Increment YPos by 20
-            new OpLabel(25, 225, "The Beacon:"),
-            new OpLabel(25, 205, Translate("Flare creation: Costs 1 food pip per rock + SHIFT (Grab).")),
-            new OpLabel(25, 185, Translate("Add flare to storage: Have a flashbang in hand + hold SHIFT (Grab).")),
-            new OpLabel(25, 165, Translate("Remove flare from storage: Have a stored flashbang + hold SHIFT (Grab).")),
-            new OpLabel(25, 145, Translate("Quick-throw flare: Have a stored flashbang + X / Throw on an empty hand.")),
+            //new OpLabel(25, 225, "The Beacon:"),
+            //new OpLabel(25, 205, Translate("Flare creation: Costs 1 food pip per rock + SHIFT (Grab).")),
+            //new OpLabel(25, 185, Translate("Add flare to storage: Have a flashbang in hand + hold SHIFT (Grab).")),
+            //new OpLabel(25, 165, Translate("Remove flare from storage: Have a stored flashbang + hold SHIFT (Grab).")),
+            //new OpLabel(25, 145, Translate("Quick-throw flare: Have a stored flashbang + X / Throw on an empty hand.")),
             //new OpLabel(25, 100, "Photomaniac:"),
             //new OpLabel(25, 80, Translate("Electric Spear creation: Costs 1 food pip per spear + SHIFT / Grab.")),
             //new OpLabel(25, 60, Translate("Electric shockwave ability: SHIFT / Grab + Z / Jump."))
         ];
         mainPage.AddItems(mainPageElements);
 
-        var radioButtonGroup = new OpRadioButtonGroup(progressMilestone);
+        var radioButtonGroup = new OpRadioButtonGroup(thanatosisVariant);
         UIelement[]? devPageElements =
         {
             new OpLabel(200f, 570f, Translate("Developer Options"), true) {alignment=FLabelAlignment.Center},
-            new OpLabel(leftSidePos, 530f, "Progress Milestone Config (preferably use for a new save)"),
-            new OpLabel(leftSidePos + 30, 500f, "Maintain current (updated?) savedata"),
-            new OpLabel(leftSidePos + 30, 500f - 25, "Beginning "),
-            new OpLabel(leftSidePos + 30, 500f - 50, "Prologue"),
-            new OpLabel(leftSidePos + 30, 500f - 75, "Intermission"),
-            new OpLabel(leftSidePos + 30, 500f - 100, "Post-Progression"),
-            
+
+            new OpLabel(leftSidePos + 30, 530, "Enable Thanatosis"),
+            new OpCheckBox(thanatosisEnabaled, leftSidePos, 530f),
+
+            new OpLabel(leftSidePos + 30, 500f, "Skip Thanatosis Sequence"),
+            new OpCheckBox(skipThanatosisSequence, leftSidePos, 500f),
+
+            new OpLabel(leftSidePos, 475f, "Thanatosis progression"),
+            new OpLabel(leftSidePos + 30, 450f, "Don't overwrite"),
+            new OpLabel(leftSidePos + 30, 425f, "Starving"),
+            new OpLabel(leftSidePos + 30, 400f, "Rot"),
+            new OpLabel(leftSidePos + 30, 375f, "Hybrid"),
+
+            new OpLabel(leftSidePos + 30, 325f, "Dreamer Encounters"),
+            new OpDragger(dreamerEncounters, leftSidePos, 325f),
+
+            new OpLabel(leftSidePos + 30, 275f, "Enable Flare Storage + Crafting"),
+            new OpCheckBox(usesFlareMechanics, leftSidePos, 275f),
+
             radioButtonGroup,
         };
         if (Plugin.devMode)
@@ -119,11 +148,10 @@ public class ModOptions : OptionInterface
             devPage.AddItems(devPageElements);
             radioButtonGroup.SetButtons
             ([
-                new OpRadioButton(new Vector2(leftSidePos, 500f)),
-                new OpRadioButton(new Vector2(leftSidePos, 500f - 25)),
-                new OpRadioButton(new Vector2(leftSidePos, 500f - 50)),
-                new OpRadioButton(new Vector2(leftSidePos, 500f - 75)),
-                new OpRadioButton(new Vector2(leftSidePos, 500f - 100))
+                new OpRadioButton(new Vector2(leftSidePos, 450f)),
+                new OpRadioButton(new Vector2(leftSidePos, 450f - 25)),
+                new OpRadioButton(new Vector2(leftSidePos, 450f - 50)),
+                new OpRadioButton(new Vector2(leftSidePos, 450f - 75)),
             ]);
         }
 

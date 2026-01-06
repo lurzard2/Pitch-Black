@@ -24,37 +24,64 @@ public static class ScugGraphics
     /// <summary>
     /// Assigns the correct lerp color to be used for Thanatosis sprite color lerping, because their colors change with progression!
     /// </summary>
-    public static void ColorsForBeaconSprites(PlayerGraphics self)
+    public static Color[] ColorsForBeaconSprites(PlayerGraphics self)
     {
-        var session = self.player.abstractCreature.world.game.GetStorySession;
-        bool usesThanatosis = BeaconSaveData.GetCanUseThanatosis(session.saveState);
+        bool pickedSkinColor = false;
+        bool pickedEyeColor = false;
+        Color[] colors = new Color[2];
+
+        var saveState = self.player.abstractCreature.world.game.GetStorySession.saveState;
+        bool usesThanatosis = BeaconSaveData.GetCanUseThanatosis(saveState);
         // Target 2f
-        bool rotMode = BeaconSaveData.GetMaxSpiralLevel(session.saveState) > 1.5f;
+        bool rotMode = BeaconSaveData.GetMaxSpiralLevel(saveState) > 1.5f;
         // Target 4f
-        bool hybridMode = BeaconSaveData.GetMaxSpiralLevel(session.saveState) > 3.5f;
-        bool tooWeakToMaintainNourishment = BeaconSaveData.GetDreamerEncountersNumber(session.saveState) < 4;
-        if (tooWeakToMaintainNourishment)
+        bool hybridMode = BeaconSaveData.GetMaxSpiralLevel(saveState) > 3.5f;
+        bool tooWeakToMaintainNourishment = BeaconSaveData.GetDreamerEncountersNumber(saveState) < 4;
+
+        if (!pickedSkinColor)
         {
-            DecidedSkinColor = Colors.BeaconStarveColor;
+            if (rotMode || hybridMode)
+            {
+                colors[0] = Colors.PlayerPaletteBlack;
+            }
+            else if (tooWeakToMaintainNourishment)
+            {
+                colors[0] = Colors.BeaconStarveColor;
+            }
+            else
+            {
+                colors[0] = Colors.BeaconEyeColor;
+            }
         }
-        if (usesThanatosis)
+        if (!pickedEyeColor)
         {
-            DecidedEyeColor = Color.Lerp(Colors.BeaconEyeColor, RainWorld.RippleColor, 0.25f);
+            if (hybridMode)
+            {
+                colors[1] = Colors.NightmareColor;
+            }
+            else if (rotMode)
+            {
+                colors[1] = RainWorld.RippleColor;
+            }
+            else if (tooWeakToMaintainNourishment)
+            {
+                colors[1] = Color.Lerp(Colors.BeaconEyeColor, RainWorld.RippleColor, 0.25f);
+            }
+            else
+            {
+                colors[1] = Colors.BeaconEyeColor;
+            }
+            pickedEyeColor = true;
         }
-        if (rotMode)
-        {
-            DecidedSkinColor = Colors.PlayerPaletteBlack;
-            DecidedEyeColor = RainWorld.RippleColor;
-        }
-        if (hybridMode)
-        {
-            DecidedEyeColor = Colors.NightmareColor;
-        }
+
+        SpriteColors = colors;
+        return colors;
     }
 
     // Assign placeholders to dynamic values
     public static Color DecidedSkinColor = Colors.BeaconFullColor;
     public static Color DecidedEyeColor = Colors.BeaconEyeColor;
+    public static Color[] SpriteColors = [];
 
     public static void Apply()
     {
@@ -157,7 +184,7 @@ public static class ScugGraphics
         if (MiscUtils.IsBeacon(self.player.abstractCreature.world.game.GetStorySession))
         {
             // Assign DecidedSkinColor OUTSIDE of CWT.
-            ColorsForBeaconSprites(self);
+            SpriteColors = ColorsForBeaconSprites(self);
         }
 
         bool GotCWTData = scugCWT.TryGetValue(self.player, out ScugCWT cwt);
@@ -182,8 +209,8 @@ public static class ScugGraphics
                     || bCWT.beaconCycle.cycle.state == Cycle.State.ExitThanatosis
                     || bCWT.beaconCycle.thanatosisLerp > 0f))
             {
-                bCWT.currentSkinColor = Color.Lerp(skinColor, DecidedSkinColor, bCWT.beaconCycle.thanatosisLerp);
-                bCWT.currentEyeColor = Color.Lerp(eyeColor, DecidedEyeColor, bCWT.beaconCycle.thanatosisLerp);
+                bCWT.currentSkinColor = Color.Lerp(skinColor, SpriteColors[0], bCWT.beaconCycle.thanatosisLerp);
+                bCWT.currentEyeColor = Color.Lerp(eyeColor, SpriteColors[1], bCWT.beaconCycle.thanatosisLerp);
             }
             else
             {

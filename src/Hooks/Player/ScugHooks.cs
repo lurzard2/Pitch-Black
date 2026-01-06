@@ -16,43 +16,6 @@ public static class ScugHooks
     private static void BeaconUpdate(Player self)
     {
         var saveState = self.room.world.game.GetStorySession.saveState;
-        if (devMode)
-        {
-            if (devMode && !updatedSaveDataOnceForRemix)
-            {
-                // 1 is to keep updated data
-                // 2 is to start fresh
-                // 3 is post 3rd encounter
-                // 4 is post thanatosis
-                // 5 is whatever :3
-
-                if (ModOptions.ProgressMilestone >= 3)
-                {
-                    BeaconSaveData.SetMaxSpiralLevel(saveState, 1f);
-                    BeaconSaveData.SetSpiralLevel(saveState, 1f);
-                    BeaconSaveData.SetDreamerEncountersNumber(saveState, 2);
-                    BeaconSaveData.SetDreamerEncounteredRooms(saveState, "vv_bo4");
-                    BeaconSaveData.SetDreamerEncounteredRooms(saveState, "vv_a01");
-                    BeaconSaveData.SetDreamerEncounteredRooms(saveState, "vv_c03");
-                }
-                if (ModOptions.ProgressMilestone >= 4)
-                {
-                    BeaconSaveData.SetCanUseThanatosis(saveState, true);
-                    BeaconSaveData.SetHasUsedThanatosis(saveState, true);
-                    BeaconSaveData.SetDreamerEncountersNumber(saveState, 3);
-                }
-                if (ModOptions.ProgressMilestone >= 5)
-                {
-                    BeaconSaveData.GetOrSetBool(saveState, BeaconSaveData.canStoreFlares, true);
-                    BeaconSaveData.GetOrSetBool(saveState, BeaconSaveData.canCraftFlares, true);
-                    BeaconSaveData.SetMaxSpiralLevel(saveState, 5f);
-                    BeaconSaveData.SetSpiralLevel(saveState, 5f);
-                    BeaconSaveData.SetDreamerEncountersNumber(saveState, 5);
-                }
-                updatedSaveDataOnceForRemix = true;
-            }
-        }
-
         // Check here if it's Beacon
         if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beacon)
         {
