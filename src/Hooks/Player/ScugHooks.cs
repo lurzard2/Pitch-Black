@@ -15,9 +15,9 @@ public static class ScugHooks
     /// </summary>
     private static void BeaconUpdate(Player self)
     {
+        var saveState = self.room.world.game.GetStorySession.saveState;
         if (devMode)
         {
-            var saveState = self.room.world.game.GetStorySession.saveState;
             if (devMode)
             {
                 BeaconSaveData.SetCanUseThanatosis(saveState, true);
@@ -25,6 +25,9 @@ public static class ScugHooks
                 BeaconSaveData.SetMaxSpiralLevel(saveState, 1f);
                 BeaconSaveData.SetSpiralLevel(saveState, 1f);
                 BeaconSaveData.SetDreamerEncountersNumber(saveState, 3);
+                // Turn on flare utilities
+                BeaconSaveData.GetOrSetBool(saveState, BeaconSaveData.canStoreFlares, true);
+                BeaconSaveData.GetOrSetBool(saveState, BeaconSaveData.canCraftFlares, true);
             }
         }
 
@@ -38,10 +41,14 @@ public static class ScugHooks
             if (beacon.squinter != null)
             {
                 beacon.squinter.Update();
-            } 
+            }
             if (beacon.dontThrowTimer > 0)
             {
                 beacon.dontThrowTimer--;
+            }
+            if (BeaconSaveData.GetOrSetBool(saveState, BeaconSaveData.canStoreFlares))
+            {
+                beacon.storage ??= new(self);
             }
         }
     }
@@ -161,7 +168,7 @@ public static class ScugHooks
                     foreach (PhysicalObject item in thingQuar) {
                         if (item is FlareBomb flare && beacon.storage.storedFlares.Count < beacon.storage.capacity) {
                             foreach (var player in self.room.PlayersInRoom) {
-                                if (player != null && scugCWT.TryGetValue(player, out var op) && op is BeaconCWT otherBeacon && otherBeacon.storage.storedFlares.Contains(flare)) {
+                                if (player != null && scugCWT.TryGetValue(player, out var op) && op is BeaconCWT otherBeacon && otherBeacon.storage!= null && otherBeacon.storage.storedFlares.Contains(flare)) {
                                     goto SkipAddingFlare;
                                 }
                             }
