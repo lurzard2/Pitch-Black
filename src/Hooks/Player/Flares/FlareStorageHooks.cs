@@ -47,7 +47,7 @@ public static class FlareStorageHooks
                 
                 if (scugCWT.TryGetValue(abstrCrit.realizedCreature as Player, out ScugCWT cwt) && cwt is BeaconCWT beaconCWT) 
                 {
-                    if (beaconCWT.storage != null && beaconCWT.storage.storedFlares.Contains(flare))
+                    if (beaconCWT.storage.storedFlares.Contains(flare))
                     {
                         return Player.ObjectGrabability.CantGrab;
                     }
@@ -101,7 +101,10 @@ public static class FlareStorageHooks
     {
         if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
         {
-            cwt.storage?.GraphicsModuleUpdated(eu);
+            if (cwt.storage != null)
+            {
+                cwt.storage.GraphicsModuleUpdated(eu);
+            }
         }
         
         orig(self, actuallyViewed, eu);
@@ -135,7 +138,8 @@ public static class FlareStorageHooks
         
         if (self.slugcatStats.name == Enums.SlugcatStatsName.Beacon
             && self.playerState.foodInStomach > 0
-            && self.objectInStomach.type == AbstractPhysicalObject.AbstractObjectType.Rock)
+            && self.objectInStomach.type == AbstractPhysicalObject.AbstractObjectType.Rock
+            && BeaconSaveData.GetOrSetBool(self.room.world.game.GetStorySession.saveState,BeaconSaveData.canCraftFlares))
         {
             self.objectInStomach = new AbstractConsumable(self.room.world, AbstractPhysicalObject.AbstractObjectType.FlareBomb, null, self.abstractCreature.pos, self.room.game.GetNewID(), -1, -1, null);
             self.SubtractFood(1);
@@ -277,15 +281,16 @@ public static class FlareStorageHooks
                     }
                 }
             }
-            
-            JustGoOverHere:
+
+        JustGoOverHere:
 
             // don't unstore a flare right after we've created one
-            if (interactLockStorage || bCWT.heldCraft)
+            if ((interactLockStorage || bCWT.heldCraft) && bCWT.storage != null)
             {
                 // dont take flarebomb from storage if holding food or eating
-                bCWT.storage?.interactionLocked = true;
-                bCWT.storage?.storageCounter.Reset();
+                bCWT.storage.interactionLocked = true;
+                bCWT.storage.storageCounter.Reset();
+                //logger.LogDebug("FlareStorage: RESETING COUNTER");
             }
 
             if (bCWT.heldCraft && !self.input[0].pckp)
@@ -294,11 +299,14 @@ public static class FlareStorageHooks
 
             if (bCWT.storage != null)
             {
+                //logger.LogDebug($"FlareStorage: INCREMENT:{bCWT.storage.increment} - COUNTER:{bCWT.storage.storageCounter} - LOCKED:{bCWT.storage.interactionLocked} - HELDCRAFT:{bCWT.heldCraft}");
+
                 // also, past a certain point stop incrementing because we are clearly trying to regurgitate something
                 if (!self.craftingObject && self.swallowAndRegurgitateCounter < 45)
                 {
                     // dont increment if crafting
                     bCWT.storage.increment = self.input[0].pckp && !bCWT.heldCraft;
+                    //logger.LogDebug($"FlareStorage: INCREMENT:{bCWT.storage.increment}");
                     bCWT.storage.Update(eu);
                 }
 

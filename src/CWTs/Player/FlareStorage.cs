@@ -39,7 +39,7 @@ public class FlareStorage
     public Player owner;
     public PlayerGraphics Graphics => owner.graphicsModule as PlayerGraphics;
     public Stack<FlareBomb> storedFlares;
-    public bool increment;
+    public bool increment = false;
     public Counter storageCounter = new(20, 0, true);
 
     public int capacity = 4; //PBOptions.maxFlashStore.Value;
@@ -58,21 +58,34 @@ public class FlareStorage
         if (increment)
         {
             storageCounter.Tick();
-        }
-        if (storageCounter.isFinished)
-        {
-            SwapFlares(eu);
+            if (storageCounter.isFinished && storedFlares.Count < capacity)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    // Move flare from any hand to store if store is empty
+                    if (owner.grasps[i]?.grabbed is FlareBomb f)
+                    {
+                        FlarebombtoStorage(f);
+                        storageCounter.Reset();
+                        break;
+                    }
+                }
+            }
+            if (storageCounter.isFinished && storedFlares.Count > 0)
+            {
+                FlarebombFromStorageToPaw(eu);
+                storageCounter.Reset();
+            }
+
         }
         else
         {
             storageCounter.Reset();
         }
-
         if (!owner.input[0].pckp)
         {
             interactionLocked = false;
         }
-        increment = false;
     }
 
     public void GraphicsModuleUpdated(bool eu)

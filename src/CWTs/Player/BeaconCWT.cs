@@ -28,12 +28,8 @@ public class BeaconCWT : ScugCWT
     public BeaconCWT(Player player) : base()
     {
         this.player = player;
-
         squinter = new(player);
-        if (BeaconSaveData.GetOrSetBool(StorySaveState, BeaconSaveData.canStoreFlares))
-        {
-            storage = new(player);
-        }
+        // storage is added in BeaconUpdate
         var localCycle = new Cycle(player.abstractCreature);
         beaconCycle = new(localCycle, player);
     }
