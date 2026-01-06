@@ -89,7 +89,7 @@ public static class Crafting
         {
             if (Enums.SlugcatStatsName.Beacon == self.slugcatStats.name)
             {
-                self.BeaconCrafting();   
+                self.BeaconCrafting();
             }
         });
         c.Emit(OpCodes.Ret);
