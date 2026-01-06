@@ -37,37 +37,37 @@ public class AbstractStoredFlare : AbstractPhysicalObject.AbstractObjectStick
 public class FlareStorage
 {
     public Player owner;
+    public PlayerGraphics Graphics => owner.graphicsModule as PlayerGraphics;
     public Stack<FlareBomb> storedFlares;
     public bool increment;
     public Counter storageCounter = new(20, 0, true);
 
     public int capacity = 4; //PBOptions.maxFlashStore.Value;
     public bool interactionLocked;
-    public Stack<AbstractStoredFlare> abstractFlare;
+    public Stack<AbstractStoredFlare> abstractStoredFlares;
 
     public FlareStorage(Player owner)
     {
-        if (storedFlares == null)
-        {
-            storedFlares = new Stack<FlareBomb>(capacity);
-            abstractFlare = new Stack<AbstractStoredFlare>(capacity);
-        }
         this.owner = owner;
+        storedFlares = new Stack<FlareBomb>(capacity);
+        abstractStoredFlares = new Stack<AbstractStoredFlare>(capacity);
     }
 
     public void Update(bool eu)
     {
         if (increment)
         {
-            if (storageCounter.isFinished)
-            {
-                SwapFlares(eu);
-            }
+            storageCounter.Tick();
+        }
+        if (storageCounter.isFinished)
+        {
+            SwapFlares(eu);
         }
         else
         {
             storageCounter.Reset();
         }
+
         if (!owner.input[0].pckp)
         {
             interactionLocked = false;
@@ -81,17 +81,17 @@ public class FlareStorage
         if (storedFlares.Count <= 0)
             return;
 
-        PlayerGraphics pG = owner.graphicsModule as PlayerGraphics;
+        PlayerGraphics pGraphics = owner.graphicsModule as PlayerGraphics;
 
-        if (pG == null) return;
+        if (pGraphics == null) return;
 
 
         for (int i = 0; i < storedFlares.Count; i++)
         {
             float necklaceLength = 2; //capacity / 2; //WW- Didn't work well for numbers past 4, changing it.
-                                      // These may be able to be replaced with math involving bodyChunks of the player, which while may be more intuitive to understand, could come with positioning issues.
-            Vector2 drawPointLeft = pG.drawPositions[0, 0];
-            Vector2 drawPointRight = pG.drawPositions[1, 0];
+            // These may be able to be replaced with math involving bodyChunks of the player, which while may be more intuitive to understand, could come with positioning issues.
+            Vector2 drawPointLeft = pGraphics.drawPositions[0, 0];
+            Vector2 drawPointRight = pGraphics.drawPositions[1, 0];
             // n is the angle created by going from the left draw point to the right draw point, based on a horizontal line as 0 degrees
             float n = Custom.VecToDeg((drawPointLeft - drawPointRight).normalized);
             // These vectors are the limits on the linear position displacement of flarebombs in between them
@@ -171,7 +171,7 @@ public class FlareStorage
         if (pawIndex != -1)
         {
             FlareBomb realizedFlare = storedFlares.Pop();
-            AbstractStoredFlare absractFlare = abstractFlare.Pop();
+            AbstractStoredFlare absractFlare = abstractStoredFlares.Pop();
 
             if (owner.graphicsModule != null)
             {
@@ -219,7 +219,7 @@ public class FlareStorage
         interactionLocked = true;
         owner.noPickUpOnRelease = 20;
         owner.room.PlaySound(SoundID.Slugcat_Stash_Spear_On_Back, owner.mainBodyChunk);
-        abstractFlare.Push(new AbstractStoredFlare(owner.abstractPhysicalObject, f.abstractPhysicalObject));
+        abstractStoredFlares.Push(new AbstractStoredFlare(owner.abstractPhysicalObject, f.abstractPhysicalObject));
         logger.LogDebug("Applied flare into storage! Storage index is now: " + storedFlares.Count);
     }
 
@@ -232,7 +232,7 @@ public class FlareStorage
             while (beaconCWT.storage.storedFlares.Count > 0)
             {
                 FlareBomb flare = beaconCWT.storage.storedFlares.Pop();
-                AbstractStoredFlare af = beaconCWT.storage.abstractFlare.Pop();
+                AbstractStoredFlare af = beaconCWT.storage.abstractStoredFlares.Pop();
                 if (flare != null)
                 {
                     flare.firstChunk.vel = self.mainBodyChunk.vel + Custom.RNV() * 3f * Random.value;

@@ -54,7 +54,7 @@ public class Squinter
             }
             else
             {
-                squintTick = 40 * 6;
+                squintTick = 40 * UnityEngine.Random.Range(5, 7);
                 owner.Blink(8);
             }
         }

@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-#pragma warning disable IDE0090
-
 namespace PitchBlack;
 
 public class BeaconCWT : ScugCWT
 {
-    // We need not access player
+    // We need not access player much, but it's here
     private readonly Player player;
     public SaveState StorySaveState => player.room.world.game.GetStorySession.saveState;
     public Color currentSkinColor;

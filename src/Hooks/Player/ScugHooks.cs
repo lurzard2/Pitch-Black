@@ -38,7 +38,7 @@ public static class ScugHooks
             if (beacon.squinter != null)
             {
                 beacon.squinter.Update();
-            }
+            } 
             if (beacon.dontThrowTimer > 0)
             {
                 beacon.dontThrowTimer--;
