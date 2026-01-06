@@ -33,27 +33,22 @@ public static class ScugGraphics
         // Target 4f
         bool hybridMode = BeaconSaveData.GetMaxSpiralLevel(session.saveState) > 3.5f;
         bool tooWeakToMaintainNourishment = BeaconSaveData.GetDreamerEncountersNumber(session.saveState) < 4;
-        // If either modes are true use black, else use the starve color
-        DecidedSkinColor = rotMode || hybridMode ? Colors.PlayerPaletteBlack : Colors.BeaconStarveColor;
         if (tooWeakToMaintainNourishment)
         {
             DecidedSkinColor = Colors.BeaconStarveColor;
-            return;
-        }
-
-        if (hybridMode)
-        {
-            DecidedEyeColor = Colors.NightmareColor;
-            return;
-        }
-        if (rotMode)
-        {
-            DecidedEyeColor = RainWorld.RippleColor;
-            return;
         }
         if (usesThanatosis)
         {
             DecidedEyeColor = Color.Lerp(Colors.BeaconEyeColor, RainWorld.RippleColor, 0.25f);
+        }
+        if (rotMode)
+        {
+            DecidedSkinColor = Colors.PlayerPaletteBlack;
+            DecidedEyeColor = RainWorld.RippleColor;
+        }
+        if (hybridMode)
+        {
+            DecidedEyeColor = Colors.NightmareColor;
         }
     }
 

@@ -27,9 +27,8 @@ public class ModOptions : OptionInterface
     private static Configurable<bool> spoiler_RippleLayerDropsFlares;
     public static bool RippleLayerDropsFlares => spoiler_RippleLayerDropsFlares.Value;
 
-    // Do not require a super long manual input for the sequence
-    private static Configurable<bool> spoiler_SpeedUpThanatosisSequence;
-    public static bool SpeedUpThanatosisSequence => spoiler_SpeedUpThanatosisSequence.Value;
+    public static Configurable<int> progressMilestone;
+    public static int ProgressMilestone => progressMilestone.Value;
 
     public ModOptions()
     {
@@ -43,16 +42,17 @@ public class ModOptions : OptionInterface
         hazHat = config.Bind("hazHat", false);
 
         spoiler_RippleLayerDropsFlares = config.Bind(nameof(spoiler_RippleLayerDropsFlares), true);
-        spoiler_SpeedUpThanatosisSequence = config.Bind(nameof(spoiler_SpeedUpThanatosisSequence), false);
+
+        progressMilestone = config.Bind("ProgressMilestone", 0);
     }
     public override void Initialize()
     {
-        OpTab page1 = new OpTab(this, "Main");
-        OpTab page2 = new OpTab(this, "Spoilers");
+        OpTab mainPage = new OpTab(this, "Main");
+        OpTab devPage = new OpTab(this, "Development");
         Tabs =
         [
-	        page1,
-	        page2
+	        mainPage,
+	        devPage
         ];
 
 		const int sliderBarLength = 135;
@@ -60,7 +60,7 @@ public class ModOptions : OptionInterface
         const int leftSidePos = 60;
 
         #nullable enable
-        UIelement[]? page1Elements =
+        UIelement[]? mainPageElements =
         [
 	        new OpLabel(200, 575, Translate("Pitch Black Options"), true) {alignment=FLabelAlignment.Center},
 
@@ -99,7 +99,34 @@ public class ModOptions : OptionInterface
             //new OpLabel(25, 80, Translate("Electric Spear creation: Costs 1 food pip per spear + SHIFT / Grab.")),
             //new OpLabel(25, 60, Translate("Electric shockwave ability: SHIFT / Grab + Z / Jump."))
         ];
-        page1.AddItems(page1Elements);
+        mainPage.AddItems(mainPageElements);
+
+        var radioButtonGroup = new OpRadioButtonGroup(progressMilestone);
+        UIelement[]? devPageElements =
+        {
+            new OpLabel(200f, 570f, Translate("Developer Options"), true) {alignment=FLabelAlignment.Center},
+            new OpLabel(leftSidePos, 530f, "Progress Milestone Config (preferably use for a new save)"),
+            new OpLabel(leftSidePos + 30, 500f, "Maintain current (updated?) savedata"),
+            new OpLabel(leftSidePos + 30, 500f - 25, "Beginning "),
+            new OpLabel(leftSidePos + 30, 500f - 50, "Prologue"),
+            new OpLabel(leftSidePos + 30, 500f - 75, "Intermission"),
+            new OpLabel(leftSidePos + 30, 500f - 100, "Post-Progression"),
+            
+            radioButtonGroup,
+        };
+        if (Plugin.devMode)
+        {
+            devPage.AddItems(devPageElements);
+            radioButtonGroup.SetButtons
+            ([
+                new OpRadioButton(new Vector2(leftSidePos, 500f)),
+                new OpRadioButton(new Vector2(leftSidePos, 500f - 25)),
+                new OpRadioButton(new Vector2(leftSidePos, 500f - 50)),
+                new OpRadioButton(new Vector2(leftSidePos, 500f - 75)),
+                new OpRadioButton(new Vector2(leftSidePos, 500f - 100))
+            ]);
+        }
+
 
         //Not exactly sure what to do with this so I will leave it here for now
         /*
