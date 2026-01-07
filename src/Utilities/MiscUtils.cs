@@ -168,6 +168,11 @@ public static class MiscUtils
 
     public static void RemixUpdateSaveData(RainWorldGame game)
     {
+        if (!game.IsStorySession)
+        {
+            return;
+        }
+
         var saveState = game.GetStorySession.saveState;
         if (devMode)
         {

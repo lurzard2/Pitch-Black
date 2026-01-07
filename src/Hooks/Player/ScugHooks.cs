@@ -15,25 +15,29 @@ public static class ScugHooks
     /// </summary>
     private static void BeaconUpdate(Player self)
     {
-        var saveState = self.room.world.game.GetStorySession.saveState;
-        // Check here if it's Beacon
-        if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beacon)
+        bool isStory = self.room.game.IsStorySession;
+        if (isStory)
         {
-            if (beacon.beaconCycle != null)
+            var saveState = self.room.world.game.GetStorySession.saveState;
+            // Check here if it's Beacon
+            if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beacon)
             {
-                beacon.beaconCycle.Update();
-            }
-            if (beacon.squinter != null)
-            {
-                beacon.squinter.Update();
-            }
-            if (beacon.dontThrowTimer > 0)
-            {
-                beacon.dontThrowTimer--;
-            }
-            if (BeaconSaveData.GetOrSetBool(saveState, BeaconSaveData.canStoreFlares))
-            {
-                beacon.storage ??= new(self);
+                if (beacon.beaconCycle != null)
+                {
+                    beacon.beaconCycle.Update();
+                }
+                if (beacon.squinter != null)
+                {
+                    beacon.squinter.Update();
+                }
+                if (beacon.dontThrowTimer > 0)
+                {
+                    beacon.dontThrowTimer--;
+                }
+                if (BeaconSaveData.GetOrSetBool(saveState, BeaconSaveData.canStoreFlares))
+                {
+                    beacon.storage ??= new(self);
+                }
             }
         }
     }
