@@ -47,7 +47,7 @@ public static class FlareStorageHooks
                 
                 if (scugCWT.TryGetValue(abstrCrit.realizedCreature as Player, out ScugCWT cwt) && cwt is BeaconCWT beaconCWT) 
                 {
-                    if (beaconCWT.storage.storedFlares.Contains(flare))
+                    if (beaconCWT.storage != null && beaconCWT.storage.storedFlares.Contains(flare))
                     {
                         return Player.ObjectGrabability.CantGrab;
                     }
