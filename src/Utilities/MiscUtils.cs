@@ -131,6 +131,7 @@ public static class MiscUtils
     }
     #endregion
 
+    #region Spawning things
     public static void AddHUDMessage(HUD.HUD hud, bool clear, string text, int wait, int time, bool darken, bool hideHUD)
     {
         var prompt = hud.textPrompt;
@@ -165,6 +166,7 @@ public static class MiscUtils
         logger.LogDebug($"PlaceRift: Rift is {(riftManager.placedRift != null ? "Active" : "null")}");
         return riftManager.placedRift;
     }
+    #endregion
 
     public static void RemixUpdateSaveData(RainWorldGame game)
     {
@@ -200,8 +202,8 @@ public static class MiscUtils
                         BeaconSaveData.SetSpiralLevel(saveState, 2f);
                         break;
                     case 3:
-                        BeaconSaveData.SetMaxSpiralLevel(saveState, 5f);
-                        BeaconSaveData.SetMaxSpiralLevel(saveState, 5f);
+                        BeaconSaveData.SetMaxSpiralLevel(saveState, 4f);
+                        BeaconSaveData.SetMaxSpiralLevel(saveState, 4f);
                         break;
                     default: break;
                 }
@@ -213,5 +215,32 @@ public static class MiscUtils
                 BeaconSaveData.GetOrSetBool(saveState, BeaconSaveData.canStoreFlares, true);
             }
         }
+    }
+
+    public static SaveState StoryState(this RainWorldGame game)
+    {
+        if (game.IsStorySession)
+        {
+            return game.GetStorySession.saveState;
+        }
+        return null;
+    }
+
+    public static bool BeaconThanatosis(this Player player)
+    {
+        if (scugCWT.TryGetValue(player, out var c) && c is BeaconCWT beacon)
+        {
+            return beacon.beaconCycle.isDead && beacon.beaconCycle.thanatosisLerp > 0f;
+        }
+        return false;
+    }
+
+    public static bool BeaconIsCached(this Player player)
+    {
+        if (scugCWT.TryGetValue(player, out var c) && c is BeaconCWT beacon)
+        {
+            return beacon.beaconCycle.cycle.state == Cycle.State.Cached;
+        }
+        return false;
     }
 }

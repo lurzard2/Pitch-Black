@@ -45,11 +45,12 @@ public class BeaconCycle
             {
                 owner.Stun(80);
                 specInputCounter.Reset();
-                owner.room.AddObject(new Watcher.RippleRing(owner.mainBodyChunk.pos, 60, 0.4f, 0.6f));
+                owner.room.AddObject(new Watcher.RippleRing(owner.mainBodyChunk.pos, 60, 0.6f, 0.6f));
             }
             return;
         }
 
+        // Self-sustainable cycle
         if (cycle.state == Cycle.State.Init)
         {
             cycle.Sync();
@@ -67,10 +68,10 @@ public class BeaconCycle
             }
         }
 
-        if (BeaconSaveData.GetCompletedBeacon(saveState) && cycle.cycleTime == 40*10)
+        if (BeaconSaveData.GetCompletedBeacon(saveState) && cycle.cycleTime == 40*12)
         {
-            string ptText = "[THIS MARKS THE END OF THE PLAYTEST CURRENTLY]";
-            MiscUtils.AddHUDMessage(owner.room.game.cameras[0].hud, true, ptText, 0, 100, true, true);
+            string ptText = $"[THIS MARKS THE END OF THE PLAYTEST CURRENTLY] ~ {MOD_VERSION}";
+            MiscUtils.AddHUDMessage(owner.room.game.cameras[0].hud, true, ptText, 0, 120, true, true);
         }
 
         // New cycle, catch up to max revives
@@ -88,6 +89,7 @@ public class BeaconCycle
         //    BeaconSaveData.SetSavedCycle(saveState, new SavedPlayerCycle(this, saveState.cycleNumber));
         //}
 
+        #region Thanatosis Sequence
         // Not VV, hasnt used thanatosis. specifically encounter 3
         if (!MiscUtils.IsVhosRegion(owner.room.world.name)
             && !BeaconSaveData.GetHasUsedThanatosis(saveState)
@@ -109,6 +111,13 @@ public class BeaconCycle
                 thanatosisTutorialSequence = new(this, owner.room);
                 return;
             }
+        }
+        #endregion
+
+        if (cycle.state == Cycle.State.PersistThroughCache)
+        {
+            ToggleThanatosis(true);
+            cycle.ChangeState(Cycle.State.Alive);
         }
 
         if (owner.input[0].spec)
