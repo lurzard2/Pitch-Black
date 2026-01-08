@@ -26,7 +26,7 @@ class  Plugin : BaseUnityPlugin
 {
     public const string MOD_ID = "lurzard.pitchblack";
     public const string MOD_NAME = "Pitch Black";
-    public const string MOD_VERSION = "0.1.0";
+    public const string MOD_VERSION = "0.6.4";
 
     private bool init = false;
     public static ManualLogSource logger;
@@ -92,6 +92,7 @@ class  Plugin : BaseUnityPlugin
         MenuSceneHooks.Apply();
         PhysicalObjectHooks.Apply();
         DevToolsHooks.Apply();
+        HUDHooks.Apply();
         WorldHooks.Apply();
         RoomHooks.Apply();
         MusicHooks.Apply();
@@ -234,7 +235,7 @@ class  Plugin : BaseUnityPlugin
     private static void RainWorldGame_Update(On.RainWorldGame.orig_Update orig, RainWorldGame self)
     {
         orig(self);
-        if (devMode && !remixUpdatedSaveData)
+        if (devMode && !remixUpdatedSaveData && self.session is StoryGameSession)
         {
             MiscUtils.RemixUpdateSaveData(self);
             remixUpdatedSaveData = true;
