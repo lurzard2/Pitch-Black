@@ -50,7 +50,7 @@ public static class ScugGraphics
             }
             else
             {
-                colors[0] = Colors.BeaconEyeColor;
+                colors[0] = Colors.BeaconDefaultColor;
             }
         }
         if (!pickedEyeColor)
@@ -200,8 +200,7 @@ public static class ScugGraphics
             {
                 flares = bCWT.storage.storedFlares.Count;
             }
-            Color DecidedBaseColor = self.player.Malnourished ? Colors.BeaconStarveColor : Colors.BeaconDefaultColor;
-            skinColor = Color.Lerp(DecidedBaseColor, Colors.BeaconFullColor, flares / (float)4);
+            skinColor = Color.Lerp(Colors.BeaconDefaultColor, Colors.BeaconFullColor, flares / (float)4);
             eyeColor = Colors.BeaconEyeColor;
             
             if (bCWT.beaconCycle != null
