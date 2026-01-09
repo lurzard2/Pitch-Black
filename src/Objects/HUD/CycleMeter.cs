@@ -11,7 +11,7 @@ public class CycleMeter : HudPart
     public Vector2 CornerPos => hud.karmaMeter != null ? hud.karmaMeter.pos : Vector2.zero;
     // instead of value and lastValue we're just gonna do this!
     private (Vector2 a, Vector2 b) pos;
-    private (float a, float b) fade;
+    public (float a, float b) fade;
 
     public bool Unlocked => BeaconSaveData.GetMaxSpiralLevel(SaveState) >= 1f;
 
@@ -33,10 +33,13 @@ public class CycleMeter : HudPart
     public int selectedCycleIndex = 0;
     public HUDCycle currentCycle = null;
 
+    public bool IsOutsideCycle => MiscUtils.IsRegionOutSideCycle(HUDOwner.abstractCreature.world);
     public bool IsInLimbo => MiscUtils.BeaconThanatosis(HUDOwner);
     public bool IsCached => MiscUtils.BeaconIsCached(HUDOwner);
 
     public CycleCursor cursor;
+
+    private float fadeLerp = 0f;
 
     public CycleMeter(HUD.HUD hud, PlayerSpecificMultiplayerHud multiHud, FContainer fContainer) : base(hud)
     {
@@ -68,6 +71,7 @@ public class CycleMeter : HudPart
         }
 
         cursor = new(this);
+        fContainer.AddChild(cursor.sprite);
     }
 
     public override void Update()
@@ -75,7 +79,7 @@ public class CycleMeter : HudPart
         pos.b = pos.a;
         fade.b = fade.a;
 
-        if (currentCycle.state == HUDCycle.State.Sacrificed)
+        if (currentCycle.state == HUDCycle.State.Sacrificed && currentCycle.index > 0)
         {
             selectedCycleIndex--;
             currentCycle = cycles[selectedCycleIndex];
@@ -111,5 +115,23 @@ public class CycleMeter : HudPart
         }
 
         cursor.Draw(timeStacker);
+
+        if (HUDOwner.input[1].mp || HUDOwner.input[1].spec || IsInLimbo || IsCached)
+        {
+            // hide for a little bit so karma meter and this don't overlap weird
+            if (HUDOwner.input[1].mp && hud.karmaMeter.fade < 0.4f && !HUDOwner.input[1].spec && fade.a < 0.3f)
+            {
+                fadeLerp = 0f;
+                fade.a = 0f;
+                return;
+            }
+            fadeLerp = Mathf.Lerp(fadeLerp, 1f, 0.06f);
+        }
+        else if (fadeLerp > 0)
+        {
+            fadeLerp = Mathf.Lerp(fadeLerp, 0f, 0.02f);
+        }
+
+        fade.a = Mathf.Lerp(0, 1, fadeLerp);
     }
 }

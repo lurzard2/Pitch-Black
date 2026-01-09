@@ -37,15 +37,24 @@ public class BeaconCycle
         if (MiscUtils.IsRegionOutSideCycle(owner.abstractCreature.world))
         {
             // Indicator for being unable to use Thanatosis
-            if (owner.input[0].spec)
+            if (MaxSpiralLevel > 1 && owner.input[0].spec)
             {
                 specInputCounter.Tick();
             }
-            if (specInputCounter == 80)
+            if (specInputCounter == UnityEngine.Random.Range(60, 140))
             {
-                owner.Stun(80);
+                owner.Stun(120);
                 specInputCounter.Reset();
-                owner.room.AddObject(new Watcher.RippleRing(owner.mainBodyChunk.pos, 60, 0.6f, 0.6f));
+                string popupText = "";
+                if (MiscUtils.IsNightmareRegion(owner.abstractCreature.world.name))
+                {
+                    popupText = "These tides are sinister";
+                }
+                else
+                {
+                    popupText = "These tides flow without disturbance";
+                }
+                MiscUtils.AddHUDMessage(owner.room.game.cameras[0].hud, true, popupText, 60, 120, false, true);
             }
             return;
         }

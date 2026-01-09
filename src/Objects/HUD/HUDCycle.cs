@@ -13,8 +13,11 @@ namespace PitchBlack;
 public class HUDCycle
 {
     public CycleMeter meter;
-    public Vector2 pos;
+    public Vector2 aboveMeterPos;
+    public Vector2 atMeterPos;
     private bool decidedPos = false;
+    private float posLerp;
+    public Vector2 realPos;
 
     public State state;
     public class State : ExtEnum<State>
@@ -31,7 +34,6 @@ public class HUDCycle
     public bool baseCycle = false;
     public bool Usable => state != State.Sacrificed || state != State.Locked;
 
-    private FAtlasElement element;
     public FSprite sprite;
 
     public HUDCycle(CycleMeter meter, int index)
@@ -47,19 +49,27 @@ public class HUDCycle
         var dead = Futile.atlasManager.GetElementWithName("Multiplayer_Death");
         var alive = Futile.atlasManager.GetElementWithName("Kill_Slugcat");
 
-        if (baseCycle)
+        bool notUnlocked = !meter.Unlocked && baseCycle;
+        if (notUnlocked)
         {
-            sprite.element = dead;
+            sprite.element = alive;
+            sprite.color = Color.grey;
+        }
+        else if (meter.IsOutsideCycle)
+        {
+            sprite.element = baseCycle ? dead : alive;
+            sprite.color = baseCycle ? Color.white : Color.grey;
         }
         else
         {
             if (state == State.Active)
             {
-                sprite.element = alive;
+                sprite.element = baseCycle ? dead : alive;
                 sprite.color = Color.white;
             }
             if (state == State.Limbo)
             {
+                // Chosen eye color from thanatosis progression
                 sprite.color = ScugGraphics.SpriteColors[1];
             }
             if (state == State.Sacrificed)
@@ -69,24 +79,41 @@ public class HUDCycle
             }
         }
 
-        if (!decidedPos && meter.hud.karmaMeter != null)
+        if (meter.hud.karmaMeter != null)
         {
-            // offset position
-            float xPosOffsetForIndex = 0;
-            for (int i = 0; i < meter.cycles.Count; i++)
+            if (!decidedPos)
             {
-                if (i == index)
+                // offset position
+                float xPosOffsetForIndex = 0;
+                for (int i = 0; i < meter.cycles.Count; i++)
                 {
-                    pos.x = meter.CornerPos.x + xPosOffsetForIndex;
-                    pos.y = (meter.CornerPos.y + 30f) + 200f;
-                    break;
+                    if (i == index)
+                    {
+                        aboveMeterPos.x = meter.CornerPos.x + xPosOffsetForIndex;
+                        aboveMeterPos.y = (meter.CornerPos.y) + 55f;
+                        break;
+                    }
+                    xPosOffsetForIndex += 35f;
                 }
-                xPosOffsetForIndex += 100f;
+                atMeterPos = aboveMeterPos;
+                atMeterPos.y -= 50f;
+                decidedPos = true;
             }
-            decidedPos = true;
+
+            if (meter.hud.karmaMeter.fade > 0.15)
+            {
+                posLerp = Mathf.Lerp(posLerp, 1f, 0.04f);
+            }
+            else
+            {
+                posLerp = Mathf.Lerp(posLerp, 0f, 0.04f);
+            }
         }
-        sprite.x = pos.x;
-        sprite.y = pos.y;
+
+        sprite.x = Mathf.Lerp(atMeterPos.x, aboveMeterPos.x, posLerp);
+        sprite.y = Mathf.Lerp(atMeterPos.y, aboveMeterPos.y, posLerp);
+        realPos = new(sprite.x, sprite.y);
+        sprite.alpha = meter.fade.a;
     }
 
     public void Update()
@@ -104,15 +131,14 @@ public class HUDCycle
 
     public void Sync()
     {
-        // Targets Alive
-        bool switchToLimbo = Usable;
-        if (switchToLimbo)
-        {
-            state = meter.IsInLimbo ? State.Limbo : State.Active;
-        }
         if (meter.IsCached)
         {
             state = State.Sacrificed;
+        }
+        // Targets Alive
+        else if (Usable)
+        {
+            state = meter.IsInLimbo ? State.Limbo : State.Active;
         }
     }
 }
