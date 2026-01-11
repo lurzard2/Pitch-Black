@@ -19,6 +19,11 @@ public class HUDCycle
     private float posLerp;
     public Vector2 realPos;
 
+    public float colorLerp = 0f;
+    public Color baseColor = Color.white;
+    public Color accentColor = Color.white;
+    public Color fullAccentColor = Color.white;
+
     public State state;
     public class State : ExtEnum<State>
     {
@@ -53,29 +58,29 @@ public class HUDCycle
         if (notUnlocked)
         {
             sprite.element = alive;
-            sprite.color = Color.grey;
+            baseColor = Color.grey;
         }
         else if (meter.IsOutsideCycle)
         {
             sprite.element = baseCycle ? dead : alive;
-            sprite.color = baseCycle ? Color.white : Color.grey;
+            baseColor = baseCycle ? Color.white : Color.grey;
         }
         else
         {
             if (state == State.Active)
             {
                 sprite.element = baseCycle ? dead : alive;
-                sprite.color = Color.white;
+                baseColor = Color.white;
             }
             if (state == State.Limbo)
             {
-                // Chosen eye color from thanatosis progression
-                sprite.color = ScugGraphics.SpriteColors[1];
+                fullAccentColor = ScugGraphics.SpriteColors[1];
+                accentColor = Color.Lerp(baseColor, fullAccentColor, 0.5f);
             }
             if (state == State.Sacrificed)
             {
                 sprite.element = dead;
-                sprite.color = Colors.PlayerPaletteBlack;
+                baseColor = Colors.PlayerPaletteBlack;
             }
         }
 
@@ -114,10 +119,20 @@ public class HUDCycle
         sprite.y = Mathf.Lerp(atMeterPos.y, aboveMeterPos.y, posLerp);
         realPos = new(sprite.x, sprite.y);
         sprite.alpha = meter.fade.a;
+        sprite.color = Color.Lerp(baseColor, accentColor, colorLerp);
     }
 
     public void Update()
     {
+        if (state == State.Limbo && colorLerp < 1)
+        {
+            colorLerp += 0.006f;
+        }
+        else if (state != State.Limbo && colorLerp > 0)
+        {
+            colorLerp -= 0.006f;
+        }
+
         if (selected)
         {
             SelectedUpdate();

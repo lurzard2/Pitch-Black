@@ -47,7 +47,7 @@ public class CycleMeter : HudPart
         }
         if (scugCWT.TryGetValue(HUDOwner, out var c) && c is BeaconCWT beacon)
         {
-            bool flag = beacon.beaconCycle.isDead;
+            bool flag = beacon.beaconCycle.isDead || beacon.beaconCycle.thanatosisLerp > 0.1f;
             flags.Add(flag);
         }
         return flags;
@@ -97,7 +97,8 @@ public class CycleMeter : HudPart
         }
 
         cursor = new(this);
-        fContainer.AddChild(cursor.sprite);
+        fContainer.AddChild(cursor.cursorSprite);
+        fContainer.AddChild(cursor.cursorGlowSprite);
     }
 
     public override void Update()
