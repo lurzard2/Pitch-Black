@@ -16,7 +16,7 @@ public static class ScugHooks
     private static void BeaconUpdate(Player self)
     {
         var game = self.abstractCreature.world.game;
-        var storyState = MiscUtils.StoryState(game);
+        var storyState = game.GetStorySession.saveState;
         if (storyState != null)
         {
             if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beacon)
@@ -43,6 +43,20 @@ public static class ScugHooks
         On.Player.Update += Player_Update;
         On.SlugcatHand.EngageInMovement += SlugcatHand_EngageInMovement;
         IL.Player.checkInput += IL_Player_checkInput_SPECIALONLY;
+        On.Player.Die += Player_Die;
+    }
+
+    private static void Player_Die(On.Player.orig_Die orig, Player self)
+    {
+        var saveState = self.abstractCreature.world.game.GetStorySession.saveState;
+        if (MiscUtils.IsBeacon(self) && BeaconSaveData.GetSpiralLevel(saveState) > -1 && BeaconSaveData.GetCanUseThanatosis(saveState))
+        {
+            // Don't do anything
+        }
+        else
+        {
+            orig(self);
+        }
     }
 
     // Allowing for special input without any others in certain circumstances

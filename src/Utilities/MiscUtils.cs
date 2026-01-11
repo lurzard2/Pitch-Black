@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using static PitchBlack.Plugin;
 
 namespace PitchBlack;
@@ -215,32 +216,5 @@ public static class MiscUtils
                 BeaconSaveData.GetOrSetBool(saveState, BeaconSaveData.canStoreFlares, true);
             }
         }
-    }
-
-    public static SaveState StoryState(this RainWorldGame game)
-    {
-        if (game.IsStorySession)
-        {
-            return game.GetStorySession.saveState;
-        }
-        return null;
-    }
-
-    public static bool BeaconThanatosis(this Player player)
-    {
-        if (scugCWT.TryGetValue(player, out var c) && c is BeaconCWT beacon)
-        {
-            return beacon.beaconCycle.isDead && beacon.beaconCycle.thanatosisLerp > 0f;
-        }
-        return false;
-    }
-
-    public static bool BeaconIsCached(this Player player)
-    {
-        if (scugCWT.TryGetValue(player, out var c) && c is BeaconCWT beacon)
-        {
-            return beacon.beaconCycle.cycle.state == Cycle.State.Cached;
-        }
-        return false;
     }
 }

@@ -39,7 +39,7 @@ public class CycleCursor
         pos.a = Vector2.Lerp(pos.b, TargetPos, t);
 
         sprite.color = meter.IsOutsideCycle ? Color.grey : CurrentCycle.sprite.color;
-        sprite.x = pos.a.x;
+        sprite.x = Mathf.Lerp(sprite.x, pos.a.x, 0.06f);
         sprite.y = pos.a.y;
         if (!meter.Unlocked)
         {

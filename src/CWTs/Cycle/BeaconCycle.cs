@@ -21,8 +21,9 @@ public class BeaconCycle
     public float MinSpiralLevel => BeaconSaveData.GetMinSpiralLevel(saveState);
     public float MaxSpiralLevel => BeaconSaveData.GetMaxSpiralLevel(saveState);
     public float ThanatosisLimit => (40 * 12) * SpiralLevel;
-    public bool ReachedThanatosisLimit => cycle.state == Cycle.State.Thanatosis && cycle.cycleStateTime == ThanatosisLimit;
+    public bool ReachedThanatosisLimit => cycle.state == Cycle.State.Thanatosis && cycle.cycleStateTime > ThanatosisLimit;
     public float thanatosisLerp;
+    public bool killMe = false;
 
     public BeaconCycle(Cycle cycle, Player owner)
     {
@@ -156,9 +157,9 @@ public class BeaconCycle
             cycle.spawnRipples = true;
         }
 
-        if (ReachedThanatosisLimit && owner.rippleDeathTime == 80)
+        if (ReachedThanatosisLimit && killMe)
         {
-            if (SpiralLevel >= 1f)
+            if (SpiralLevel >= 0f)
             {
                 logger.LogDebug("Thanatosis: Persisting!");
                 BeaconSaveData.SetSpiralLevel(saveState, SpiralLevel - 1f);
@@ -169,6 +170,7 @@ public class BeaconCycle
                 logger.LogDebug("Thanatosis: Die!");
                 EndCycle();
             }
+            killMe = false;
         }
 
         if (cycle.state == Cycle.State.Thanatosis)
@@ -236,7 +238,7 @@ public class BeaconCycle
         {
             owner.rippleDeathIntensity -= 0.004f;
         }
-        if (!isDead && thanatosisLerp < 0f && thanatosisLerp < 0f && owner.rippleDeathIntensity < 0f)
+        if (!isDead && thanatosisLerp < 0f && owner.rippleDeathIntensity < 0f)
         {
             cycle.ChangeState(Cycle.State.Alive);
         }
@@ -247,6 +249,7 @@ public class BeaconCycle
     private void Persist()
     {
         cycle.ChangeState(Cycle.State.PersistThroughCache);
+        ToggleThanatosis(true);
         owner.room.PlaySound(Enums.SoundID.Player_Revived, owner.mainBodyChunk);
 
     }
