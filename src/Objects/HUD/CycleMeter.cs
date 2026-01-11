@@ -12,8 +12,9 @@ public class CycleMeter : HudPart
     // instead of value and lastValue we're just gonna do this!
     private (Vector2 a, Vector2 b) pos;
     public (float a, float b) fade;
+    private float fadeLerp = 0f;
 
-    public bool Unlocked => BeaconSaveData.GetMaxSpiralLevel(SaveState) >= 1f;
+    public bool Unlocked => BeaconSaveData.GetMaxSpiralLevel(SaveState ) >= 1f;
 
     public Player HUDOwner
     {
@@ -26,20 +27,46 @@ public class CycleMeter : HudPart
             return hud.owner as Player;
         } 
     }
-    public SaveState SaveState => MiscUtils.StoryState(HUDOwner.abstractCreature.world.game);
+    public SaveState SaveState => HUDOwner.abstractCreature.world.game.GetStorySession.saveState;
     public PlayerSpecificMultiplayerHud multiHud;
 
     public List<HUDCycle> cycles = [];
     public int selectedCycleIndex = 0;
     public HUDCycle currentCycle = null;
 
-    public bool IsOutsideCycle => MiscUtils.IsRegionOutSideCycle(HUDOwner.abstractCreature.world);
-    public bool IsInLimbo => MiscUtils.BeaconThanatosis(HUDOwner);
-    public bool IsCached => MiscUtils.BeaconIsCached(HUDOwner);
-
     public CycleCursor cursor;
 
-    private float fadeLerp = 0f;
+    public bool IsOutsideCycle => MiscUtils.IsRegionOutSideCycle(HUDOwner.abstractCreature.world);
+
+    public List<bool> BeaconTrackedInThanatosis()
+    {
+        List<bool> flags = [];
+        if (multiHud != null)
+        {
+            // placeholder
+        }
+        if (scugCWT.TryGetValue(HUDOwner, out var c) && c is BeaconCWT beacon)
+        {
+            bool flag = beacon.beaconCycle.isDead;
+            flags.Add(flag);
+        }
+        return flags;
+    }
+
+    public List<bool> BeaconOutOfTimeInThanatosis()
+    {
+        List<bool> flags = [];
+        if (multiHud != null)
+        {
+            // placeholder
+        }
+        if (scugCWT.TryGetValue(HUDOwner, out var c) && c is BeaconCWT beacon)
+        {
+            bool flag = beacon.beaconCycle.ReachedThanatosisLimit && HUDOwner.rippleDeathTime >= 80;
+            flags.Add(flag);
+        }
+        return flags;
+    }
 
     public CycleMeter(HUD.HUD hud, PlayerSpecificMultiplayerHud multiHud, FContainer fContainer) : base(hud)
     {
@@ -65,7 +92,6 @@ public class CycleMeter : HudPart
                 selectedCycleIndex = j;
                 currentCycle = cycles[j];
             }
-
             // Need this for adding sprites
             fContainer.AddChild(cycles[j].sprite);
         }
@@ -76,21 +102,29 @@ public class CycleMeter : HudPart
 
     public override void Update()
     {
+        if (currentCycle.state == HUDCycle.State.Sacrificed)
+        {
+            // we are not reaching an invalid index nuhuh
+            if (currentCycle.index > 0)
+            {
+                selectedCycleIndex--;
+                currentCycle = cycles[selectedCycleIndex];
+            } 
+            if (scugCWT.TryGetValue(HUDOwner, out var c) && c is BeaconCWT beacon)
+            {
+                beacon.beaconCycle.killMe = true;
+            }
+        }
+
         pos.b = pos.a;
         fade.b = fade.a;
-
-        if (currentCycle.state == HUDCycle.State.Sacrificed && currentCycle.index > 0)
-        {
-            selectedCycleIndex--;
-            currentCycle = cycles[selectedCycleIndex];
-        }
 
         int first = 0;
         int last = 0;
         for (int j = 0; j < cycles.Count; j++)
         {
             cycles[j]?.Update();
-            cycles[j]?.selected = cycles[j] == currentCycle ? true : false;
+            cycles[j]?.selected = cycles[j].index == currentCycle.index ? true : false;
 
             if (cycles[j] == cycles.First())
             {
@@ -104,7 +138,7 @@ public class CycleMeter : HudPart
 
         cursor?.Update();
 
-        logger.LogDebug($"CycleMeter: CYCLES:{cycles.Count}[{first},{last}] - CURSORON:{selectedCycleIndex}|{currentCycle.state.value} - LIMBO:{IsInLimbo} - CACHED:{IsCached}");
+        logger.LogDebug($"CycleMeter: CYCLES:{cycles.Count}[{first},{last}] - CURSORON:{selectedCycleIndex}|{currentCycle.state.value} - LIMBO:{BeaconTrackedInThanatosis()[0]} - CACHED:{BeaconOutOfTimeInThanatosis()[0]}");
     }
 
     public override void Draw(float timeStacker)
@@ -116,7 +150,7 @@ public class CycleMeter : HudPart
 
         cursor.Draw(timeStacker);
 
-        if (HUDOwner.input[1].mp || HUDOwner.input[1].spec || IsInLimbo || IsCached)
+        if (HUDOwner.input[1].mp || HUDOwner.input[1].spec || BeaconTrackedInThanatosis()[0] || BeaconOutOfTimeInThanatosis()[0])
         {
             // hide for a little bit so karma meter and this don't overlap weird
             if (HUDOwner.input[1].mp && hud.karmaMeter.fade < 0.4f && !HUDOwner.input[1].spec && fade.a < 0.3f)

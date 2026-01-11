@@ -131,14 +131,14 @@ public class HUDCycle
 
     public void Sync()
     {
-        if (meter.IsCached)
+        if (meter.BeaconTrackedInThanatosis()[0] && meter.BeaconOutOfTimeInThanatosis()[0])
         {
             state = State.Sacrificed;
         }
-        // Targets Alive
         else if (Usable)
         {
-            state = meter.IsInLimbo ? State.Limbo : State.Active;
+            state = meter.BeaconTrackedInThanatosis()[0] ? State.Limbo : State.Active;
         }
     }
 }
+ 
