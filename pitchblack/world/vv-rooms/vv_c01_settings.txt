@@ -1,8 +1,10 @@
 Template: vv_settingstemplate_maininterior
 RandomItemDensity: 0
 RandomItemSpearChance: 0
+Palette: 1002
 Effects: ElsehowView-1-30-30, 
 PlacedObjects: SlugcatEyeSelector><262.9445><744.3079><-353~129~0~0~10~3~0.9456522~CustomBlink~439^686, SlugcatEyeSelector><261><1429><-353~129~0~0~10~3~0.8478261~ReverseBlink~440^646, 
 AmbientSounds: OMNI><am_win-wndtone.ogg><791.1506><509.9236><0><1, OMNI><am_win-howlingwnd.ogg><435.1968><509.5357><0><1, OMNI><am_win-medwind.ogg><790.679><588.8393><0.04347826><1, SPOT><AM_WIN-HowlingWnd.ogg><64.10022><375.6731><0.2717391><1.058696><472.1002><631.6731><-74.35535><-61.35535><0><0.154348, SPOT><AM_WIN-HowlingWnd.ogg><250.935><373.576><0.2717391><1><471.935><970.5759><-70.35535><-58.35535><0><0.2195653, SPOT><AM_WIN-HowlingWnd.ogg><440.3519><372.6344><0.2826089><1><473.3519><1282.662><-55.35535><-65.35535><0><0.2521736, SPOT><AM_WIN-HowlingWnd.ogg><623.1888><370.3158><0.326087><1><471.1888><1620.315><-57.35535><-59.35535><0><0.3065219, SPOT><AM_ENV-LightWind.ogg><68.83496><252.681><0.326087><1><464.835><2056.681><-127.3553><-139.3553><0><0.697826, 
-FadePalette: 1002, 0.173913, 0.3913043, 0.6413044
+FadePalette: 1000, 0.1630435, 0.25, 0.3478261
 WetTerrain: OFF
+MorePalette0: 999, 0.7717391, 0.5434783, 0.3586957
