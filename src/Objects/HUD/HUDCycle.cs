@@ -130,7 +130,7 @@ public class HUDCycle
         }
         else if (state != State.Limbo && colorLerp > 0)
         {
-            colorLerp -= 0.006f;
+            colorLerp -= 0.003f;
         }
 
         if (selected)

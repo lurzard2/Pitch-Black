@@ -139,7 +139,7 @@ public class CycleMeter : HudPart
 
         cursor?.Update();
 
-        logger.LogDebug($"CycleMeter: CYCLES:{cycles.Count}[{first},{last}] - CURSORON:{selectedCycleIndex}|{currentCycle.state.value} - LIMBO:{BeaconTrackedInThanatosis()[0]} - CACHED:{BeaconOutOfTimeInThanatosis()[0]}");
+        //logger.LogDebug($"CycleMeter: CYCLES:{cycles.Count}[{first},{last}] - CURSORON:{selectedCycleIndex}|{currentCycle.state.value} - LIMBO:{BeaconTrackedInThanatosis()[0]} - CACHED:{BeaconOutOfTimeInThanatosis()[0]}");
     }
 
     public override void Draw(float timeStacker)

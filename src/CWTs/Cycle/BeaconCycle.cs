@@ -20,16 +20,33 @@ public class BeaconCycle
     public float SpiralLevel => BeaconSaveData.GetSpiralLevel(saveState);
     public float MinSpiralLevel => BeaconSaveData.GetMinSpiralLevel(saveState);
     public float MaxSpiralLevel => BeaconSaveData.GetMaxSpiralLevel(saveState);
-    public float ThanatosisLimit => (40 * 12) * SpiralLevel;
+    public float ThanatosisLimit => (40 * 8) * SpiralLevel;
     public bool ReachedThanatosisLimit => cycle.state == Cycle.State.Thanatosis && cycle.cycleStateTime > ThanatosisLimit;
     public float thanatosisLerp;
     public bool killMe = false;
 
+    private float unstableness = 0f;
+
     public BeaconCycle(Cycle cycle, Player owner)
     {
         this.cycle = cycle;
+        cycle.Sync();
+
         this.owner = owner;
         saveState = owner.abstractCreature.world.game.GetStorySession.saveState;
+        
+        // New cycle, catch up to max revives?
+        if (MaxSpiralLevel > 1 && SpiralLevel < MaxSpiralLevel)
+        {
+            BeaconSaveData.SetSpiralLevel(saveState, MaxSpiralLevel);
+        }
+
+        // for Playtest, for now
+        if (BeaconSaveData.GetCompletedBeacon(saveState))
+        {
+            string ptText = $"[THIS MARKS THE END OF THE PLAYTEST CURRENTLY] ~ {MOD_VERSION}";
+            MiscUtils.AddHUDMessage(owner.room.game.cameras[0].hud, true, ptText, 40 * 30, 120, true, true);
+        }
     }
 
     public void Update()
@@ -38,7 +55,7 @@ public class BeaconCycle
         if (MiscUtils.IsRegionOutSideCycle(owner.abstractCreature.world))
         {
             // Indicator for being unable to use Thanatosis
-            if (MaxSpiralLevel > 1 && owner.input[0].spec)
+            if (MaxSpiralLevel >= 1 && owner.input[0].spec)
             {
                 specInputCounter.Tick();
             }
@@ -60,34 +77,14 @@ public class BeaconCycle
             return;
         }
 
-        // Self-sustainable cycle
-        if (cycle.state == Cycle.State.Init)
+        cycle.CycleTick();
+        if (owner.abstractCreature != null)
         {
-            cycle.Sync();
+            cycle.AbstractUpdate();
         }
-        else
+        if (owner != null)
         {
-            cycle.CycleTick();
-            if (owner.abstractCreature != null)
-            {
-                cycle.AbstractUpdate();
-            }
-            if (owner != null)
-            {
-                cycle.RealizedUpdate();
-            }
-        }
-
-        if (BeaconSaveData.GetCompletedBeacon(saveState) && cycle.cycleTime == 40*12)
-        {
-            string ptText = $"[THIS MARKS THE END OF THE PLAYTEST CURRENTLY] ~ {MOD_VERSION}";
-            MiscUtils.AddHUDMessage(owner.room.game.cameras[0].hud, true, ptText, 0, 120, true, true);
-        }
-
-        // New cycle, catch up to max revives
-        if (cycle.cycleTime == 1 && SpiralLevel < MaxSpiralLevel)
-        {
-            BeaconSaveData.SetSpiralLevel(saveState, MaxSpiralLevel);
+            cycle.RealizedUpdate();
         }
 
         // Save cycle to save data on end
@@ -124,10 +121,14 @@ public class BeaconCycle
         }
         #endregion
 
-        if (cycle.state == Cycle.State.PersistThroughCache)
+        // Unstable effects from using Thanatosis too much
+        if (unstableness > 8f)
         {
-            ToggleThanatosis(true);
-            cycle.ChangeState(Cycle.State.Alive);
+            if (UnityEngine.Random.value < 0.01f)
+            {
+                ToggleThanatosis(true);
+                owner.Stun(120);
+            }
         }
 
         if (owner.input[0].spec)
@@ -145,22 +146,32 @@ public class BeaconCycle
 
         if (BeaconSaveData.GetCanUseThanatosis(saveState))
         {
-            //logger.LogDebug($"Thanatosis: Doing input - {specInputCounter}");
-            if (specInputCounter == 24)
+            ThanatosisUpdate();
+        }
+    }
+    
+    private void ThanatosisUpdate()
+    {
+        //logger.LogDebug($"Thanatosis: Doing input - {specInputCounter}");
+        if (specInputCounter == 24)
+        {
+            ToggleThanatosis(true);
+            if (unstableness > 4f)
             {
-                ToggleThanatosis(true);
+                owner.Stun(80);
             }
-            if (cycle.idleRipplesToSpawn == 0)
-            {
-                cycle.idleRipplesToSpawn++;
-            }
-            cycle.spawnRipples = true;
+        }
+
+        if (cycle.idleRipplesToSpawn == 0)
+        {
+            cycle.idleRipplesToSpawn++;
         }
 
         if (ReachedThanatosisLimit && killMe)
         {
             if (SpiralLevel >= 0f)
             {
+                unstableness += 2f;
                 logger.LogDebug("Thanatosis: Persisting!");
                 BeaconSaveData.SetSpiralLevel(saveState, SpiralLevel - 1f);
                 Persist();
@@ -179,8 +190,21 @@ public class BeaconCycle
         }
         else if (cycle.state == Cycle.State.ExitThanatosis)
         {
-            OutsideThanatosis();
+            LeavingThanatosis();
         }
+
+        if (isDead)
+        {
+            // 0 if maxLvl=4 or 0.5 if maxLvl>=2
+            float mult = MaxSpiralLevel == 4 ? 0 : MaxSpiralLevel >= 2 ? 0.5f : 1;
+            unstableness += 0.005f * mult;
+        }
+        else if (!isDead && unstableness > 0)
+        {
+            unstableness -= 0.01f;
+        }
+
+        logger.LogDebug($"{unstableness} - {SpiralLevel}");
     }
 
     // Increasing values while in Thanatosis
@@ -194,37 +218,35 @@ public class BeaconCycle
         // this will have to be modified later to be actually uh, good
 
         float thanatosisTime = cycle.cycleStateTime; //x
-        float minSafeTime = 12 * 40f; //tc
-        float maxSafeTime = 60 * 40f; // Tc
-        float beginningIntensity = 0.4f; //l
+        float minSafeTime = 10 * 40f; //tc
+        float maxSafeTime = 40 * 40f; // Tc
+        float beginningIntensity = 0.3f; //l
         float endIntensity = 0.45f; //m
         float windUpTime = 3 * 40f; //wc
         float rampUpTime = 3 * 40f; //Wc
-        float plateauDuration = (SpiralLevel) * (maxSafeTime - (windUpTime + rampUpTime) * 2) / 4 + minSafeTime - windUpTime - rampUpTime; //c
+        float plateauDuration = SpiralLevel * (maxSafeTime - (windUpTime + rampUpTime) * 2) / 4 + minSafeTime - windUpTime - rampUpTime; //c
+        float targetIntensity = 0.3f;
                          
         // Starting plateau
         if (thanatosisTime < windUpTime)
         {
-            owner.rippleDeathIntensity = Mathf.Sqrt(thanatosisTime) * beginningIntensity / Mathf.Sqrt(windUpTime);
+            targetIntensity = Mathf.Sqrt(thanatosisTime) * beginningIntensity / Mathf.Sqrt(windUpTime);
         }
         // Middle of plateau
         else if ((thanatosisTime < windUpTime + plateauDuration) && thanatosisTime >= windUpTime)
         {
-            owner.rippleDeathIntensity = (thanatosisTime - windUpTime) * (endIntensity - beginningIntensity) / plateauDuration + beginningIntensity;
+            targetIntensity = (thanatosisTime - windUpTime) * (endIntensity - beginningIntensity) / plateauDuration + beginningIntensity;
         }
         // End
         if (thanatosisTime >= windUpTime + plateauDuration + (rampUpTime / 2))
         {
-            float increment = 0.008f;
-            int mult = 4;
-            owner.rippleDeathIntensity += increment;
-            increment += 0.008f * mult;
-            mult += 4;
+            targetIntensity = 1f;
         }
+        owner.rippleDeathIntensity = Mathf.Lerp(owner.rippleDeathIntensity, targetIntensity, 0.06f);
     }
 
     // Decreasing values that linger from Thanatosis
-    private void OutsideThanatosis()
+    private void LeavingThanatosis()
     {
         if (thanatosisLerp > 0f)
         {
@@ -238,6 +260,8 @@ public class BeaconCycle
         {
             owner.rippleDeathIntensity -= 0.004f;
         }
+
+        // Switch back to alive if effects are done being removed
         if (!isDead && thanatosisLerp < 0f && owner.rippleDeathIntensity < 0f)
         {
             cycle.ChangeState(Cycle.State.Alive);
@@ -248,10 +272,9 @@ public class BeaconCycle
 
     private void Persist()
     {
-        cycle.ChangeState(Cycle.State.PersistThroughCache);
         ToggleThanatosis(true);
+        owner.Stun(80);
         owner.room.PlaySound(Enums.SoundID.Player_Revived, owner.mainBodyChunk);
-
     }
 
     private void EndCycle()
