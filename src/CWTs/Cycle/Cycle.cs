@@ -12,6 +12,7 @@ public class Cycle
 {
     public AbstractCreature abstractOwner;
     public Creature RealizedOwner => abstractOwner.realizedCreature;
+    public CreatureTemplate.Type OwnerType => abstractOwner.creatureTemplate.type;
 
     public State state;
     #region State
@@ -37,6 +38,7 @@ public class Cycle
 
     public int idleRipplesToSpawn;
     public bool spawnRipples;
+
     public class CycleRippleSource : ExtEnum<CycleRippleSource>
     {
         public CycleRippleSource(string value, bool register) : base(value, register) { }
@@ -44,6 +46,15 @@ public class Cycle
         public static readonly CycleRippleSource Idle = new(nameof(Idle), true);
         public static readonly CycleRippleSource Thanatosis = new(nameof(Thanatosis), true);
         public static readonly CycleRippleSource Cache = new(nameof(Cache), true);
+    }
+    private int GetRippleSpawnLimitFromCreature()
+    {
+        // Hopefully reducing lag from coalescipedes
+        if (OwnerType == CreatureTemplate.Type.Spider)
+        {
+            return 3;
+        }
+        return 15;
     }
 
     // Time existing
@@ -66,31 +77,9 @@ public class Cycle
             Sync();
             return;
         }
-        else
-        {
-            CycleTick();
-        }
+        CycleTick();
 
-        // Mark for cache without ovewriting, on death
-        if (abstractOwner.state.dead
-            && state != State.MarkedForCache
-            && state != State.Cached)
-        {
-            ChangeState(State.MarkedForCache);
-            // Skip to end of process if abstract
-            if (RealizedOwner == null)
-            {
-                ChangeState(State.Cached);
-            }
-        }
-        
-        // Dying anim done
-        if (state == State.MarkedForCache && cycleStateTime == 80)
-        {
-            ChangeState(State.Cached);
-        }
-
-        if (Random.value < 0.5f && idleRipplesToSpawn <= 15)
+        if (Random.value < 0.1f && idleRipplesToSpawn <= GetRippleSpawnLimitFromCreature())
         {
             idleRipplesToSpawn++;
         }
@@ -99,12 +88,7 @@ public class Cycle
     // In-room features based on state
     public virtual void RealizedUpdate()
     {
-        if (state == State.MarkedForCache)
-        {
-            AddRipple(CycleRippleSource.Cache);
-        }
-
-        if (Random.value < 0.0003f && !spawnRipples)
+        if (Random.value < 0.0001f && !spawnRipples)
         {
             // I just rippled everywhere
             spawnRipples = true;
@@ -114,14 +98,7 @@ public class Cycle
         {
             for (int i = 0; i < idleRipplesToSpawn; i++)
             {
-                if (state == State.Cached)
-                {
-                    AddRipple(CycleRippleSource.Cache);
-                }
-                else 
-                {
-                    AddRipple(CycleRippleSource.Idle);
-                }
+                AddRipple(CycleRippleSource.Idle);
                 idleRipplesToSpawn--;
             }
         }
@@ -146,19 +123,6 @@ public class Cycle
         {
             life = 80;
             intensity = Random.Range(0.6f, Random.Range(0.6f, 1f));
-        }
-        else if (source == CycleRippleSource.Cache)
-        {
-            if (state == State.MarkedForCache)
-            {
-                life = 60;
-                life -= cycleStateTime;
-                intensity = Random.Range(0.4f, Random.Range(0.4f, 1f));
-            }
-            else
-            {
-                intensity = Random.Range(0.2f, Random.Range(0.2f, 1f));
-            }
         }
         float speed = intensity * (life / 20);
 

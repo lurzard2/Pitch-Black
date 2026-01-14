@@ -14,7 +14,7 @@ public class CycleMeter : HudPart
     public (float a, float b) fade;
     private float fadeLerp = 0f;
 
-    public bool Unlocked => BeaconSaveData.GetMaxSpiralLevel(SaveState ) >= 1f;
+    public bool Unlocked => BeaconSaveData.GetMaxSpiralLevel(SaveState) >= 1f && BeaconSaveData.GetHasUsedThanatosis(SaveState);
 
     public Player HUDOwner
     {
@@ -79,7 +79,6 @@ public class CycleMeter : HudPart
             cycles.Add(new HUDCycle(this, i));
         }
 
-        // Choose cycle at the end of the list to select
         for (int j = 0; j < cycles.Count; j++)
         {
             if (cycles[j] == cycles.First())

@@ -14,12 +14,9 @@ public static class CreatureCycleHooks
     {
         orig(self, eu);
 
-        if (creatureCycle.TryGetValue(self.abstractCreature, out var cycle))
+        if (creatureCycle.TryGetValue(self.abstractCreature, out var cycle) && cycle != null)
         {
-            if (cycle != null)
-            {
-                cycle.RealizedUpdate();
-            }
+            cycle.RealizedUpdate();
         }
     }
 
@@ -27,18 +24,13 @@ public static class CreatureCycleHooks
     {
         orig(self, time);
 
-        if (creatureCycle.TryGetValue(self, out var cycle))
+        if (creatureCycle.TryGetValue(self, out var cycle) && cycle != null)
         {
-            if (cycle != null)
+            if (MiscUtils.IsRegionOutSideCycle(self.world))
             {
-                if (MiscUtils.IsRegionOutSideCycle(self.world))
-                {
-                    Cycle cycle2 = cycle;
-                    cycle2 = null;
-                    return;
-                }
-                cycle.AbstractUpdate();
+                return;
             }
+            cycle.AbstractUpdate();
         }
     }
 

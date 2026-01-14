@@ -103,6 +103,7 @@ public class StillbornBehavior : PBEntity.BehaviorModule
                             if (!beacon.beaconCycle.isDead)
                             {
                                 beacon.beaconCycle.ToggleThanatosis(false);
+                                beacon.beaconCycle.owner.abstractCreature.rippleLayer = 0;
                             }
                         }
                         if (Stillborn.RoomCamera.ghostMode < 1)

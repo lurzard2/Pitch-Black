@@ -143,6 +143,13 @@ public class ModOptions : OptionInterface
 
             radioButtonGroup,
         };
+        UIelement[]? devPageOFFElements =
+        {
+            new OpLabel(leftSidePos + 30, 500f, "Ah so sorry! This is for developers! We use this to test features."),
+            new OpLabel(leftSidePos + 30, 450f, "Please return to the previous page for usable config options!"),
+        };
+
+        // Adding the dev page, but also accomodating for when it's off, because dev mod will be off for playtests and release!
         if (Plugin.devMode)
         {
             devPage.AddItems(devPageElements);
@@ -153,6 +160,10 @@ public class ModOptions : OptionInterface
                 new OpRadioButton(new Vector2(leftSidePos, 450f - 50)),
                 new OpRadioButton(new Vector2(leftSidePos, 450f - 75)),
             ]);
+        }
+        else
+        {
+            devPage.AddItems(devPageOFFElements);
         }
 
 
