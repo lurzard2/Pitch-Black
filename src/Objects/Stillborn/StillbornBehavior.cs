@@ -157,7 +157,7 @@ public class StillbornBehavior : PBEntity.BehaviorModule
 
         if (encounterType == EncounterType.Ghost)
         {
-            riftManager.ScriptedRift(Enums.Timeline.Beacon, "ud", "ud_test", rift);
+            riftManager.ScriptedRift(Enums.Timeline.Beacon, "ud", "ud_a01", rift);
         }
         MiscUtils.PlaceRift(riftManager, rift, true);
         riftSpawned = true;
