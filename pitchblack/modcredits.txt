@@ -33,6 +33,7 @@ Dutch: Level design, Industrial Outflow, Corroded Manufactory
 Tronsx: Level design
 Scuglat: Beacon select screen description, dialogue qa + writing, ideas
 (NOT) Reincarnid: Dialogue qa + writing, ideas
+kayjaypax: SU, HI, and CC night region landscapes
 
 REGIONS
 "VV - Elsehow"
