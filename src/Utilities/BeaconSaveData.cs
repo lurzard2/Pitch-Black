@@ -71,40 +71,6 @@ public static class BeaconSaveData
     public static void SetMaxSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(maxSpiralLevel, value);
     #endregion
 
-    #region Saved Cycle
-    // Cycle saving
-    public static string savedCycles = "SavedCycles";
-    public static List<SavedPlayerCycle> GetSavedCycles(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(savedCycles, out List<SavedPlayerCycle> cycles) ? cycles : [];
-    public static void SetSavedCycle(this SaveState save, SavedPlayerCycle value)
-    {
-        string s = $"SavedPlayerCycle {nameof(value)}:";
-
-        if (!save.deathPersistentSaveData.GetSlugBaseData().TryGet(savedCycles, out List<SavedPlayerCycle> cycles))
-        {
-            logger.LogDebug($"{s} Can't get list, creating one");
-            cycles = new List<SavedPlayerCycle>();
-            save.deathPersistentSaveData.GetSlugBaseData().Set(savedCycles, cycles);
-        }
-
-        foreach (var cycle in cycles)
-        {
-            if (cycle != null && cycle.cycleNumber == value.cycleNumber)
-            {
-                logger.LogDebug($"{s} Aborted due to duplicate cycle in collection - {nameof(value.cycleNumber)}={value.cycleNumber}");
-                return;
-            }
-        }
-
-        bool hasCycle = cycles.Contains(value);
-        if (!hasCycle)
-        {
-            cycles.Add(value);
-            logger.LogDebug($"{s} Cycle #{value.cycleNumber} added to savedata - reason is {value.cycleEndReason.value} - {value.sacrifices} sacrifices");
-        }
-        logger.LogDebug($"{s} Cycle count is {cycles.Count}");
-    }
-    #endregion
-
     // Bools for flares
     public static readonly string canCraftFlares = "CanCraftFlares";
     public static readonly string canStoreFlares = "CanStoreFlares";

@@ -5,6 +5,7 @@ using static PitchBlack.Plugin;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Watcher;
+using BepInEx.Bootstrap;
 
 namespace PitchBlack;
 
@@ -12,16 +13,9 @@ public class Cycle
 {
     public AbstractCreature abstractOwner;
     public Creature RealizedOwner => abstractOwner.realizedCreature;
-    public CreatureTemplate.Type OwnerType => abstractOwner.creatureTemplate.type;
+    public CreatureTemplate.Type CycleCreatureTemplateType => abstractOwner.creatureTemplate.type;
 
     public State state;
-    #region State
-    public void ChangeState(State newState)
-    {
-        state = newState;
-        cycleStateTime.Reset();
-    }
-
     public class State : ExtEnum<State>
     {
         public State(string value, bool register) : base(value, register) { }
@@ -34,10 +28,10 @@ public class Cycle
         public static readonly State MarkedForCache = new(nameof(MarkedForCache), true);
         public static readonly State Cached = new(nameof(Cached), true);
     }
-    #endregion
 
     public int idleRipplesToSpawn;
-    public bool spawnRipples;
+    public bool spawnedPendingRipples;
+    private Counter rippleCooldown = new(20, 0, false);
 
     public class CycleRippleSource : ExtEnum<CycleRippleSource>
     {
@@ -50,18 +44,15 @@ public class Cycle
     private int GetRippleSpawnLimitFromCreature()
     {
         // Hopefully reducing lag from coalescipedes
-        if (OwnerType == CreatureTemplate.Type.Spider)
+        if (CycleCreatureTemplateType == CreatureTemplate.Type.Spider)
         {
             return 3;
         }
         return 15;
     }
 
-    // Time existing
     public Counter cycleTime = new(Int32.MaxValue, 0, true);
-    // Time per state
     public Counter cycleStateTime = new(Int32.MaxValue, 0, true);
-    public bool active => cycleTime > 0;
 
     public Cycle(AbstractCreature abstractOwner)
     {
@@ -69,7 +60,7 @@ public class Cycle
         state = State.Init;
     }
 
-    // State tracking and determining
+    // Back end
     public virtual void AbstractUpdate()
     {
         if (state == State.Init)
@@ -77,35 +68,68 @@ public class Cycle
             Sync();
             return;
         }
+
         CycleTick();
 
+        #region Idle Ripples
         if (Random.value < 0.1f && idleRipplesToSpawn <= GetRippleSpawnLimitFromCreature())
         {
             idleRipplesToSpawn++;
         }
+
+        spawnedPendingRipples = Random.value < 0.0008f;
+
+        // Clear if unable to spawn in room
+        if (spawnedPendingRipples && RealizedOwner == null)
+        {
+            for (int i = 0; i < idleRipplesToSpawn; i++)
+            {
+                idleRipplesToSpawn--;
+            }
+        }
+        #endregion
+
+        if (state == State.MarkedForCache)
+        {
+            switch (cycleStateTime)
+            {
+                case 1:
+                    MarkForCache();
+                    break;
+                case 80:
+                    ChangeState(State.Cached);
+                    break;
+                default: break;
+            }
+        }
+        else if (abstractOwner.state.dead && state == State.Alive)
+        {
+            ChangeState(State.MarkedForCache);
+        }
     }
 
-    // In-room features based on state
+    // Front end
     public virtual void RealizedUpdate()
     {
-        if (Random.value < 0.0001f && !spawnRipples)
-        {
-            // I just rippled everywhere
-            spawnRipples = true;
-        }
-
-        if (idleRipplesToSpawn > 0 && spawnRipples)
+        // Spawn ripples with a half-second cooldown
+        if (spawnedPendingRipples && rippleCooldown.isFinished)
         {
             for (int i = 0; i < idleRipplesToSpawn; i++)
             {
                 AddRipple(CycleRippleSource.Idle);
                 idleRipplesToSpawn--;
+                rippleCooldown.Reset();
             }
         }
-        if (idleRipplesToSpawn == 0)
+        else
         {
-            spawnRipples = false;
+            rippleCooldown.Tick();
         }
+    }
+
+    private void MarkForCache()
+    {
+        
     }
 
     public void AddRipple(CycleRippleSource source)
@@ -141,23 +165,35 @@ public class Cycle
         return;
     }
 
-    #region Internal
     public void CycleTick()
     {
         cycleTime.Tick();
         cycleStateTime.Tick();
     }
 
+    public void ChangeState(State newState)
+    {
+        state = newState;
+        cycleStateTime.Reset();
+    }
+
+    public bool TimeInState(State stateToCheck, float timeToCheck)
+    {
+        if (state == stateToCheck && cycleStateTime == timeToCheck)
+        {
+            return true;
+        }
+        return false;
+    }
+
     public void Sync()
     {
-        // We only have to check if it's alive, cause this is when the abstractcreature is first updated
+        // We only have to check if it's alive, cause this is when the abstractcreature is first updated, otherwise it is guaranteed dead
         if (abstractOwner.state.alive)
         {
             ChangeState(State.Alive);
             return;
         }
-        // Otherwise, it's dead
         ChangeState(State.Cached);
     }
-    #endregion
 }

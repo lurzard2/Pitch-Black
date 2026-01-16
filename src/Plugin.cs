@@ -1,11 +1,11 @@
 ﻿using BepInEx;
-using EffExt;
 using BepInEx.Logging;
 using Fisobs.Core;
-using IL.Watcher;
 using SlugBase.Features;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security;
 using System.Security.Permissions;
@@ -27,9 +27,12 @@ class  Plugin : BaseUnityPlugin
     public const string MOD_ID = "lurzard.pitchblack";
     public const string MOD_NAME = "Pitch Black";
     public const string MOD_VERSION = "0.6.4";
+    public static string MOD_PATH = "";
 
     private bool init = false;
     public static ManualLogSource logger;
+
+    public static PBRegionData loadedRegionData;
 
     // Dev bool for testing and/or hardcoding values
     public static bool devMode = true;
@@ -107,12 +110,18 @@ class  Plugin : BaseUnityPlugin
     }
 
     // Registering
-    private void EnableMod(On.RainWorld.orig_OnModsInit orig, RainWorld self)
+    private void EnableMod(On.RainWorld.orig_OnModsInit orig, RainWorld self)  
     {
         orig(self);
 
         if (!init)
         {
+            MOD_PATH = ModManager.ActiveMods.First(x => x.id == MOD_ID).path + Path.DirectorySeparatorChar;
+
+            PBRegionData data = new();
+            data.Save();
+            loadedRegionData = data;
+
             // Remix Menu
             MachineConnector.SetRegisteredOI(MOD_ID, ModOptions.Instance);
 
