@@ -46,16 +46,21 @@ internal class PBRegionData
 
     public PBRegionData()
     {
+    }
+
+    public static PBRegionData GetData()
+    {
+        PBRegionData data = new();
+
         if (!File.Exists(FilePath))
         {
-
             Region region = new();
             region.ID = "TestRegion";
             region.Creatures = [];
             region.Creatures.Add(new()
             {
                 ID = "-1",
-                Name = "Spider",
+                Name = "Type",
                 State = "Alive",
             });
 
@@ -67,14 +72,14 @@ internal class PBRegionData
                 Encountered = false,
             });
 
-            Regions = [];
-            CycleRegions = [region];
+            data.Regions = [];
+            data.CycleRegions = [region];
         }
-    }
-
-    public static PBRegionData GetData()
-    {
-        PBRegionData data = JsonConvert.DeserializeObject<PBRegionData>(FilePath);
+        else
+        {
+            data = JsonConvert.DeserializeObject<PBRegionData>(File.ReadAllText(FilePath));
+        }
+        
         return data;
     }
 

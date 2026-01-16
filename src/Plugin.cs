@@ -110,15 +110,16 @@ class  Plugin : BaseUnityPlugin
     }
 
     // Registering
-    private void EnableMod(On.RainWorld.orig_OnModsInit orig, RainWorld self)  
+    private void EnableMod(On.RainWorld.orig_OnModsInit orig, RainWorld self)
     {
         orig(self);
 
         if (!init)
         {
+            // Always gets the correct path, whether it be workshop or mods directly
             MOD_PATH = ModManager.ActiveMods.First(x => x.id == MOD_ID).path + Path.DirectorySeparatorChar;
 
-            PBRegionData data = new();
+            var data = PBRegionData.GetData();
             data.Save();
             loadedRegionData = data;
 
@@ -178,8 +179,8 @@ class  Plugin : BaseUnityPlugin
             self.Shaders["DreamSpawnBody"] = FShader.CreateShader("dreamspawnbody", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamspawnbody")).LoadAsset<Shader>("Assets/Shaders/DreamSpawnBody.shader"));
             self.Shaders["RoseGlow"] = FShader.CreateShader("roseglow", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/roseglow")).LoadAsset<Shader>("Assets/Shaders/RoseGlow.shader"));
 
-			// Haizlbliek Pitch Black Assets
-			self.Shaders["PitchBlackBackgroundBuildings"] = FShader.CreateShader("PitchBlackBackgroundBuildings", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/haizlbliekpitchblack")).LoadAsset<Shader>("Assets/Shaders/PBBackgroundBuildings.shader"));
+            // Haizlbliek Pitch Black Assets
+            self.Shaders["PitchBlackBackgroundBuildings"] = FShader.CreateShader("PitchBlackBackgroundBuildings", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/haizlbliekpitchblack")).LoadAsset<Shader>("Assets/Shaders/PBBackgroundBuildings.shader"));
 
             // Rift Assets
             self.Shaders["DreamWarpTear"] = FShader.CreateShader("DreamWarpTear", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamwarptear")).LoadAsset<Shader>("Assets/Shaders/DreamWarpTear.shader"));
