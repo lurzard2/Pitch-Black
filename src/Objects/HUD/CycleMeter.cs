@@ -119,26 +119,13 @@ public class CycleMeter : HudPart
         pos.b = pos.a;
         fade.b = fade.a;
 
-        int first = 0;
-        int last = 0;
-        for (int j = 0; j < cycles.Count; j++)
+        cycles.ForEach(cycle =>
         {
-            cycles[j]?.Update();
-            cycles[j]?.selected = cycles[j].index == currentCycle.index ? true : false;
-
-            if (cycles[j] == cycles.First())
-            {
-                first = j;
-            }
-            else if (cycles[j] == cycles.Last())
-            {
-                last = j;
-            }
-        }
-
+            cycle.Update();
+            cycle.selected = cycle.index == currentCycle.index;
+        });
+        
         cursor?.Update();
-
-        //logger.LogDebug($"CycleMeter: CYCLES:{cycles.Count}[{first},{last}] - CURSORON:{selectedCycleIndex}|{currentCycle.state.value} - LIMBO:{BeaconTrackedInThanatosis()[0]} - CACHED:{BeaconOutOfTimeInThanatosis()[0]}");
     }
 
     public override void Draw(float timeStacker)
