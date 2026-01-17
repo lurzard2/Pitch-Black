@@ -123,8 +123,8 @@ public class CycleMeter : HudPart
         int last = 0;
         for (int j = 0; j < cycles.Count; j++)
         {
-            cycles[j]?.Update();
-            cycles[j]?.selected = cycles[j].index == currentCycle.index ? true : false;
+            cycles[j].Update();
+            cycles[j].selected = cycles[j].index == currentCycle.index;
 
             if (cycles[j] == cycles.First())
             {
