@@ -1,4 +1,7 @@
-﻿using Unity.Mathematics;
+﻿using System;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
+using ScavengerCosmetic;
 using UnityEngine;
 
 namespace PitchBlack;
@@ -20,6 +23,45 @@ public static class CitizenHooks
         On.ScavengerGraphics.AddToContainer += ScavengerGraphics_AddToContainer;
 
         On.Watcher.WarpPoint.ctor += WarpPoint_ctor;
+        //removing spine
+        IL.ScavengerGraphics.ctor += ScavengerGraphicsOnctor;
+
+    }
+
+    static void ScavengerGraphicsOnctor(ILContext il)
+    {
+        //removing spine is pretty much impossible without IL. spines add amount of sprites, every scav has spine, spine affects readonly property of specific indexes
+        //like chest sprite index. You can't fix this after ctor or before ctor, it needs to be fixed inside ctor 
+        
+        //<if citizen jump to B>if (UnityEngine.Random.value < 0.1f || scavenger.Elite) (if not satisfied jumps to A)
+        // {
+        // 	AddSubModule(new HardBackSpikes(this, num));
+        // 	totBckCosSprs += subModules[subModules.Count - 1].totalSprites;
+        // 	num += subModules[subModules.Count - 1].totalSprites;
+        // JUMP B
+        // }
+        // else
+        // {
+        // 	A:  AddSubModule(new WobblyBackTufts(this, num));
+        // 	totBckCosSprs += subModules[subModules.Count - 1].totalSprites;
+        // 	num += subModules[subModules.Count - 1].totalSprites;
+        // }
+        // B: ChestSprite = num++;
+        ILCursor cursor = new(il);
+        #nullable enable
+        ILLabel? skipWobblyBackTuft = null;
+        if (cursor.TryGotoNext(MoveType.Before, x => x.MatchNewobj(typeof(WobblyBackTufts)))
+            && cursor.TryGotoPrev(MoveType.After, x => x.MatchBr(out skipWobblyBackTuft))
+            && cursor.TryGotoPrev(MoveType.Before, x => x.MatchCall(typeof(UnityEngine.Random).GetProperty( nameof(UnityEngine.Random.value))!.GetGetMethod()))
+            )
+        {
+            cursor
+                .Emit(OpCodes.Ldarg, 0)
+                .EmitDelegate<Predicate<ScavengerGraphics>>(graphics =>
+                    graphics.scavenger.Template.type == Enums.CreatureTemplateType.Citizen);
+            cursor.Emit(OpCodes.Brtrue, skipWobblyBackTuft);
+        }
+        #nullable disable
     }
 
     private static void WarpPoint_ctor(On.Watcher.WarpPoint.orig_ctor orig, Watcher.WarpPoint self, Room room, PlacedObject placedObject)
