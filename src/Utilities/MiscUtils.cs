@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using static PitchBlack.Plugin;
 
@@ -217,4 +218,8 @@ public static class MiscUtils
             }
         }
     }
+
+    public static void LogExErr(object data, [CallerFilePath] string callerFile = "",
+        [CallerMemberName] string callerName = "") =>
+        logger.LogError($"{callerFile}.{callerName}:{data}");
 }
