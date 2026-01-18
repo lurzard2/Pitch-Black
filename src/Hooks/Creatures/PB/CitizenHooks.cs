@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using PitchBlack.Creatures.Citizen;
 using ScavengerCosmetic;
 using UnityEngine;
 
@@ -27,13 +29,13 @@ public static class CitizenHooks
         IL.ScavengerGraphics.ctor += ScavengerGraphicsOnctor;
 
     }
-
+    delegate bool ContinousScavGraphsInline(ScavengerGraphics scavengerGraphics, ref int num);
     static void ScavengerGraphicsOnctor(ILContext il)
     {
         //removing spine is pretty much impossible without IL. spines add amount of sprites, every scav has spine, spine affects readonly property of specific indexes
         //like chest sprite index. You can't fix this after ctor or before ctor, it needs to be fixed inside ctor 
         
-        //<if citizen jump to B>if (UnityEngine.Random.value < 0.1f || scavenger.Elite) (if not satisfied jumps to A)
+        //<if citizen add graphics module update sprite counter and jump to B>if (UnityEngine.Random.value < 0.1f || scavenger.Elite) (if not satisfied jumps to A)
         // {
         // 	AddSubModule(new HardBackSpikes(this, num));
         // 	totBckCosSprs += subModules[subModules.Count - 1].totalSprites;
@@ -47,20 +49,33 @@ public static class CitizenHooks
         // 	num += subModules[subModules.Count - 1].totalSprites;
         // }
         // B: ChestSprite = num++;
+        
         ILCursor cursor = new(il);
         #nullable enable
-        ILLabel? skipWobblyBackTuft = null;
+        ILLabel? skipWobblyBackTuftLabel = null;
         if (cursor.TryGotoNext(MoveType.Before, x => x.MatchNewobj(typeof(WobblyBackTufts)))
-            && cursor.TryGotoPrev(MoveType.After, x => x.MatchBr(out skipWobblyBackTuft))
-            && cursor.TryGotoPrev(MoveType.Before, x => x.MatchCall(typeof(UnityEngine.Random).GetProperty( nameof(UnityEngine.Random.value))!.GetGetMethod()))
+            && cursor.TryGotoPrev(MoveType.After, x => x.MatchBr(out skipWobblyBackTuftLabel))
+            && cursor.TryGotoPrev(MoveType.AfterLabel, x => x.MatchCall(typeof(UnityEngine.Random).GetProperty( nameof(UnityEngine.Random.value))!.GetGetMethod()))
             )
         {
+            
             cursor
                 .Emit(OpCodes.Ldarg, 0)
-                .EmitDelegate<Predicate<ScavengerGraphics>>(graphics =>
-                    graphics.scavenger.Template.type == Enums.CreatureTemplateType.Citizen);
-            cursor.Emit(OpCodes.Brtrue, skipWobblyBackTuft);
+                .Emit(OpCodes.Ldloca, 1)
+                .EmitDelegate<ContinousScavGraphsInline>((ScavengerGraphics graphics, ref int ongoingSpriteNumber) =>
+                {
+                    if (graphics.scavenger.Template.type == Enums.CreatureTemplateType.Citizen)
+                    {
+                        CitizenMask mask = new(graphics, ongoingSpriteNumber);
+                        graphics.AddSubModule(mask);
+                        ongoingSpriteNumber += mask.totalSprites;
+                        return true; 
+                    }
+                    return false;
+                });
+            cursor.Emit(OpCodes.Brtrue, skipWobblyBackTuftLabel);
         }
+        else MiscUtils.LogExErr("IL match for citizen features failed. Citizens would have spines and yield no mask");
         #nullable disable
     }
 
@@ -249,5 +264,10 @@ private static void ScavengerGraphics_AddToContainer(On.ScavengerGraphics.orig_A
         }
         
         orig(self, sLeaser,rCam,newContatiner);
+        
+        foreach (CitizenMask mask in self.subModules.OfType<CitizenMask>())
+        {
+            mask.AddToContainer(sLeaser, rCam, newContatiner);
+        }
     }
 }
