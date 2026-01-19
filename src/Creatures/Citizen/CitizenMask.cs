@@ -10,12 +10,12 @@ public class CitizenMask : ScavengerCosmetic.Template
 	public CitizenMask(ScavengerGraphics owner, int firstSprite, Color? color = null) : base(owner, firstSprite)
 	{
 		totalSprites = 3;
-		mainColor = color ?? Random.Range(0, 2) switch
-		{
-			0 => Color.red,
-			1 => Color.blue,
-			_ => Color.green,
-		};
+		//mainColor = color ?? Random.Range(0, 2) switch
+		//{
+		//	0 => Color.red,
+		//	1 => Color.blue,
+		//	_ => Color.green,
+		//};
 	}
 
 	#region Config variables
@@ -114,7 +114,8 @@ public class CitizenMask : ScavengerCosmetic.Template
 			sprite.scaleX = Mathf.Sign(headDirectionDegrees);
 			sprite.x = pos.x-camPos.x;
 			sprite.y = pos.y-camPos.y;
-			sprite.color = spriteIndex == firstSprite ? mainColor : Color.Lerp(mainColor, blackColor, darkness);
+			// Same color as head
+			sprite.color = sLeaser.sprites[scavGrphs.HeadSprite].color;
 		}
 
 		sLeaser.sprites[firstSprite + 1].scaleX *= 0.85f;

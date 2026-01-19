@@ -55,10 +55,10 @@ public static class CitizenHooks
         ILLabel? skipWobblyBackTuftLabel = null;
         if (cursor.TryGotoNext(MoveType.Before, x => x.MatchNewobj(typeof(WobblyBackTufts)))
             && cursor.TryGotoPrev(MoveType.After, x => x.MatchBr(out skipWobblyBackTuftLabel))
-            && cursor.TryGotoPrev(MoveType.AfterLabel, x => x.MatchCall(typeof(UnityEngine.Random).GetProperty( nameof(UnityEngine.Random.value))!.GetGetMethod()))
+            && cursor.TryGotoPrev(MoveType.AfterLabel, x => x.MatchCall(typeof(UnityEngine.Random).GetProperty(nameof(UnityEngine.Random.value))!.GetGetMethod()))
             )
         {
-            
+                
             cursor
                 .Emit(OpCodes.Ldarg, 0)
                 .Emit(OpCodes.Ldloca, 1)
@@ -66,7 +66,7 @@ public static class CitizenHooks
                 {
                     if (graphics.scavenger.Template.type == Enums.CreatureTemplateType.Citizen)
                     {
-                        CitizenMask mask = new(graphics, ongoingSpriteNumber);
+                        CitizenMask mask = new(graphics, ongoingSpriteNumber, graphics.BlendedHeadColor);
                         graphics.AddSubModule(mask);
                         ongoingSpriteNumber += mask.totalSprites;
                         return true; 
