@@ -1,4 +1,5 @@
 overseersSpawnChance: 0
 playerGuideOverseerSpawnChance: 0
+globalCreatureFlags: Citizen-BornInUD
 
 Room Setting Templates: depths
