@@ -130,10 +130,10 @@ public class CycleMeter : HudPart
 
     public override void Draw(float timeStacker)
     {
-        for (int i = 0; i < cycles.Count; i++)
+        cycles.ForEach((cycle) =>
         {
-            cycles[i].Draw(timeStacker);
-        }
+            cycle.Draw(timeStacker);
+        });
 
         cursor.Draw(timeStacker);
 
@@ -146,11 +146,11 @@ public class CycleMeter : HudPart
                 fade.a = 0f;
                 return;
             }
-            fadeLerp = Mathf.Lerp(fadeLerp, 1f, 0.06f);
+            fadeLerp = Mathf.Lerp(fadeLerp, 1, 0.06f);
         }
         else if (fadeLerp > 0)
         {
-            fadeLerp = Mathf.Lerp(fadeLerp, 0f, 0.02f);
+            fadeLerp = Mathf.Lerp(fadeLerp, 0, 0.02f);
         }
 
         fade.a = Mathf.Lerp(0, 1, fadeLerp);

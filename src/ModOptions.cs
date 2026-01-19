@@ -17,29 +17,33 @@ public class ModOptions : OptionInterface
 	public static Configurable<bool> elecImmune;
 	public static Configurable<bool> chargeSpears;
 
-    // Scavenger taking from Beacon's flare storage
-    public static Configurable<bool> scavStealing;
-
     // Hat graphic in player sprites
     private static Configurable<bool> hazHat;
     public static bool UsesHatSprite => hazHat.Value;
 
-    // Thanatosis dropping flares on activate
-    private static Configurable<bool> spoiler_RippleLayerDropsFlares;
-    public static bool RippleLayerDropsFlares => spoiler_RippleLayerDropsFlares.Value;
-
+    // Enable beacon's thanatosis mechanic
     public static Configurable<bool> thanatosisEnabaled;
     public static bool ThanatosisEnabled => thanatosisEnabaled.Value;
+
+    // Change beacon's cosmetic effects for thanatosis depending on progression stage   
     public static Configurable<int> thanatosisVariant;
     public static int ThanatosisVariant => thanatosisVariant.Value;
+
+    // Stops the Thanatosis tutorial from spawning
     public static Configurable<bool> skipThanatosisSequence;
     public static bool SkipThanatosisSequence => skipThanatosisSequence.Value;
 
+    // Amount of "times" beacon met Dreamer
     public static Configurable<int> dreamerEncounters;
     public static int DreamerEncounters => dreamerEncounters.Value;
 
+    // Toggle beacon flare crafting and storage
     public static Configurable<bool> usesFlareMechanics;
     public static bool UsesFlareMechanics => usesFlareMechanics.Value;
+
+    // Thanatosis dropping flares
+    private static Configurable<bool> rippleLayerDropsFlares;
+    public static bool RippleLayerDropsFlares => rippleLayerDropsFlares.Value;
 
     public ModOptions()
     {
@@ -49,10 +53,10 @@ public class ModOptions : OptionInterface
         //shockStun = config.Bind<bool>("shockStun", true);
         elecImmune = config.Bind("elecImmune", false);
         chargeSpears = config.Bind("chargeSpears", false);
-        scavStealing = config.Bind("scavStealing", false);
         hazHat = config.Bind("hazHat", false);
 
-        spoiler_RippleLayerDropsFlares = config.Bind(nameof(spoiler_RippleLayerDropsFlares), true);
+        rippleLayerDropsFlares = config.Bind("RippleLayerDropsFlares", true);
+
 
         thanatosisEnabaled = config.Bind("ThanatosisEnabled", false);
         thanatosisVariant = config.Bind("ThanatosisVariant", 0);
@@ -94,9 +98,6 @@ public class ModOptions : OptionInterface
             // Make the options on the left side
             new OpCheckBox(pursuer, new Vector2(leftSidePos, 520)) {description=Translate("Something is pursuing you...")},
             new OpLabel(leftSidePos+30, 523, Translate("Beacon's Pursuer Spawns")),
-
-            new OpCheckBox(scavStealing, new Vector2(leftSidePos, 440)) {description = Translate("Scavengers can steal Beacon's flares (causes graphical issues with storage)")},
-            new OpLabel(leftSidePos+30, 443, Translate("Scavenger Griefing")),
 
             new OpCheckBox(elecImmune, new Vector2(leftSidePos, 360)) {description = Translate("Photomaniac gains resistance to electricity")},
             new OpLabel(leftSidePos+30, 363, Translate("Photomaniac's Electricity Resistance")),

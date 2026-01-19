@@ -7,7 +7,7 @@ namespace PitchBlack.Creatures.Citizen;
 
 public class CitizenMask : ScavengerCosmetic.Template
 {
-	public CitizenMask(ScavengerGraphics owner, int firstSprite) : base(owner, firstSprite)
+	public CitizenMask(ScavengerGraphics owner, int firstSprite, Color? color = null) : base(owner, firstSprite)
 	{
 		totalSprites = 3;
 	}
