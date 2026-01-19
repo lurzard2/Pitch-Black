@@ -7,15 +7,9 @@ namespace PitchBlack.Creatures.Citizen;
 
 public class CitizenMask : ScavengerCosmetic.Template
 {
-	public CitizenMask(ScavengerGraphics owner, int firstSprite, Color? color = null) : base(owner, firstSprite)
+	public CitizenMask(ScavengerGraphics owner, int firstSprite) : base(owner, firstSprite)
 	{
 		totalSprites = 3;
-		mainColor = color ?? Random.Range(0, 2) switch
-		{
-			0 => Color.red,
-			1 => Color.blue,
-			_ => Color.green,
-		};
 	}
 
 	#region Config variables
@@ -32,7 +26,7 @@ public class CitizenMask : ScavengerCosmetic.Template
 		//would be set by apply palette. needed for shadows
 		Color blackColor = new(0, 0, 0);
 		//main color of mask
-		readonly Color mainColor;
+		Color color;
 	#endregion
 
 	
@@ -41,6 +35,7 @@ public class CitizenMask : ScavengerCosmetic.Template
 	{
 		base.ApplyPalette(sLeaser, rCam, palette);
 		blackColor = palette.blackColor;
+		color = sLeaser.sprites[scavGrphs.HeadSprite].color;
 	}
 
 	public override void Update()
@@ -114,7 +109,7 @@ public class CitizenMask : ScavengerCosmetic.Template
 			sprite.scaleX = Mathf.Sign(headDirectionDegrees);
 			sprite.x = pos.x-camPos.x;
 			sprite.y = pos.y-camPos.y;
-			sprite.color = spriteIndex == firstSprite ? mainColor : Color.Lerp(mainColor, blackColor, darkness);
+			sprite.color = color;
 		}
 
 		sLeaser.sprites[firstSprite + 1].scaleX *= 0.85f;
