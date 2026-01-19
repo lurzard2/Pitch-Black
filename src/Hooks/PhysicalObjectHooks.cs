@@ -179,20 +179,17 @@ public class FlareBombHooks
     {
         var val = orig(self, obj, weaponFiltered);
 
-        if (!ModOptions.scavStealing.Value)
+        if (obj is FlareBomb flarebomb && self.scavenger.room != null)
         {
-            if (obj is FlareBomb flarebomb && self.scavenger.room != null)
+            foreach (var abstrCrit in self.scavenger.room.game.Players)
             {
-                foreach (var abstrCrit in self.scavenger.room.game.Players)
+                if (abstrCrit.realizedCreature == null)
                 {
-                    if (abstrCrit.realizedCreature == null)
-                    {
-                        continue;
-                    }
-                    if (Plugin.scugCWT.TryGetValue(abstrCrit.realizedCreature as Player, out ScugCWT c) && c is BeaconCWT beaconCWT && beaconCWT.storage.storedFlares.Contains(flarebomb))
-                    {
-                        return 0;
-                    }
+                    continue;
+                }
+                if (Plugin.scugCWT.TryGetValue(abstrCrit.realizedCreature as Player, out ScugCWT c) && c is BeaconCWT beaconCWT && beaconCWT.storage.storedFlares.Contains(flarebomb))
+                {
+                    return 0;
                 }
             }
         }
