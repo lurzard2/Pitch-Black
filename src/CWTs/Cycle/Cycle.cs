@@ -31,7 +31,7 @@ public class Cycle
 
     public int idleRipplesToSpawn;
     public bool spawnedPendingRipples;
-    private Counter rippleCooldown = new(20, 0, false);
+    private Counter rippleCooldown = new(40, 0, false);
 
     public class CycleRippleSource : ExtEnum<CycleRippleSource>
     {
@@ -41,7 +41,7 @@ public class Cycle
         public static readonly CycleRippleSource Thanatosis = new(nameof(Thanatosis), true);
         public static readonly CycleRippleSource Cache = new(nameof(Cache), true);
     }
-    private int GetRippleSpawnLimitFromCreature()
+    private int GetCreatureIdleRippleSpawnLimit()
     {
         // Hopefully reducing lag from coalescipedes
         if (CycleCreatureTemplateType == CreatureTemplate.Type.Spider)
@@ -72,20 +72,9 @@ public class Cycle
         CycleTick();
 
         #region Idle Ripples
-        if (Random.value < 0.1f && idleRipplesToSpawn <= GetRippleSpawnLimitFromCreature())
+        if (Random.value < 0.1f && idleRipplesToSpawn <= GetCreatureIdleRippleSpawnLimit())
         {
             idleRipplesToSpawn++;
-        }
-
-        spawnedPendingRipples = Random.value < 0.0008f;
-
-        // Clear if unable to spawn in room
-        if (spawnedPendingRipples && RealizedOwner == null)
-        {
-            for (int i = 0; i < idleRipplesToSpawn; i++)
-            {
-                idleRipplesToSpawn--;
-            }
         }
         #endregion
 
@@ -111,7 +100,9 @@ public class Cycle
     // Front end
     public virtual void RealizedUpdate()
     {
-        // Spawn ripples with a half-second cooldown
+        spawnedPendingRipples = Random.value < 0.003f;
+
+        // Spawn a ripple with a half-second cooldown
         if (spawnedPendingRipples && rippleCooldown.isFinished)
         {
             for (int i = 0; i < idleRipplesToSpawn; i++)
@@ -119,6 +110,7 @@ public class Cycle
                 AddRipple(CycleRippleSource.Idle);
                 idleRipplesToSpawn--;
                 rippleCooldown.Reset();
+                break;
             }
         }
         else
@@ -137,17 +129,14 @@ public class Cycle
         RippleRing ripple = null;
         Vector2 pos = RealizedOwner.bodyChunks[0].pos;
         int life = Random.Range(20, Random.Range(20, 60));
-        float intensity = 0;
+        float intensity = Random.Range(0.1f, Random.Range(0.1f, 1f));
 
-        if (source == CycleRippleSource.Idle)
-        {
-            intensity = Random.Range(0.1f, Random.Range(0.1f, 1f));
-        }
-        else if (source == CycleRippleSource.Thanatosis)
+        if (source == CycleRippleSource.Thanatosis)
         {
             life = 80;
             intensity = Random.Range(0.6f, Random.Range(0.6f, 1f));
         }
+        // must calculate speed after determining intensity
         float speed = intensity * (life / 20);
 
         ripple = new RippleRing(pos, life, intensity, speed);
@@ -158,10 +147,10 @@ public class Cycle
             // We need a better sound
             //RealizedOwner.room.PlaySound(SoundID.Small_Object_Into_Water_Slow, pos, intensity - 0.5f, intensity - 0.2f);
         }
-        //if (devMode && RealizedOwner.room.updateList.Contains(ripple))
-        //{
-        //    logger.LogDebug($"Spawned Idle ripple for {abstractOwner.creatureTemplate.type.value} - {life}, {intensity}, {speed}");
-        //}
+        if (devMode && RealizedOwner.room.updateList.Contains(ripple))
+        {
+            logger.LogDebug($"Spawned Idle ripple for {abstractOwner.creatureTemplate.type.value} - {life}, {intensity}, {speed}");
+        }
         return;
     }
 
