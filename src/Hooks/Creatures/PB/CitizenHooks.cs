@@ -27,8 +27,20 @@ public static class CitizenHooks
         On.Watcher.WarpPoint.ctor += WarpPoint_ctor;
         //removing spine
         IL.ScavengerGraphics.ctor += ScavengerGraphicsOnctor;
+        
+        On.ScavengerAI.ctor += ScavengerAIOnctor;
 
     }
+
+    static void ScavengerAIOnctor(On.ScavengerAI.orig_ctor orig, ScavengerAI self, AbstractCreature creature, World world)
+    {
+        orig(self, creature, world);
+        if (creature.creatureTemplate.type == Enums.CreatureTemplateType.Citizen)
+        {
+            self.AddModule(new CitizenLooking(self));
+        }
+    }
+
     delegate bool ContinousScavGraphsInline(ScavengerGraphics scavengerGraphics, ref int num);
     static void ScavengerGraphicsOnctor(ILContext il)
     {
@@ -124,6 +136,8 @@ public static class CitizenHooks
         if (self.Template.type == citizen)
         {
             self.CollideWithObjects = false;
+            
+            
         }
 
         orig(self, eu);
