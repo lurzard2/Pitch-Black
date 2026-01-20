@@ -208,7 +208,7 @@ public class BeaconCycle
             unstableness -= 0.01f;
         }
 
-        logger.LogDebug($"{unstableness} - {SpiralLevel}");
+        //logger.LogDebug($"{unstableness} - {SpiralLevel}");
     }
 
     // Increasing values while in Thanatosis

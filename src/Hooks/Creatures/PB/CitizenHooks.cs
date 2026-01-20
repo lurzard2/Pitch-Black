@@ -178,7 +178,7 @@ public static class CitizenHooks
             }
             else if (attributes.Contains("BornInUD"))
             {
-                self.bodyColor = self.headColor = self.bellyColor = new HSLColor(0.08184808f, 0.06207584f, 0.8753151f);
+                self.bodyColor = self.headColor = self.bellyColor = new HSLColor(0.08184808f, 0.06207584f, 0.0753151f);
                 self.decorationColor = new HSLColor(0.6535784f, 0.1437009f, 0.3652394f);
                 self.eyeColor = new HSLColor(0.6535784f, 0.7f, 0.1f);
             }
