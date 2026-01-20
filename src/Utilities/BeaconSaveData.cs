@@ -7,6 +7,69 @@ namespace PitchBlack;
 
 public static class BeaconSaveData
 {
+    /// <summary>
+    /// Gets a SaveState from the game's StoryGameSession properly without breaking other types of sessions. Must Check if null.
+    /// </summary>
+    /// <param name="rwg">The RainWorldGame instance.</param>
+    /// <returns>An instance of SaveState from GetStorySession. Returns null if GameSession is not a StoryGameSession</returns>
+    public static SaveState GetSaveState(this RainWorldGame rwg, bool onlyForBeacon = false)
+    {
+        var storySession = rwg.GetStorySession;
+        if (storySession != null)
+        {
+            if (onlyForBeacon && !MiscUtils.IsBeacon(storySession))
+            {
+                return null;
+            }
+            return storySession.saveState;
+        }
+        return null;
+    }
+
+    // Called in RWG ctor, to update savedata on cycle 0 depending on remix config
+    public static void RemixUpdateSaveState(this SaveState beaconState)
+    {
+        if (ModOptions.DreamerEncounters > 0)
+        {
+            beaconState.SetDreamerEncountersNumber(ModOptions.DreamerEncounters);
+        }
+
+        if (ModOptions.ThanatosisEnabled)
+        {
+            beaconState.SetCanUseThanatosis(true);
+            if (ModOptions.SkipThanatosisSequence)
+            {
+                beaconState.SetHasUsedThanatosis(true);
+            }
+
+            switch (ModOptions.ThanatosisVariant)
+            {
+                case 1:
+                    // Starving
+                    beaconState.SetMaxSpiralLevel(1f);
+                    beaconState.SetSpiralLevel(1f);
+                    break;
+                case 2:
+                    // Rot
+                    beaconState.SetMaxSpiralLevel(2f);
+                    beaconState.SetSpiralLevel(2f);
+                    break;
+                case 3:
+                    // Hybrid
+                    beaconState.SetMaxSpiralLevel(4f);
+                    beaconState.SetMaxSpiralLevel(4f);
+                    break;
+                default: break;
+            }
+        }
+
+        if (ModOptions.UsesFlareMechanics)
+        {
+            beaconState.GetOrSetBool(canCraftFlares, true);
+            beaconState.GetOrSetBool(canStoreFlares, true);
+        }
+    }
+
     public static bool GetOrSetBool(this SaveState save, string key, bool? setValue = null)
     {
         var data = save.deathPersistentSaveData.GetSlugBaseData();

@@ -170,55 +170,6 @@ public static class MiscUtils
     }
     #endregion
 
-    public static void RemixUpdateSaveData(RainWorldGame game)
-    {
-        if (!game.IsStorySession)
-        {
-            return;
-        }
-
-        var saveState = game.GetStorySession.saveState;
-        if (devMode)
-        {
-            if (ModOptions.DreamerEncounters > 0)
-            {
-                BeaconSaveData.SetDreamerEncountersNumber(saveState, ModOptions.DreamerEncounters);
-            }
-
-            if (ModOptions.ThanatosisEnabled)
-            {
-                BeaconSaveData.SetCanUseThanatosis(saveState, true);
-                if (ModOptions.SkipThanatosisSequence)
-                {
-                    BeaconSaveData.SetHasUsedThanatosis(saveState, true);
-                }
-
-                switch (ModOptions.ThanatosisVariant)
-                {
-                    case 1:
-                        BeaconSaveData.SetMaxSpiralLevel(saveState, 1f);
-                        BeaconSaveData.SetSpiralLevel(saveState, 1f);
-                        break;
-                    case 2:
-                        BeaconSaveData.SetMaxSpiralLevel(saveState, 2f);
-                        BeaconSaveData.SetSpiralLevel(saveState, 2f);
-                        break;
-                    case 3:
-                        BeaconSaveData.SetMaxSpiralLevel(saveState, 4f);
-                        BeaconSaveData.SetMaxSpiralLevel(saveState, 4f);
-                        break;
-                    default: break;
-                }
-            }
-
-            if (ModOptions.UsesFlareMechanics)
-            {
-                BeaconSaveData.GetOrSetBool(saveState, BeaconSaveData.canCraftFlares, true);
-                BeaconSaveData.GetOrSetBool(saveState, BeaconSaveData.canStoreFlares, true);
-            }
-        }
-    }
-
     public static void LogExErr(object data, [CallerFilePath] string callerFile = "",
         [CallerMemberName] string callerName = "") =>
         logger.LogError($"{callerFile}.{callerName}:{data}");

@@ -14,7 +14,7 @@ public class CycleMeter : HudPart
     public (float a, float b) fade;
     private float fadeLerp = 0f;
 
-    public bool Unlocked => BeaconSaveData.GetMaxSpiralLevel(SaveState) >= 1f && BeaconSaveData.GetHasUsedThanatosis(SaveState);
+    public bool Unlocked => SaveState.GetMaxSpiralLevel() >= 1f && SaveState.GetHasUsedThanatosis();
 
     public Player HUDOwner
     {
@@ -27,7 +27,7 @@ public class CycleMeter : HudPart
             return hud.owner as Player;
         } 
     }
-    public SaveState SaveState => HUDOwner.abstractCreature.world.game.GetStorySession.saveState;
+    public SaveState SaveState => HUDOwner.abstractCreature.world.game.GetSaveState();
     public PlayerSpecificMultiplayerHud multiHud;
 
     public List<HUDCycle> cycles = [];
@@ -74,7 +74,7 @@ public class CycleMeter : HudPart
         fade.a = 0f;
 
         // Adding cycles, with an extra one to serve as the fixed 0 index cycle
-        for (int i = 0; i < BeaconSaveData.GetMaxSpiralLevel(SaveState) + 1; i++)
+        for (int i = 0; i < SaveState.GetMaxSpiralLevel() + 1; i++)
         {
             cycles.Add(new HUDCycle(this, i));
         }
