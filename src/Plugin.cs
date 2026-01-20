@@ -239,22 +239,22 @@ class  Plugin : BaseUnityPlugin
             
         }
     }
-
-
     
     private static void RainWorldGame_Update(On.RainWorldGame.orig_Update orig, RainWorldGame self)
     {
         orig(self);
-        if (devMode && !remixUpdatedSaveData && self.session is StoryGameSession)
-        {
-            MiscUtils.RemixUpdateSaveData(self);
-            remixUpdatedSaveData = true;
-        }
         if (pursuerTracker.TryGetValue(self, out List<NTTracker> trackers)) foreach (NTTracker tracker in trackers) tracker.Update();
     }
+
     private static void RainWorldGame_ctor(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)
     {
         orig(self, manager);
+
+        var beaconState = self.GetSaveState(true);
+        if (devMode && beaconState != null) 
+        {
+            beaconState.RemixUpdateSaveState();
+        }
 
         pursuerTracker.Add(self, new List<NTTracker>());
         if ((MiscUtils.IsBeacon(self.session) || ModOptions.universalPursuer.Value) && pursuerTracker.TryGetValue(self, out var trackers))

@@ -9,7 +9,7 @@ public class BeaconCycle
 {
     public Cycle cycle;
     public Player owner;
-    public SaveState saveState;
+    public SaveState SaveState => owner.abstractCreature.world.game.GetSaveState();
     // Not a UAD yet
     public ThanatosisTutorialSequence thanatosisTutorialSequence;
 
@@ -17,9 +17,9 @@ public class BeaconCycle
     public bool deathToggle;
     public bool isDead;
     public Counter specInputCounter = new(Int32.MaxValue, 0, true);
-    public float SpiralLevel => BeaconSaveData.GetSpiralLevel(saveState);
-    public float MinSpiralLevel => BeaconSaveData.GetMinSpiralLevel(saveState);
-    public float MaxSpiralLevel => BeaconSaveData.GetMaxSpiralLevel(saveState);
+    public float SpiralLevel => SaveState.GetSpiralLevel();
+    public float MinSpiralLevel => SaveState.GetMinSpiralLevel();
+    public float MaxSpiralLevel => SaveState.GetMaxSpiralLevel();
     public float ThanatosisLimit => (40 * 8) * SpiralLevel;
     public bool ReachedThanatosisLimit => cycle.state == Cycle.State.Thanatosis && cycle.cycleStateTime > ThanatosisLimit;
     public float thanatosisLerp;
@@ -33,16 +33,20 @@ public class BeaconCycle
         cycle.Sync();
 
         this.owner = owner;
-        saveState = owner.abstractCreature.world.game.GetStorySession.saveState;
         
+        if (SaveState == null)
+        {
+            return;
+        }
+
         // New cycle, catch up to max revives?
         if (MaxSpiralLevel > 1 && SpiralLevel < MaxSpiralLevel)
         {
-            BeaconSaveData.SetSpiralLevel(saveState, MaxSpiralLevel);
+            BeaconSaveData.SetSpiralLevel(SaveState, MaxSpiralLevel);
         }
 
         // for Playtest, for now
-        if (BeaconSaveData.GetCompletedBeacon(saveState))
+        if (BeaconSaveData.GetCompletedBeacon(SaveState))
         {
             string ptText = $"[THIS MARKS THE END OF THE PLAYTEST CURRENTLY] ~ {MOD_VERSION}";
             MiscUtils.AddHUDMessage(owner.room.game.cameras[0].hud, true, ptText, 40 * 30, 120, true, true);
@@ -99,8 +103,8 @@ public class BeaconCycle
         #region Thanatosis Sequence
         // Not VV, hasnt used thanatosis. specifically encounter 3
         if (!MiscUtils.IsVhosRegion(owner.room.world.name)
-            && !BeaconSaveData.GetHasUsedThanatosis(saveState)
-            && BeaconSaveData.GetDreamerEncountersNumber(saveState) == 3)
+            && !BeaconSaveData.GetHasUsedThanatosis(SaveState)
+            && BeaconSaveData.GetDreamerEncountersNumber(SaveState) == 3)
         {
             if (thanatosisTutorialSequence != null)
             {
@@ -109,7 +113,7 @@ public class BeaconCycle
                 if (thanatosisTutorialSequence.phase == ThanatosisTutorialSequence.Phase.UsedThanatosis)
                 {
                     thanatosisTutorialSequence = null;
-                    BeaconSaveData.SetCompletedBeacon(saveState, true);
+                    BeaconSaveData.SetCompletedBeacon(SaveState, true);
                     return;
                 }
             }
@@ -144,7 +148,7 @@ public class BeaconCycle
             specInputCounter.Reset();
         }
 
-        if (BeaconSaveData.GetCanUseThanatosis(saveState))
+        if (BeaconSaveData.GetCanUseThanatosis(SaveState))
         {
             ThanatosisUpdate();
         }
@@ -173,7 +177,7 @@ public class BeaconCycle
             {
                 unstableness += 2f;
                 logger.LogDebug("Thanatosis: Persisting!");
-                BeaconSaveData.SetSpiralLevel(saveState, SpiralLevel - 1f);
+                BeaconSaveData.SetSpiralLevel(SaveState, SpiralLevel - 1f);
                 Persist();
             }
             else

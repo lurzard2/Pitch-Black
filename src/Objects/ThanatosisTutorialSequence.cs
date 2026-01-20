@@ -14,7 +14,7 @@ public class ThanatosisTutorialSequence
     public InGameTranslator Translator => room.world.game.manager.rainWorld.inGameTranslator;
     public string SequenceText => Translator.Translate("Hold SPECIAL to maintain stasis, but only if it gets too close...");
     public string SequenceInvertedText => Translator.Translate("The tides are shifting...");
-    public string CycleDisplayText => Translator.Translate($"Cycle {cycle.saveState.cycleNumber} ~ {Region.GetRegionFullName(cycle.owner.room.world.region.name, SlugcatStats.Name.White)}");
+    public string CycleDisplayText => Translator.Translate($"Cycle {cycle.SaveState.cycleNumber} ~ {Region.GetRegionFullName(cycle.owner.room.world.region.name, SlugcatStats.Name.White)}");
     public string SequenceCompleteText => Translator.Translate("Hold SPECIAL to enter and exit a state of thanatosis");
     #endregion
 
@@ -106,7 +106,7 @@ public class ThanatosisTutorialSequence
             {
                 if (ring.intensity > 0.6f)
                 {
-                    cycle.saveState.cycleNumber -= ring.intensity >= 0.85f ? 1 : UnityEngine.Random.Range(1, 4);
+                    cycle.SaveState.cycleNumber -= ring.intensity >= 0.85f ? 1 : UnityEngine.Random.Range(1, 4);
                 }
                 if (timeTilCycleDisplay.isFinished)
                 {
@@ -268,7 +268,7 @@ public class ThanatosisTutorialSequence
             cycle.cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
             cycle.owner.room.PlaySound(Enums.SoundID.Player_Deactivated_Thanatosis, 0.5f, 1f, 0.9f);
             cycle.owner.room.PlaySound(Enums.SoundID.Player_Activated_Thanatosis, 0.5f, 1f, 0.9f);
-            BeaconSaveData.SetCanUseThanatosis(cycle.saveState, true);
+            BeaconSaveData.SetCanUseThanatosis(cycle.SaveState, true);
             cycle.ToggleThanatosis(false);
             markedAsDead = false;
             cycle.owner.Stun(80);
@@ -284,7 +284,7 @@ public class ThanatosisTutorialSequence
                 seenTrueTutorialPromptThisCycle = true;
             }
 
-            BeaconSaveData.SetHasUsedThanatosis(cycle.saveState, true);
+            BeaconSaveData.SetHasUsedThanatosis(cycle.SaveState, true);
             // Do not make them do that whole thing over again
             RainWorldGame.ForceSaveNewDenLocation(cycle.owner.room.world.game, cycle.owner.room.abstractRoom.name, true);
             cycle.cycle.spawnedPendingRipples = false;

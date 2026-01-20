@@ -6,9 +6,6 @@ namespace PitchBlack;
 
 public class BeaconCWT : ScugCWT
 {
-    // We need not access player much, but it's here
-    private readonly Player player;
-    public SaveState StorySaveState => player.room.world.game.GetStorySession.saveState;
     public Color currentSkinColor;
     public Color currentEyeColor;
 
@@ -27,7 +24,6 @@ public class BeaconCWT : ScugCWT
 
     public BeaconCWT(Player player) : base()
     {
-        this.player = player;
         squinter = new(player);
         // storage is added in BeaconUpdate
         var localCycle = new Cycle(player.abstractCreature);

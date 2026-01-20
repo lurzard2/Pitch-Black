@@ -11,15 +11,24 @@ public class Squinter
     public bool Squinting => squintTick > 0;
     public bool BlindBeaconHere()
     {
+        bool placeIsBright = Room.Darkness(owner.mainBodyChunk.pos) < 0.15f;
+
+        if (Room.world.singleRoomWorld)
+        {
+            if (placeIsBright)
+            {
+                return true;
+            }
+            return false;
+        }
+
         var region = Room.world.region.name.ToLowerInvariant();
         var room = Room.abstractRoom.name.ToLowerInvariant();
-
         bool vhosOverride = room == "vv_e01"
             || room == "vv_b06"
             || room == "vv_b08"
             || room == "vv_c02"
             || room == "vv_c01";
-        bool placeIsBright = Room.Darkness(owner.mainBodyChunk.pos) < 0.15f;
         bool presentGhostModeOverride = Room.game.cameras[0].ghostMode > 0.40f;
 
         // Order of priority matters here
