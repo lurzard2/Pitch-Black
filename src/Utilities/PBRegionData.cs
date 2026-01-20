@@ -12,15 +12,16 @@ namespace PitchBlack;
 
 // Credit to Alduris' BetterWorkshopUploader for the json stuff I referenced
 
-internal class PBRegionData
+public class PBRegionData
 {
     public static string PBPath => Plugin.MOD_PATH;
-    public static string FilePath => Path.Combine(PBPath, "pbworld.json");
+    public static string FilePath => Path.Combine(PBPath, "world", "pbworld.json");
 
-    #region Data
     public List<Region> Regions { get; set; }
-    public List<Region> CycleRegions { get; set; }
 
+    /// <summary>
+    /// JSON object
+    /// </summary>
     public class Region
     {
         public string ID { get; set; }
@@ -29,9 +30,9 @@ internal class PBRegionData
 
         public class Creature
         {
-            public string ID { get; set; }
-            public string Name { get; set; }
-            public string State { get; set; }
+            public EntityID ID { get; set; }
+            public CreatureTemplate.Type Name { get; set; }
+            public Cycle.State State { get; set; }
         }
 
         public class Dreamer
@@ -41,39 +42,33 @@ internal class PBRegionData
             public bool Encountered { get; set; }
         }
     }
-    #endregion
-
 
     public PBRegionData()
     {
     }
 
-    public static PBRegionData GetData()
+    public static PBRegionData TemplateData()
+    {
+        PBRegionData data = new();
+
+        Region region = new()
+        {
+            ID = "TestRegion",
+        };
+        region.Creatures = [];
+        region.DreamerEncounters = [];
+        data.Regions = [region];
+
+        return data;
+    }
+
+    public static PBRegionData LoadFromFile()
     {
         PBRegionData data = new();
 
         if (!File.Exists(FilePath))
         {
-            Region region = new();
-            region.ID = "TestRegion";
-            region.Creatures = [];
-            region.Creatures.Add(new()
-            {
-                ID = "-1",
-                Name = "Type",
-                State = "Alive",
-            });
-
-            region.DreamerEncounters = [];
-            region.DreamerEncounters.Add(new()
-            {
-                ID = -1,
-                Room = "TestRoom",
-                Encountered = false,
-            });
-
-            data.Regions = [];
-            data.CycleRegions = [region];
+            data = TemplateData();
         }
         else
         {
@@ -83,10 +78,45 @@ internal class PBRegionData
         return data;
     }
 
-    public void Save()
+    public void SaveToFile()
     {
         string obj = JsonConvert.SerializeObject(this, Formatting.Indented);
         File.WriteAllText(FilePath, obj);
+    }
+
+    public void OnLoadWorld(World world, List<AbstractRoom> roomsForDreamer)
+    {
+        int regionCount = Regions.Count;
+        int failureToFindDataCount = 0;
+
+        for (int i = 0; i < regionCount; i++)
+        {
+            var r = Regions[i];
+            if (r.ID != world.name)
+            {
+                failureToFindDataCount++;
+            }
+
+            // We need to add a new region to the list because it doesn't exist
+            if (failureToFindDataCount == regionCount)
+            {
+                Region region = new();
+                region.ID = world.name;
+                region.Creatures = [];
+                region.DreamerEncounters = [];
+                for (int j = 0; j < roomsForDreamer.Count; j++)
+                {
+                    region.DreamerEncounters.Add(new()
+                    {
+                        ID = j,
+                        Room = roomsForDreamer[j].name,
+                        Encountered = false,
+                    });
+                }
+                Regions.Add(region);
+                break;
+            }
+        }
     }
 }
         

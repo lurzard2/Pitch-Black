@@ -8,7 +8,7 @@ namespace PitchBlack;
 public static class BeaconSaveData
 {
     /// <summary>
-    /// Gets a SaveState from the game's StoryGameSession properly without breaking other types of sessions.
+    /// Gets a SaveState from the game's StoryGameSession properly without breaking other types of sessions. Must Check if null.
     /// </summary>
     /// <param name="rwg">The RainWorldGame instance.</param>
     /// <returns>An instance of SaveState from GetStorySession. Returns null if GameSession is not a StoryGameSession</returns>

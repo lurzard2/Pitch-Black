@@ -32,8 +32,6 @@ class  Plugin : BaseUnityPlugin
     private bool init = false;
     public static ManualLogSource logger;
 
-    public static PBRegionData loadedRegionData;
-
     // Dev bool for testing and/or hardcoding values
     public static bool devMode = true;
     public static bool remixUpdatedSaveData = false;
@@ -118,10 +116,6 @@ class  Plugin : BaseUnityPlugin
         {
             // Always gets the correct path, whether it be workshop or mods directly
             MOD_PATH = ModManager.ActiveMods.First(x => x.id == MOD_ID).path + Path.DirectorySeparatorChar;
-
-            var data = PBRegionData.GetData();
-            data.Save();
-            loadedRegionData = data;
 
             // Remix Menu
             MachineConnector.SetRegisteredOI(MOD_ID, ModOptions.Instance);
