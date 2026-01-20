@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -27,7 +28,7 @@ public static class CitizenHooks
         On.Watcher.WarpPoint.ctor += WarpPoint_ctor;
         //removing spine
         IL.ScavengerGraphics.ctor += ScavengerGraphicsOnctor;
-        
+        //add looking module
         On.ScavengerAI.ctor += ScavengerAIOnctor;
 
     }
@@ -152,22 +153,32 @@ public static class CitizenHooks
     private static void ScavengerGraphics_GenerateColors(On.ScavengerGraphics.orig_GenerateColors orig, ScavengerGraphics self)
     {
         orig(self);
-        
-        // if (self.scavenger.Template.type == PBEnums.CreatureTemplateType.UmbraScav)
-        // {
-        //     self.bodyColor = new HSLColor(0.08184808f, 0.06207584f, 0.8753151f);
-        //     self.headColor = new HSLColor(0.08184808f, 0.06207584f, 0.8753151f);
-        //     self.decorationColor = new HSLColor(0.6535784f, 0.1437009f, 0.3652394f);
-        //     self.eyeColor = new HSLColor(0.6535784f, 0.7f, 0.1f);
-        //     self.bellyColor = new HSLColor(0.08184808f, 0.06207584f, 0.8753151f);
-        // }
         if (self.scavenger.Template.type == Enums.CreatureTemplateType.Citizen)
         {
-            self.bodyColor = new HSLColor(0.67f, 0.9f, 0.95f);
-            self.headColor = new HSLColor(0.67f, 0.9f, 0.95f);
-            self.decorationColor = new HSLColor(0.67f, 0.9f, 0.95f);
-            self.eyeColor = new HSLColor(0.67f, 0.9f, 0.95f);
-            self.bellyColor = new HSLColor(0.67f, 0.9f, 0.95f);
+            string[] attributes = self.scavenger.abstractCreature.unrecognizedAttributes;
+            if (attributes == null)
+            {
+                self.bodyColor = 
+                    self.headColor = 
+                        self.decorationColor = 
+                            self.eyeColor = 
+                                self.bellyColor = new HSLColor(0.33f, 1f, 0.5f);
+            }
+            else if (attributes.Contains("BornInUD"))
+            {
+                self.bodyColor = self.headColor = self.bellyColor = new HSLColor(0.08184808f, 0.06207584f, 0.8753151f);
+                self.decorationColor = new HSLColor(0.6535784f, 0.1437009f, 0.3652394f);
+                self.eyeColor = new HSLColor(0.6535784f, 0.7f, 0.1f);
+            }
+            else if (attributes.Contains("NotBornInUD"))
+            {
+                self.bodyColor = 
+                    self.headColor = 
+                        self.decorationColor = 
+                            self.eyeColor = 
+                                self.bellyColor = new HSLColor(0.67f, 0.9f, 0.95f);
+            }
+            
         }
     }
     
