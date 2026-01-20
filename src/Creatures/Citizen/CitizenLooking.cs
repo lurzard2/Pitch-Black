@@ -16,8 +16,6 @@ public class CitizenLooking(ArtificialIntelligence ai) : AIModule(ai)
 		base.Update();
 		if (valid)
 		{
-			//just above 0.2f
-			ScavAI.agitation = 0.21f;
 			//get a list of players in same room
 			if (AI.creature.world.game.Players.Where(player => player.Room == AI.creature.Room).ToList() is
 			    {

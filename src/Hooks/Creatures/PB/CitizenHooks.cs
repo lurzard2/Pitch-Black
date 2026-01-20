@@ -30,7 +30,19 @@ public static class CitizenHooks
         IL.ScavengerGraphics.ctor += ScavengerGraphicsOnctor;
         //add looking module
         On.ScavengerAI.ctor += ScavengerAIOnctor;
+        //force scav looking without agitation
+        On.Scavenger.ForcedLookCreature += ScavengerOnForcedLookCreature;
 
+    }
+
+    static Tracker.CreatureRepresentation ScavengerOnForcedLookCreature(On.Scavenger.orig_ForcedLookCreature orig, Scavenger self)
+    {
+        Tracker.CreatureRepresentation result = orig(self);
+        if (self.Template.type == Enums.CreatureTemplateType.Citizen && result is null)
+        {
+            return self.AI.focusCreature;
+        }
+        return result;
     }
 
     static void ScavengerAIOnctor(On.ScavengerAI.orig_ctor orig, ScavengerAI self, AbstractCreature creature, World world)
