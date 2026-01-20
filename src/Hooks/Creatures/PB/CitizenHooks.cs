@@ -243,6 +243,13 @@ public static class CitizenHooks
         if (self.Template.type == Enums.CreatureTemplateType.Citizen)
         {
             self.collisionLayer = 2;
+            if (abstractCreature.unrecognizedAttributes == null || !Array.Exists(abstractCreature.unrecognizedAttributes,
+                    str => str is "BornInUD" or "NotBornInUD"))
+            {
+                List<string> resizedAttributes = abstractCreature.unrecognizedAttributes == null ? [] : abstractCreature.unrecognizedAttributes.ToList();
+                    resizedAttributes.Add(world.name == "UD" ? "BornInUD" : "NotBornInUD");
+                abstractCreature.unrecognizedAttributes = resizedAttributes.ToArray();
+            }
         }
         // if (self.Template.type == PBEnums.CreatureTemplateType.UmbraScav) //umbra scav stuff
         // {
