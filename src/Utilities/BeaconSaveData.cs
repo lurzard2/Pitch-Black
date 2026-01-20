@@ -31,33 +31,33 @@ public static class BeaconSaveData
     {
         if (ModOptions.DreamerEncounters > 0)
         {
-            SetDreamerEncountersNumber(beaconState, ModOptions.DreamerEncounters);
+            beaconState.SetDreamerEncountersNumber(ModOptions.DreamerEncounters);
         }
 
         if (ModOptions.ThanatosisEnabled)
         {
-            SetCanUseThanatosis(beaconState, true);
+            beaconState.SetCanUseThanatosis(true);
             if (ModOptions.SkipThanatosisSequence)
             {
-                SetHasUsedThanatosis(beaconState, true);
+                beaconState.SetHasUsedThanatosis(true);
             }
 
             switch (ModOptions.ThanatosisVariant)
             {
                 case 1:
                     // Starving
-                    SetMaxSpiralLevel(beaconState, 1f);
-                    SetSpiralLevel(beaconState, 1f);
+                    beaconState.SetMaxSpiralLevel(1f);
+                    beaconState.SetSpiralLevel(1f);
                     break;
                 case 2:
                     // Rot
-                    SetMaxSpiralLevel(beaconState, 2f);
-                    SetSpiralLevel(beaconState, 2f);
+                    beaconState.SetMaxSpiralLevel(2f);
+                    beaconState.SetSpiralLevel(2f);
                     break;
                 case 3:
                     // Hybrid
-                    SetMaxSpiralLevel(beaconState, 4f);
-                    SetMaxSpiralLevel(beaconState, 4f);
+                    beaconState.SetMaxSpiralLevel(4f);
+                    beaconState.SetMaxSpiralLevel(4f);
                     break;
                 default: break;
             }
@@ -65,8 +65,8 @@ public static class BeaconSaveData
 
         if (ModOptions.UsesFlareMechanics)
         {
-            GetOrSetBool(beaconState, canCraftFlares, true);
-            GetOrSetBool(beaconState, canStoreFlares, true);
+            beaconState.GetOrSetBool(canCraftFlares, true);
+            beaconState.GetOrSetBool(canStoreFlares, true);
         }
     }
 
