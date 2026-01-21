@@ -170,7 +170,7 @@ public class DreamerBehavior : PBEntity.BehaviorModule
         placedObj.pos = Dreamer.Pos;
 
         // Reset warp counter so it may open
-        Dreamer.room.world.game.Players[0].world.game.GetStorySession.warpsTraversedThisCycle = 0;
+        Dreamer.room.world.game.GetStorySession.warpsTraversedThisCycle = 0;
 
         var riftManager = new RiftManager(Dreamer.room, placedObj, false);
         bool makeOneWay = false;
@@ -225,7 +225,7 @@ public class DreamerBehavior : PBEntity.BehaviorModule
                 riftManager.placedRift.Data.oneWayEntranceIdentified = true;
             }
 
-            MiscUtils.PlaceRift(riftManager, riftManager.placedRift, false);
+            MiscUtils.PlaceRift(riftManager, riftManager.placedRift);
         }
     }
 

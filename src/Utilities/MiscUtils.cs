@@ -23,13 +23,12 @@ public static class MiscUtils
     #region Region Checks
     public static bool IsRegionOutSideCycle(this World world)
     {
-        bool isPBSBRegion = world.name.ToLowerInvariant() == "pbsb";
-        bool watcherCondition = Region.IsAncientUrbanRegion(world.name) || Region.IsDaemonRegion(world.name);
+        bool watcherRegion = Region.IsAncientUrbanRegion(world.name) || Region.IsDaemonRegion(world.name);
 
         if (IsVhosRegion(world.name)
             || IsNightmareRegion(world.name)
-            || isPBSBRegion
-            || watcherCondition)
+            || IsPBSB(world.name)
+            || watcherRegion)
         {
             return true;
         }
@@ -42,6 +41,7 @@ public static class MiscUtils
     public static bool IsVhosRegion(string name) => name.ToLowerInvariant() == "vv";
     public static bool IsNightmareRegion(string name) => name.ToLowerInvariant() == "ud";
     public static bool IsDissolvedFieldsRegion(string name) => name.ToLowerInvariant() == "pblf";
+    public static bool IsPBSB(string name) => name.ToLowerInvariant() == "pbsb";
 
     public static int RiftAssociatedWithDreamscape(Room room, Rift rift)
     {
@@ -134,24 +134,22 @@ public static class MiscUtils
     #endregion
 
     #region Spawning things
-    public static void AddHUDMessage(HUD.HUD hud, bool clear, string text, int wait, int time, bool darken, bool hideHUD)
+    public static void AddHUDMessage(HUD.HUD hud, bool clearMessages, string text, int waitTime, int time, bool darkenScreen, bool hideHUD)
     {
         var prompt = hud.textPrompt;
-        // Clear previous, to force it to 0
-        if (clear)
+        if (clearMessages)
         {
             prompt.messages.Clear();
         }
-
         // Add message to list
-        prompt.AddMessage(text, wait, time, darken, hideHUD);
+        prompt.AddMessage(text, waitTime, time, darkenScreen, hideHUD);
         if (prompt.messages.Count > 0 && prompt.messages[0].text == text)
         {
             prompt.messages[0].time = time;
         }
     }
 
-    public static Rift PlaceRift(RiftManager riftManager, Rift replacementRift, bool triggerNow)
+    public static Rift PlaceRift(RiftManager riftManager, Rift replacementRift = null, bool triggerNow = false)
     {
         riftManager.room.AddObject(riftManager);
         if (replacementRift != null)

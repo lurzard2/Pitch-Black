@@ -117,6 +117,7 @@ public class StillbornBehavior : PBEntity.BehaviorModule
                                 SpawnRift();
                                 beacon.beaconCycle.owner.room.AddObject(spasmer);
                                 beacon.beaconCycle.owner.controller = null;
+                                riftSpawned = true;
                             }
                         }
                     }
@@ -141,26 +142,18 @@ public class StillbornBehavior : PBEntity.BehaviorModule
         placedObj.pos = Stillborn.Pos;
 
         var riftManager = new RiftManager(Stillborn.room, placedObj, false);
-        var rift = riftManager.GenerateRift();
+        var rift = riftManager.placedRift;
+        rift = riftManager.ScriptedRift(data.destTimeline, data.destRegion, data.destRoom);
 
-        rift.Data.oneWay = true;
-        rift.Data.oneWayEntrance = true;
-        rift.Data.oneWayEntranceIdentified = true;
+        rift.guaranteeTrigger = true;
+        rift.strongPull = true;
         rift.Data.effectSettings.badWarpCosmetic = true;
         rift.Data.effectSettings.spawnBigRift = true;
-        rift.strongPull = true;
-        rift.guaranteeTrigger = true;
-        // Make completely one way
         rift.Data.oneWay = true;
         rift.Data.oneWayEntrance = true;
         rift.Data.oneWayEntranceIdentified = true;
 
-        if (encounterType == EncounterType.Ghost)
-        {
-            riftManager.ScriptedRift(Enums.Timeline.Beacon, "ud", "ud_a01", rift);
-        }
-        MiscUtils.PlaceRift(riftManager, rift, true);
-        riftSpawned = true;
+        MiscUtils.PlaceRift(riftManager, rift);
     }
 
     private Player.InputPackage GetInput()

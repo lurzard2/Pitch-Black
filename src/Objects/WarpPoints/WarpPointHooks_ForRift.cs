@@ -36,11 +36,9 @@ public static class WarpPointHooks_ForRift
         for (int i = 0; i < self.room.warpPoints.Count; i++)
         {
             var warpPoint = self.room.warpPoints[i];
-            if (warpPoint is Rift target)
+            if (warpPoint is Rift)
             {
-                target = warpPoint as Rift;
-                rift = target;
-
+                rift = warpPoint as Rift;
             }
         }
 
