@@ -62,7 +62,7 @@ public class CycleMeter : HudPart
         }
         if (scugCWT.TryGetValue(HUDOwner, out var c) && c is BeaconCWT beacon)
         {
-            bool flag = beacon.beaconCycle.ReachedThanatosisLimit && HUDOwner.rippleDeathTime >= 80;
+            bool flag = beacon.beaconCycle.ReachedThanatosisLimit && beacon.beaconCycle.thanatosisDeathCounter.isFinished;
             flags.Add(flag);
         }
         return flags;

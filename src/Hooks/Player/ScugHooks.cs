@@ -51,7 +51,7 @@ public static class ScugHooks
     private static void Player_Die(On.Player.orig_Die orig, Player self)
     {
         var saveState = self.abstractCreature.world.game.GetStorySession.saveState;
-        if (MiscUtils.IsBeacon(self) && BeaconSaveData.GetSpiralLevel(saveState) > -1 && BeaconSaveData.GetCanUseThanatosis(saveState))
+        if (MiscUtils.IsBeacon(self) && saveState.GetSpiralLevel() >= 1 && saveState.GetCanUseThanatosis())
         {
             // Don't do anything
         }

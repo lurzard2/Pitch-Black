@@ -32,7 +32,6 @@ public class Cycle
     public int idleRipplesToSpawn;
     public bool spawnedPendingRipples;
     private Counter rippleCooldown = new(40, 0, false);
-
     public class CycleRippleSource : ExtEnum<CycleRippleSource>
     {
         public CycleRippleSource(string value, bool register) : base(value, register) { }
@@ -54,10 +53,19 @@ public class Cycle
     public Counter cycleTime = new(Int32.MaxValue, 0, true);
     public Counter cycleStateTime = new(Int32.MaxValue, 0, true);
 
+    public List<CycleModule> modules = [];
+    public IdleRippleTracker idleRippleTracker {  get; set; }
+    public SpacialTracker spacialTracker {  get; set; }
+
     public Cycle(AbstractCreature abstractOwner)
     {
         this.abstractOwner = abstractOwner;
         state = State.Init;
+
+        idleRippleTracker = new(this);
+        modules.Add(idleRippleTracker);
+        spacialTracker = new(this);
+        modules.Add(spacialTracker);
     }
 
     // Back end
@@ -70,13 +78,12 @@ public class Cycle
         }
 
         CycleTick();
+        return;
 
-        #region Idle Ripples
         if (Random.value < 0.1f && idleRipplesToSpawn <= GetCreatureIdleRippleSpawnLimit())
         {
             idleRipplesToSpawn++;
         }
-        #endregion
 
         if (state == State.MarkedForCache)
         {
@@ -100,12 +107,17 @@ public class Cycle
     // Front end
     public virtual void RealizedUpdate()
     {
-        spawnedPendingRipples = Random.value < 0.003f;
+        foreach (CycleModule module in modules)
+        {
+            module.Update();
+        }
+
+        //spawnedPendingRipples = Random.value < 0.003f;
 
         // Spawn a ripple with a half-second cooldown
         if (spawnedPendingRipples && rippleCooldown.isFinished)
         {
-            for (int i = 0; i < idleRipplesToSpawn; i++)
+            for (int i = 0; i < idleRipplesToSpawn;)
             {
                 AddRipple(CycleRippleSource.Idle);
                 idleRipplesToSpawn--;

@@ -129,7 +129,8 @@ public class ThanatosisTutorialSequence
         {
             cycle.owner.animation = Player.AnimationIndex.Dead;
             cycle.owner.bodyMode = Player.BodyModeIndex.Dead;
-           
+            (cycle.owner.graphicsModule as PlayerGraphics).LookAtNothing();
+
         }
         else if (!cycle.owner.Stunned && !cycle.owner.dead && cycle.owner.bodyMode == Player.BodyModeIndex.Dead && phase == Phase.UsedThanatosis)
         {
