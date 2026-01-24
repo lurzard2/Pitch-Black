@@ -7,10 +7,10 @@ public class MDVector
 {
     public float x {  get; set; }
     public float y { get; set; }
-    public float z;
-
-    // 0.1: Ripple surface tension
+    public float z { get; set; }
+    // Ripple: value from 0f-3f, see specifics in SpacialTracker
     public float w {  get; set; }
+    public float h { get; set; }
 
     public float gravity;
 

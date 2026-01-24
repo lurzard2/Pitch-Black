@@ -11,9 +11,14 @@ namespace PitchBlack;
 public class SpacialTracker : CycleModule
 {
     public MDVector pos = new();
-    public float RippleSurfaceTension => 0.1f;
-    public bool AboveRippleSurface => pos.w <= RippleSurfaceTension;
-    public bool BelowRippleSurface => pos.w >= RippleSurfaceTension;
+
+    // Ripple
+    public float rippleNone = 0;
+    public float rippleSurface = 0.55f;
+    public float rippleSurfaceTension = 0.65f;
+    public bool AboveRippleSurface => pos.w <= rippleSurfaceTension;
+    public bool BelowRippleSurface => pos.w >= rippleSurface;
+    public bool BrokeRippleSurfaceTension => pos.w > rippleSurfaceTension;
     public bool reboundFromRipple;
 
     public SpacialTracker(Cycle owner) : base(owner) { }
@@ -23,47 +28,59 @@ public class SpacialTracker : CycleModule
         pos.x = cycle.RealizedOwner.mainBodyChunk.pos.x;
         pos.y = cycle.RealizedOwner.mainBodyChunk.pos.y;
 
+        W_Axis();
+    }
+
+    #region W Axis Influence
+    private void W_Axis()
+    {
         // Idling submersion only, ticks randomly, and brought down to 0 once the "ripple surface" is reached
         if (AboveRippleSurface)
         {
             IdleRippleSubmersionTick();
         }
-        else if (BelowRippleSurface)
+        else if (BrokeRippleSurfaceTension)
         {
+
         }
     }
 
     private void IdleRippleSubmersionTick()
     {
-        RippleTick();
-        if (pos.w >= RippleSurfaceTension && !reboundFromRipple)
+        RippleTick(reboundFromRipple ? 0 : rippleSurfaceTension);
+        if (BelowRippleSurface && !reboundFromRipple)
         {
-            reboundFromRipple = true;
-            pos.w = RippleSurfaceTension;
+            if (BrokeRippleSurfaceTension)
+            {
+                reboundFromRipple = true;
+                pos.w = rippleSurfaceTension;
+            }
+            else if (Random.value < 0.008)
+            {
+                reboundFromRipple = true;
+            }
         }
     }
 
-    public void RippleTick()
+    public void RippleTick(float target)
     {
         if (reboundFromRipple)
         {
-            pos.w = Custom.LerpAndTick(pos.w, 0f, 0.008f, 0.0025f);
-            if (pos.w == 0)
+            pos.w = Custom.LerpAndTick(pos.w, target, 0.008f, 0.0025f);
+            if (pos.w == rippleNone)
             {
                 reboundFromRipple = false;
             }
         }
-        else if (Random.value < 0.01f)
+        else if (Random.value < 0.05f)
         {
-            if (AboveRippleSurface)
-            {
-                pos.w = Custom.LerpAndTick(pos.w, 0.1f, 0.008f, 0.0025f);
-            }
+            pos.w = Custom.LerpAndTick(pos.w, target, 0.008f, 0.0025f);
         }
 
-        if (cycle.CycleCreatureTemplateType == Enums.CreatureTemplateType.Rotrat)
+        if (devMode && cycle.CycleCreatureTemplateType == CreatureTemplate.Type.Slugcat)
         {
             logger.LogDebug($"W: {pos.w} : {reboundFromRipple}");
         }
     }
+    #endregion
 }

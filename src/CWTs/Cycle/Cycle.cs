@@ -62,10 +62,10 @@ public class Cycle
         this.abstractOwner = abstractOwner;
         state = State.Init;
 
-        idleRippleTracker = new(this);
-        modules.Add(idleRippleTracker);
         spacialTracker = new(this);
         modules.Add(spacialTracker);
+        idleRippleTracker = new(this);
+        modules.Add(idleRippleTracker);
     }
 
     // Back end
