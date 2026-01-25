@@ -25,17 +25,10 @@ public static class MiscUtils
     {
         bool watcherRegion = Region.IsAncientUrbanRegion(world.name) || Region.IsDaemonRegion(world.name);
 
-        if (IsVhosRegion(world.name)
+        return IsVhosRegion(world.name)
             || IsNightmareRegion(world.name)
             || IsPBSB(world.name)
-            || watcherRegion)
-        {
-            return true;
-        }
-        //for (int i = 0; i < world.abstractRooms.Length; i++)
-        //{
-        //}
-        return false;
+            || watcherRegion;
     }
 
     public static bool IsVhosRegion(string name) => name.ToLowerInvariant() == "vv";

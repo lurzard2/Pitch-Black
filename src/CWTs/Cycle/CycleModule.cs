@@ -9,9 +9,9 @@ namespace PitchBlack;
 public class CycleModule
 {
     public Cycle cycle;
-    public CycleModule(Cycle _owner)
+    public CycleModule(Cycle cycle)
     {
-        cycle = _owner;
+        this.cycle = cycle;
     }
 
     public virtual void Update()

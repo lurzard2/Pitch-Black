@@ -7,18 +7,24 @@ public class MDVector
 {
     public float x {  get; set; }
     public float y { get; set; }
+    // Creatures don't use 3d vectors unfortunately but it's here
     public float z { get; set; }
-    // Ripple: value from 0f-3f, see specifics in SpacialTracker
-    public float w {  get; set; }
-    public float h { get; set; }
 
-    public float gravity;
+    // See specifics for these values in SpacialTracker
+
+    // Ripple: value from 0f-5f
+    public float v {  get; set; }
+
+    // Dream: value from 0f-1f
+    public float w { get; set; }
+
+    public float gravity { get; set; }
 
     public MDVector(float x = 0, float y = 0, float z = 0, float w = 0)
     {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.w = w;
+        this.v = w;
     }
 }

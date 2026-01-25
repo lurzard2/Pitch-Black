@@ -11,12 +11,9 @@ public class IdleRippleTracker : CycleModule
 {
     public SpacialTracker spacialTracker => cycle.spacialTracker;
 
-    public string s = "IdleRippleTracker:";
-    public float rippleSpawnChance = 0.0008f;
-    public int rippleLimit = 10;
-    public bool SpawnIdleRipples;
-    int defaultDelay = 80;
-    public Counter delayCounter = new(80, 0, true);
+    private readonly string debug = $"{nameof(Cycle)}.{nameof(IdleRippleTracker)}:";
+    private Counter delayCounter = new(80, 0, true);
+    private readonly int defaultDelay = 80;
 
     public IdleRippleTracker(Cycle cycle) : base(cycle) { }
 
@@ -35,8 +32,8 @@ public class IdleRippleTracker : CycleModule
 
         if (spacialTracker.BelowRippleSurface)
         {
-            // Manipulate counter delay for more frequent ripples
-            if (spacialTracker.pos.w > spacialTracker.rippleSurface)
+            // Manipulate counter delay for differently timed ripples
+            if (spacialTracker.pos.v > spacialTracker.rippleSurface)
             {
                 delayCounter.max = Random.Range(40, 100);
             }
@@ -52,15 +49,50 @@ public class IdleRippleTracker : CycleModule
 
     public void SpawnRippleRing()
     {
-        float w = spacialTracker.pos.w;
+        float w = spacialTracker.pos.v;
+
         Vector2 pos = new(spacialTracker.pos.x, spacialTracker.pos.y);
         int life = Random.Range(20, Random.Range(20, 80));
         float intensity = w;
         float speed = 0.15f + intensity;
 
-        if (cycle.RealizedOwner == null)
+        if (cycle.RealizedOwner.room == null)
         {
             return;
+        }
+
+        if (spacialTracker.InDream)
+        {
+            life = Random.Range(20, 120);
+            intensity = Random.Range(0.3f, spacialTracker.rippleSurface);
+            speed = Random.Range(0.5f, 1f);
+        }
+
+        if (devMode)
+        {
+            if (Input.GetKey("e"))
+            {
+                intensity = 2f;
+            }
+
+            // Can be empty, but shouldn't be if it's a player
+            string playerCharString = "";
+            string creatureType = cycle.CycleCreatureTemplateType.value;
+            if (cycle.RealizedOwner is Player p)
+            {
+                string playerName = $"{p.slugcatStats.name}";
+                string playerIndex = $"{p.room.PlayersInRoom.IndexOf(p)}";
+                playerCharString = $"Player[{playerName},{playerIndex}]";
+                creatureType = "";
+            }
+            Custom.LogImportant(
+            [
+                $"{debug} ",
+                "Spawned ripple for ",
+                $"{playerCharString}",
+                $"{creatureType}",
+                $"~ {life}, {intensity}, {speed}",
+            ]);
         }
 
         // RippleRing
@@ -68,12 +100,7 @@ public class IdleRippleTracker : CycleModule
         cycle.RealizedOwner.room.AddObject(ripple);
 
         // Shockwave
-        float intensity2 = intensity - 0.45f;
+        float intensity2 = intensity - 0.35f;
         cycle.RealizedOwner.room.AddObject(new ShockWave(pos, intensity2, intensity, life));
-
-        if (devMode)
-        {
-            logger.LogDebug($"{s} Spawned ripple for {cycle.CycleCreatureTemplateType.value} - {life}, {intensity}, {speed} - {intensity2}");
-        }
     }
 }

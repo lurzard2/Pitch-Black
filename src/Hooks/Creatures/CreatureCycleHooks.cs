@@ -26,10 +26,6 @@ public static class CreatureCycleHooks
 
         if (creatureCycle.TryGetValue(self, out var cycle) && cycle != null)
         {
-            if (MiscUtils.IsRegionOutSideCycle(self.world))
-            {
-                return;
-            }
             cycle.AbstractUpdate();
         }
     }
@@ -38,16 +34,9 @@ public static class CreatureCycleHooks
     {
         orig(self, world, creatureTemplate, realizedCreature, pos, ID);
 
-        if (MiscUtils.IsRegionOutSideCycle(world))
+        if (!creatureCycle.TryGetValue(self, out var _))
         {
-            return;
-        }
-        else
-        {
-            if (!creatureCycle.TryGetValue(self, out var _))
-            {
-                creatureCycle.Add(self, new Cycle(self));
-            }
+            creatureCycle.Add(self, new Cycle(self));
         }
     }
 }
