@@ -7,17 +7,8 @@ public static class CreatureCycleHooks
     {
         On.AbstractCreature.ctor += Add_Cycle_CWT;
         On.AbstractCreature.Update += AbstractCreature_Update;
-        On.Creature.Update += RealizedCreature_Update;
-    }
-
-    private static void RealizedCreature_Update(On.Creature.orig_Update orig, Creature self, bool eu)
-    {
-        orig(self, eu);
-
-        if (creatureCycle.TryGetValue(self.abstractCreature, out var cycle) && cycle != null)
-        {
-            cycle.RealizedUpdate();
-        }
+        // We'll let cwt handle realized update
+        //On.Creature.Update += RealizedCreature_Update;
     }
 
     private static void AbstractCreature_Update(On.AbstractCreature.orig_Update orig, AbstractCreature self, int time)

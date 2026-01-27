@@ -5,8 +5,7 @@ namespace PitchBlack;
 
 public class MDVector
 {
-    public float x {  get; set; }
-    public float y { get; set; }
+    public Vector2 Main {  get; set; }
     // Creatures don't use 3d vectors unfortunately but it's here
     public float z { get; set; }
 
@@ -18,13 +17,17 @@ public class MDVector
     // Dream: value from 0f-1f
     public float w { get; set; }
 
+    // Spiral: value from 0f-5f
+    public float h { get; set; }
+
     public float gravity { get; set; }
 
-    public MDVector(float x = 0, float y = 0, float z = 0, float w = 0)
+    public MDVector(float x = 0, float y = 0, float z = 0, float v = 0, float w = 0, float h = 0)
     {
-        this.x = x;
-        this.y = y;
+        Main = new Vector2(x, y);
         this.z = z;
-        this.v = w;
+        this.v = v;
+        this.w = w;
+        this.h = h;
     }
 }

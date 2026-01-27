@@ -24,28 +24,31 @@ public class SpacialTracker : CycleModule
     public bool InRippleWaters => pos.v > rippleSurfaceTension;
     public bool InRippleDepths => pos.v >= rippleDepths;
 
-    // Dream (Associated with Ripple)
+    // Dream (Affects Ripple)
     public const float dreamNone = 0f;
     public const float dreamInside = 1f;
     public bool AvailableForDream => MiscUtils.IsRegionOutSideCycle(cycle.abstractOwner.world);
     public bool InDream => InRippleDepths && pos.w >= dreamInside;
 
+
+
     public SpacialTracker(Cycle owner) : base(owner)
     {
+        // Prevent common syncing ticks to spawn ripples
         pos.v = Random.Range(rippleNone, rippleSurface);
     }
 
     public override void Update()
     {
-        pos.x = cycle.RealizedOwner.mainBodyChunk.pos.x;
-        pos.y = cycle.RealizedOwner.mainBodyChunk.pos.y;
+        pos.Main = cycle.RealizedOwner.mainBodyChunk.pos;
 
+        // Intentionally ordered
         W_Axis();
         V_Axis();
 
         if (devMode && cycle.CycleCreatureTemplateType == CreatureTemplate.Type.Slugcat)
         {
-            logger.LogDebug($"H: {pos.w} | W: {pos.v} - {reboundFromRipple}");
+            logger.LogDebug($"W: {pos.w} | V: {pos.v} - {reboundFromRipple}");
         }
     }
 
@@ -116,7 +119,7 @@ public class SpacialTracker : CycleModule
                 reboundFromRipple = false;
             }
         }
-        else if (Random.value < 0.05f)
+        else if (Random.value < 0.02f)
         {
             pos.v = Custom.LerpAndTick(pos.v, target, 0.008f, 0.0025f);
         }

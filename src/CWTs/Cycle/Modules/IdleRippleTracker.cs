@@ -15,6 +15,15 @@ public class IdleRippleTracker : CycleModule
     private Counter delayCounter = new(80, 0, true);
     private readonly int defaultDelay = 80;
 
+    public class RippleRingSource : ExtEnum<RippleRingSource>
+    {
+        public RippleRingSource(string value, bool register) : base(value, register) { }
+
+        public static readonly RippleRingSource Idle = new(nameof(Idle), true);
+        public static readonly RippleRingSource Thanatosis = new(nameof(Thanatosis), true);
+        public static readonly RippleRingSource Cache = new(nameof(Cache), true);
+    }
+
     public IdleRippleTracker(Cycle cycle) : base(cycle) { }
 
     public override void Update()
@@ -49,11 +58,11 @@ public class IdleRippleTracker : CycleModule
 
     public void SpawnRippleRing()
     {
-        float w = spacialTracker.pos.v;
+        float v = spacialTracker.pos.v;
 
-        Vector2 pos = new(spacialTracker.pos.x, spacialTracker.pos.y);
+        Vector2 pos = spacialTracker.pos.Main;
         int life = Random.Range(20, Random.Range(20, 80));
-        float intensity = w;
+        float intensity = v;
         float speed = 0.15f + intensity;
 
         if (cycle.RealizedOwner.room == null)

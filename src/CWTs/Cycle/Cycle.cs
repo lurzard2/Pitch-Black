@@ -5,15 +5,17 @@ using static PitchBlack.Plugin;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Watcher;
-using BepInEx.Bootstrap;
+using IL.MoreSlugcats;
 
 namespace PitchBlack;
 
 public class Cycle
 {
     public AbstractCreature abstractOwner;
-    public Creature RealizedOwner => abstractOwner.realizedCreature;
     public CreatureTemplate.Type CycleCreatureTemplateType => abstractOwner.creatureTemplate.type;
+
+    // Can be null when abstract
+    public Creature RealizedOwner => abstractOwner.realizedCreature;
 
     public State state;
     public class State : ExtEnum<State>
@@ -29,33 +31,14 @@ public class Cycle
         public static readonly State Cached = new(nameof(Cached), true);
     }
 
-    public int idleRipplesToSpawn;
-    public bool spawnedPendingRipples;
-    private Counter rippleCooldown = new(40, 0, false);
-    public class CycleRippleSource : ExtEnum<CycleRippleSource>
-    {
-        public CycleRippleSource(string value, bool register) : base(value, register) { }
-
-        public static readonly CycleRippleSource Idle = new(nameof(Idle), true);
-        public static readonly CycleRippleSource Thanatosis = new(nameof(Thanatosis), true);
-        public static readonly CycleRippleSource Cache = new(nameof(Cache), true);
-    }
-    private int GetCreatureIdleRippleSpawnLimit()
-    {
-        // Hopefully reducing lag from coalescipedes
-        if (CycleCreatureTemplateType == CreatureTemplate.Type.Spider)
-        {
-            return 3;
-        }
-        return 15;
-    }
-
     public Counter cycleTime = new(Int32.MaxValue, 0, true);
     public Counter cycleStateTime = new(Int32.MaxValue, 0, true);
 
     public List<CycleModule> modules = [];
     public IdleRippleTracker idleRippleTracker {  get; set; }
     public SpacialTracker spacialTracker {  get; set; }
+    public ManipulationTracker manipulationTracker { get; set; }
+    public ManipulationModule Manipulator { get; set; }
 
     public Cycle(AbstractCreature abstractOwner)
     {
@@ -66,6 +49,8 @@ public class Cycle
         modules.Add(spacialTracker);
         idleRippleTracker = new(this);
         modules.Add(idleRippleTracker);
+        manipulationTracker = new(this);
+        modules.Add(manipulationTracker);
     }
 
     // Back end
@@ -73,17 +58,11 @@ public class Cycle
     {
         if (state == State.Init)
         {
-            Sync();
+            ChangeState(State.Alive);
             return;
         }
 
         CycleTick();
-        return;
-
-        if (Random.value < 0.1f && idleRipplesToSpawn <= GetCreatureIdleRippleSpawnLimit())
-        {
-            idleRipplesToSpawn++;
-        }
 
         if (state == State.MarkedForCache)
         {
@@ -104,30 +83,30 @@ public class Cycle
         }
     }
 
-    // Front end
-    public virtual void RealizedUpdate()
+    public void CycleTick()
     {
-        foreach (CycleModule module in modules)
+        cycleTime.Tick();
+        cycleStateTime.Tick();
+        if (RealizedOwner != null)
         {
-            module.Update();
-        }
-
-        //spawnedPendingRipples = Random.value < 0.003f;
-
-        // Spawn a ripple with a half-second cooldown
-        if (spawnedPendingRipples && rippleCooldown.isFinished)
-        {
-            for (int i = 0; i < idleRipplesToSpawn;)
+            RealizedUpdate();
+            foreach (CycleModule mod in modules)
             {
-                AddRipple(CycleRippleSource.Idle);
-                idleRipplesToSpawn--;
-                rippleCooldown.Reset();
-                break;
+                mod.Update();
             }
         }
-        else
+    }
+
+    // Front end
+    public void RealizedUpdate()
+    {
+        if (Manipulator == null)
         {
-            rippleCooldown.Tick();
+            if (RealizedOwner is Player player && MiscUtils.IsBeacon(player))
+            {
+                Manipulator = new BeaconManipulator(this, player);
+            }
+            modules.Add(Manipulator);
         }
     }
 
@@ -136,65 +115,9 @@ public class Cycle
         
     }
 
-    public void AddRipple(CycleRippleSource source)
-    {
-        RippleRing ripple = null;
-        Vector2 pos = RealizedOwner.bodyChunks[0].pos;
-        int life = Random.Range(20, Random.Range(20, 60));
-        float intensity = Random.Range(0.1f, Random.Range(0.1f, 1f));
-
-        if (source == CycleRippleSource.Thanatosis)
-        {
-            life = 80;
-            intensity = Random.Range(0.6f, Random.Range(0.6f, 1f));
-        }
-        // must calculate speed after determining intensity
-        float speed = intensity * (life / 20);
-
-        ripple = new RippleRing(pos, life, intensity, speed);
-        if (ripple != null && RealizedOwner != null && RealizedOwner.room != null)
-        {
-            RealizedOwner.room.AddObject(ripple);
-            RealizedOwner.room.AddObject(new ShockWave(pos, 0.15f * (intensity / 2f), intensity, life, true));
-            // We need a better sound
-            //RealizedOwner.room.PlaySound(SoundID.Small_Object_Into_Water_Slow, pos, intensity - 0.5f, intensity - 0.2f);
-        }
-        if (devMode && RealizedOwner.room.updateList.Contains(ripple))
-        {
-            logger.LogDebug($"Spawned Idle ripple for {abstractOwner.creatureTemplate.type.value} - {life}, {intensity}, {speed}");
-        }
-        return;
-    }
-
-    public void CycleTick()
-    {
-        cycleTime.Tick();
-        cycleStateTime.Tick();
-    }
-
     public void ChangeState(State newState)
     {
         state = newState;
         cycleStateTime.Reset();
-    }
-
-    public bool TimeInState(State stateToCheck, float timeToCheck)
-    {
-        if (state == stateToCheck && cycleStateTime == timeToCheck)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    public void Sync()
-    {
-        // We only have to check if it's alive, cause this is when the abstractcreature is first updated, otherwise it is guaranteed dead
-        if (abstractOwner.state.alive)
-        {
-            ChangeState(State.Alive);
-            return;
-        }
-        ChangeState(State.Cached);
     }
 }

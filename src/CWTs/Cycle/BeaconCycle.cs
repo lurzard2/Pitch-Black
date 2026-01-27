@@ -239,7 +239,7 @@ public class BeaconCycle
                 ? Enums.SoundID.Player_Activated_Thanatosis
                 : Enums.SoundID.Player_Deactivated_Thanatosis;
 
-            cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
+            cycle.AddRipple(Cycle.RippleRingSource.Thanatosis);
             cycle.ChangeState(cycleState);
             owner.room.PlaySound(soundEffect, owner.mainBodyChunk);
             if (layerSwitches)

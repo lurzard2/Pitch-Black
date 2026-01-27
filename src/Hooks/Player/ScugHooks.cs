@@ -23,8 +23,6 @@ public static class ScugHooks
 
             if (storyState != null)
             {
-                beacon.beaconCycle?.Update();
-
                 if (BeaconSaveData.GetOrSetBool(storyState, BeaconSaveData.canStoreFlares))
                 {
                     beacon.storage ??= new(self);
