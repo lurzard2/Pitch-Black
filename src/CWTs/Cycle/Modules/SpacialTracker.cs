@@ -30,6 +30,8 @@ public class SpacialTracker : CycleModule
     public bool AvailableForDream => MiscUtils.IsRegionOutSideCycle(cycle.abstractOwner.world);
     public bool InDream => InRippleDepths && pos.w >= dreamInside;
 
+    // Spiral
+    public readonly float spiralNone = 0f;
 
 
     public SpacialTracker(Cycle owner) : base(owner)
@@ -38,11 +40,13 @@ public class SpacialTracker : CycleModule
         pos.v = Random.Range(rippleNone, rippleSurface);
     }
 
-    public override void Update()
+    public override void Realized()
     {
+        base.Realized();
         pos.Main = cycle.RealizedOwner.mainBodyChunk.pos;
 
         // Intentionally ordered
+        H_Axis();
         W_Axis();
         V_Axis();
 
@@ -52,29 +56,52 @@ public class SpacialTracker : CycleModule
         }
     }
 
+    #region H Axis Influence
+    private void H_Axis()
+    {
+
+    }
+
+    public void SpiralTick(float target)
+    {
+        pos.h = Custom.LerpAndTick(pos.h, target, 0.008f, 0.0025f);
+    }
+
+    public void SetSpiral(float set)
+    {
+        pos.h = set;
+    }
+    #endregion
+
     #region W Axis Influence
-    public void W_Axis()
+    private void W_Axis()
     {
         // Submerged in dream also influences ripple. InRippleDepths should be true if InsideDream is
         if (AvailableForDream)
         {
             if (pos.w < dreamInside)
             {
-                pos.w = dreamInside;
-                pos.v = rippleDepths;
+                SetDream(dreamInside);
+                SetRipple(rippleDepths);
             }
         }
         else if (pos.w > dreamNone)
         {
-            pos.w = dreamNone;
-            pos.v = rippleNone;
+            SetDream(dreamNone);
+            SetRipple(rippleNone);
         }
+    }
+
+    public void SetDream(float set)
+    {
+        pos.w = set;
     }
     #endregion
 
     #region V Axis Influence
     private void V_Axis()
     {
+        // Too far
         if (InRippleDepths)
         {
         }
@@ -123,6 +150,10 @@ public class SpacialTracker : CycleModule
         {
             pos.v = Custom.LerpAndTick(pos.v, target, 0.008f, 0.0025f);
         }
+    }
+    public void SetRipple(float set)
+    {
+        pos.v = set;
     }
     #endregion
 }

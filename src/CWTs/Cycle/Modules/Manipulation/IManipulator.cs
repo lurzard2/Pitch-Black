@@ -5,7 +5,10 @@ namespace PitchBlack;
 
 public interface IManipulator
 {
-    Cycle CycleToManipulate(Cycle targetCycle);
+    // Manipulation behavior back-end
     void Act();
-    void ManipulateOther(Cycle target);
+    // Manipulation of target front-end
+    void ManipulateTarget(Cycle target);
+    // Change stuff with my graphics
+    void ManipulateGraphics(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam);
 }

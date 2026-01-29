@@ -2,20 +2,19 @@
 using System;
 using System.Collections.Generic;
 using static PitchBlack.Plugin;
-using UnityEngine;
-using Random = UnityEngine.Random;
-using Watcher;
-using IL.MoreSlugcats;
 
 namespace PitchBlack;
 
 public class Cycle
 {
     public AbstractCreature abstractOwner;
+    public AbstractRoom AbstractRoom => abstractOwner.Room;
     public CreatureTemplate.Type CycleCreatureTemplateType => abstractOwner.creatureTemplate.type;
+    public List<AbstractCreature> CreaturesInRoom => abstractOwner.Room.creatures;
 
     // Can be null when abstract
     public Creature RealizedOwner => abstractOwner.realizedCreature;
+    public bool Realized => RealizedOwner is not null;
 
     public State state;
     public class State : ExtEnum<State>
@@ -34,11 +33,10 @@ public class Cycle
     public Counter cycleTime = new(Int32.MaxValue, 0, true);
     public Counter cycleStateTime = new(Int32.MaxValue, 0, true);
 
-    public List<CycleModule> modules = [];
-    public IdleRippleTracker idleRippleTracker {  get; set; }
+    public Queue<CycleModule> modules = [];
     public SpacialTracker spacialTracker {  get; set; }
-    public ManipulationTracker manipulationTracker { get; set; }
-    public ManipulationModule Manipulator { get; set; }
+    public IdleRippleHandler idleRippleHandler { get; set; }
+    public RippleManipulation rippleManipulation { get; set; }
 
     public Cycle(AbstractCreature abstractOwner)
     {
@@ -46,78 +44,56 @@ public class Cycle
         state = State.Init;
 
         spacialTracker = new(this);
-        modules.Add(spacialTracker);
-        idleRippleTracker = new(this);
-        modules.Add(idleRippleTracker);
-        manipulationTracker = new(this);
-        modules.Add(manipulationTracker);
+        modules.Enqueue(spacialTracker);
+        idleRippleHandler = new(this);
+        modules.Enqueue(idleRippleHandler);
+        rippleManipulation = new(this);
+        modules.Enqueue(rippleManipulation);
     }
 
-    // Back end
     public virtual void AbstractUpdate()
     {
         if (state == State.Init)
         {
-            ChangeState(State.Alive);
+            Sync();
             return;
         }
 
         CycleTick();
 
-        if (state == State.MarkedForCache)
+        foreach (var mod in modules)
         {
-            switch (cycleStateTime)
+            mod.Abstract();
+            if (Realized)
             {
-                case 1:
-                    MarkForCache();
-                    break;
-                case 80:
-                    ChangeState(State.Cached);
-                    break;
-                default: break;
+                mod.Realized();
             }
         }
-        else if (abstractOwner.state.dead && state == State.Alive)
-        {
-            ChangeState(State.MarkedForCache);
-        }
-    }
-
-    public void CycleTick()
-    {
-        cycleTime.Tick();
-        cycleStateTime.Tick();
-        if (RealizedOwner != null)
-        {
-            RealizedUpdate();
-            foreach (CycleModule mod in modules)
-            {
-                mod.Update();
-            }
-        }
-    }
-
-    // Front end
-    public void RealizedUpdate()
-    {
-        if (Manipulator == null)
-        {
-            if (RealizedOwner is Player player && MiscUtils.IsBeacon(player))
-            {
-                Manipulator = new BeaconManipulator(this, player);
-            }
-            modules.Add(Manipulator);
-        }
-    }
-
-    private void MarkForCache()
-    {
-        
     }
 
     public void ChangeState(State newState)
     {
         state = newState;
         cycleStateTime.Reset();
+    }
+
+    public void CycleTick()
+    {
+        cycleTime.Tick();
+        cycleStateTime.Tick();
+    }
+
+    public void OnRealize()
+    {
+        if (RealizedOwner is Player player && MiscUtils.IsBeacon(player))
+        {
+            modules.Enqueue(new BeaconManipulator(this, player));
+        }
+    }
+
+    private void Sync()
+    {
+        // Will include functionality for setting other states later
+        ChangeState(State.Alive);
     }
 }

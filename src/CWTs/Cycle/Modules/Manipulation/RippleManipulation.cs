@@ -4,16 +4,16 @@ using RWCustom;
 
 namespace PitchBlack;
 
-public class ManipulationTracker : ManipulationModule
+public class RippleManipulation : ManipulationModule
 {
-    public ManipulationTracker(Cycle cycle) : base(cycle) { }
+    public RippleManipulation(Cycle cycle) : base(cycle) { }
 
-    public override void Update()
+    public override void Realized()
     {
-        foreach (var absCrit in cycle.abstractOwner.Room.creatures)
+        base.Realized();
+        foreach (var absCrit in cycle.CreaturesInRoom)
         {
-            // I hate needing to check this constantly within the loop but don't know what would be better than continue or goto -Lur
-            if (absCrit != cycle.abstractOwner && Plugin.creatureCycle.TryGetValue(absCrit, out var otherCycle))
+            if (!IsThisMe(absCrit) && Plugin.creatureCycle.TryGetValue(absCrit, out var otherCycle))
             {
                 // If other cycle is affecting ripple then it should affect me, but only if close enough
                 float distance = Vector2.Distance(cycle.spacialTracker.pos.Main, otherCycle.spacialTracker.pos.Main);

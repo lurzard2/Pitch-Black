@@ -7,11 +7,11 @@ using Watcher;
 
 namespace PitchBlack;
 
-public class IdleRippleTracker : CycleModule
+public class IdleRippleHandler : CycleModule
 {
     public SpacialTracker spacialTracker => cycle.spacialTracker;
 
-    private readonly string debug = $"{nameof(Cycle)}.{nameof(IdleRippleTracker)}:";
+    private readonly string debug = $"{nameof(IdleRippleHandler)}:";
     private Counter delayCounter = new(80, 0, true);
     private readonly int defaultDelay = 80;
 
@@ -24,11 +24,12 @@ public class IdleRippleTracker : CycleModule
         public static readonly RippleRingSource Cache = new(nameof(Cache), true);
     }
 
-    public IdleRippleTracker(Cycle cycle) : base(cycle) { }
+    public IdleRippleHandler(Cycle cycle) : base(cycle) { }
 
-    public override void Update()
+    public override void Abstract()
     {
-        // If ticked, needs delay, then we wait until the delay is finished to start over
+        base.Abstract();
+        // If ticked, needs delay
         if (delayCounter > 0)
         {
             delayCounter.Tick();
@@ -36,6 +37,15 @@ public class IdleRippleTracker : CycleModule
             {
                 delayCounter.Reset();
             }
+        }
+    }
+
+    public override void Realized()
+    {
+        base.Realized();
+        // If ongoing delay, hold
+        if (delayCounter > 0)
+        {
             return;
         }
 
@@ -51,7 +61,11 @@ public class IdleRippleTracker : CycleModule
                 delayCounter.max = defaultDelay;
             }
 
-            SpawnRippleRing();
+            if (cycle.RealizedOwner.room != null)
+            {
+                SpawnRippleRing();
+            }
+            // Start the delay loop and perpetuate it
             delayCounter.Tick();
         }
     }
@@ -64,11 +78,6 @@ public class IdleRippleTracker : CycleModule
         int life = Random.Range(20, Random.Range(20, 80));
         float intensity = v;
         float speed = 0.15f + intensity;
-
-        if (cycle.RealizedOwner.room == null)
-        {
-            return;
-        }
 
         if (spacialTracker.InDream)
         {
