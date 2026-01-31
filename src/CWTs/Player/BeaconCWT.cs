@@ -1,6 +1,8 @@
 ﻿using RWCustom;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static PitchBlack.Plugin;
 
 namespace PitchBlack;
 
@@ -19,9 +21,14 @@ public class BeaconCWT : ScugCWT
     //flashbangs to recover after respawning in jollycoop
     public int coopRefundFlares = 0;
 
+    public BeaconCycle2 beaconCycle;
+    public bool CycleExists => beaconCycle is not null;
+
     public BeaconCWT(Player player) : base()
     {
         squinter = new(player);
+        beaconCycle = new(player);
+        creatureCycle.Add(player.abstractCreature, beaconCycle);
         // storage is added in BeaconUpdate.
     }
 }

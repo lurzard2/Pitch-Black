@@ -266,7 +266,7 @@ public class ThanatosisTutorialSequence
                 }
                 return;
             }
-            cycle.cycle.AddRipple(Cycle.RippleRingSource.Thanatosis);
+            cycle.idleRippleHandler.SpawnRippleRing();
             cycle.owner.room.PlaySound(Enums.SoundID.Player_Deactivated_Thanatosis, 0.5f, 1f, 0.9f);
             cycle.owner.room.PlaySound(Enums.SoundID.Player_Activated_Thanatosis, 0.5f, 1f, 0.9f);
             BeaconSaveData.SetCanUseThanatosis(cycle.SaveState, true);

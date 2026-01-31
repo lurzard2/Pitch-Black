@@ -4,7 +4,7 @@ using RWCustom;
 
 namespace PitchBlack;
 
-public class RippleManipulation : ManipulationModule
+public class RippleManipulation : InfluenceHandler
 {
     public RippleManipulation(Cycle cycle) : base(cycle) { }
 
@@ -19,7 +19,7 @@ public class RippleManipulation : ManipulationModule
                 float distance = Vector2.Distance(cycle.spacialTracker.pos.Main, otherCycle.spacialTracker.pos.Main);
                 if (!otherCycle.spacialTracker.InDream && otherCycle.spacialTracker.BelowRippleSurface && distance < radiusForInfluence)
                 {
-                    BeingManipulated(otherCycle);
+                    BeingInfluenced(otherCycle);
                     if (TooManyCreaturesAvailable)
                     {
                         break;
@@ -29,7 +29,7 @@ public class RippleManipulation : ManipulationModule
         }
     }
 
-    public override void BeingManipulated(Cycle oC)
+    public override void BeingInfluenced(Cycle oC)
     {
         cycle.spacialTracker.RippleTick(oC.spacialTracker.pos.v);
     }

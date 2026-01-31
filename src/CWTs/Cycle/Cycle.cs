@@ -10,6 +10,7 @@ public class Cycle
     public AbstractCreature abstractOwner;
     public AbstractRoom AbstractRoom => abstractOwner.Room;
     public CreatureTemplate.Type CycleCreatureTemplateType => abstractOwner.creatureTemplate.type;
+    public bool IsSlugcatType => abstractOwner.creatureTemplate.type == CreatureTemplate.Type.Slugcat;
     public List<AbstractCreature> CreaturesInRoom => abstractOwner.Room.creatures;
 
     // Can be null when abstract
@@ -33,10 +34,15 @@ public class Cycle
     public Counter cycleTime = new(Int32.MaxValue, 0, true);
     public Counter cycleStateTime = new(Int32.MaxValue, 0, true);
 
-    public Queue<CycleModule> modules = [];
+    #region Modules
+    public List<CycleModule> modules = [];
+    // Holds and manages "spacial effects" like ripple
     public SpacialTracker spacialTracker {  get; set; }
+    // Idle ripplering spawner
     public IdleRippleHandler idleRippleHandler { get; set; }
-    public RippleManipulation rippleManipulation { get; set; }
+    // Controls dying, optionally overriden
+    public DeathHandler deathHandler { get; set; }
+    #endregion
 
     public Cycle(AbstractCreature abstractOwner)
     {
@@ -44,14 +50,15 @@ public class Cycle
         state = State.Init;
 
         spacialTracker = new(this);
-        modules.Enqueue(spacialTracker);
+        modules.Add(spacialTracker);
         idleRippleHandler = new(this);
-        modules.Enqueue(idleRippleHandler);
-        rippleManipulation = new(this);
-        modules.Enqueue(rippleManipulation);
+        modules.Add(idleRippleHandler);
+        //modules.Enqueue(new RippleInfluence(this));
+        deathHandler = new(this);
+        modules.Add(deathHandler);
     }
 
-    public virtual void AbstractUpdate()
+    public virtual void Update()
     {
         if (state == State.Init)
         {
@@ -85,10 +92,8 @@ public class Cycle
 
     public void OnRealize()
     {
-        if (RealizedOwner is Player player && MiscUtils.IsBeacon(player))
-        {
-            modules.Enqueue(new BeaconManipulator(this, player));
-        }
+        // We have to wait until player exists, to then create their cycle, this will also result in a key transfer within the object
+        // Instead, we'll leave it up to BeaconCWT to handle, since player exists there
     }
 
     private void Sync()

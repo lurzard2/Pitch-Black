@@ -204,8 +204,8 @@ public static class ScugGraphics
             eyeColor = Colors.BeaconEyeColor;
             
             if (bCWT.beaconCycle != null
-                && (bCWT.beaconCycle.cycle.state == Cycle.State.Thanatosis
-                    || bCWT.beaconCycle.cycle.state == Cycle.State.ExitThanatosis
+                && (bCWT.beaconCycle.state == Cycle.State.Thanatosis
+                    || bCWT.beaconCycle.state == Cycle.State.ExitThanatosis
                     || bCWT.beaconCycle.thanatosisLerp > 0f))
             {
                 bCWT.currentSkinColor = Color.Lerp(skinColor, SpriteColors[0], bCWT.beaconCycle.thanatosisLerp);
