@@ -47,7 +47,7 @@ public class CycleMeter : HudPart
         }
         if (scugCWT.TryGetValue(HUDOwner, out var c) && c is BeaconCWT beacon)
         {
-            bool flag = beacon.beaconCycle.isDead || beacon.beaconCycle.thanatosisLerp > 0.1f;
+            bool flag = beacon.BeaconCycle.isDead || beacon.BeaconCycle.thanatosisLerp > 0.1f;
             flags.Add(flag);
         }
         return flags;
@@ -62,7 +62,7 @@ public class CycleMeter : HudPart
         }
         if (scugCWT.TryGetValue(HUDOwner, out var c) && c is BeaconCWT beacon)
         {
-            bool flag = beacon.beaconCycle.ReachedThanatosisLimit && beacon.beaconCycle.thanatosisDeathCounter.isFinished;
+            bool flag = beacon.BeaconCycle.ReachedThanatosisLimit && beacon.BeaconCycle.thanatosisDeathCounter.isFinished;
             flags.Add(flag);
         }
         return flags;
@@ -112,7 +112,7 @@ public class CycleMeter : HudPart
             } 
             if (scugCWT.TryGetValue(HUDOwner, out var c) && c is BeaconCWT beacon)
             {
-                beacon.beaconCycle.killMe = true;
+                beacon.BeaconCycle.killMe = true;
             }
         }
 

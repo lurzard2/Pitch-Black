@@ -13,21 +13,23 @@ public class BeaconInputHandler : CycleModule
     public BeaconCycle2 cycleRef;
     public bool AllowNone {  get; set; }
     public bool AllowSpecialOnly { get; set; }
+    public bool UseSpecial {  get; set; }
     public Counter specialInputCounter = new(Int32.MaxValue, 0, true);
+    public bool SpecialHeldConditionMet => specialInputCounter == 24;
 
     public BeaconInputHandler(BeaconCycle2 cycle) : base(cycle)
     {
         cycleRef = cycle;
     }
 
-    public void Update(bool dontReset = false)
+    public override void Realized()
     {
         // Special input press time tracking
         if (cycleRef.Beacon.input[0].spec)
         {
             specialInputCounter.Tick();
         }
-        else if (specialInputCounter > 0 && !dontReset)
+        else if (specialInputCounter > 0)
         {
             specialInputCounter.Reset();
         }
@@ -40,13 +42,19 @@ public class BeaconInputHandler : CycleModule
         Player.InputPackage newInputs = originalInputs;
         Player.InputPackage none = new (controls.gamePad, controls.GetActivePreset(), 0, 0, false, false, false, false, false);
 
+        // Only special input is passed through
         if (AllowSpecialOnly)
         {
-            newInputs = new(false, Options.ControlSetup.Preset.None, 0, 0, false, false, false, false, false, originalInputs.spec);
+            newInputs = none;
+            newInputs.spec = originalInputs.spec;
         }
 
-        // Set to null inputs if flagged. Or otherwise if controller exists, remove it.
-        // Player controller removes usual inputs from the player
+        // Trigger special regardless of input
+        if (UseSpecial)
+        {
+            newInputs.spec = true;
+        }
+
         if (AllowNone)
         {
             newInputs = none;

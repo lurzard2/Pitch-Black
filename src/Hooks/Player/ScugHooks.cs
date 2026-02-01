@@ -19,13 +19,13 @@ public static class ScugHooks
         var storyState = game.GetSaveState();
         if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beacon)
         {
-            beacon.squinter?.Update();
+            beacon.Squinter?.Update();
 
             if (storyState != null)
             {
                 if (BeaconSaveData.GetOrSetBool(storyState, BeaconSaveData.canStoreFlares))
                 {
-                    beacon.storage ??= new(self);
+                    beacon.Storage ??= new(self);
                 }
 
                 if (beacon.dontThrowTimer > 0)
@@ -61,7 +61,7 @@ public static class ScugHooks
                 if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beaconCWT)
                 {
                     // pass inputs to the handler
-                    return beaconCWT.beaconCycle.InputHandler.InputPackage(originalInputs);
+                    return beaconCWT.BeaconCycle.InputHandler.InputPackage(originalInputs);
                 }
                 // If the prior condition is not met, just return the original inputs to the stack.
                     return originalInputs;
@@ -83,7 +83,7 @@ public static class ScugHooks
     {
         var player = self.owner.owner as Player;
         
-        if (scugCWT.TryGetValue(player, out ScugCWT c) && c is BeaconCWT beacon && beacon.squinter.squintTick > 1)
+        if (scugCWT.TryGetValue(player, out ScugCWT c) && c is BeaconCWT beacon && beacon.Squinter.squintTick > 1)
         {
             PlayerGraphics pGraphics = player.graphicsModule as PlayerGraphics;
 
@@ -141,13 +141,13 @@ public static class ScugHooks
             {
                 foreach (List<PhysicalObject> thingQuar in self.room.physicalObjects) {
                     foreach (PhysicalObject item in thingQuar) {
-                        if (item is FlareBomb flare && beacon.storage is not null && beacon.storage.storedFlares.Count < beacon.storage.capacity) {
+                        if (item is FlareBomb flare && beacon.Storage is not null && beacon.Storage.storedFlares.Count < beacon.Storage.capacity) {
                             foreach (var player in self.room.PlayersInRoom) {
-                                if (player != null && scugCWT.TryGetValue(player, out var op) && op is BeaconCWT otherBeacon && otherBeacon.storage is not null && otherBeacon.storage.storedFlares.Contains(flare)) {
+                                if (player != null && scugCWT.TryGetValue(player, out var op) && op is BeaconCWT otherBeacon && otherBeacon.Storage is not null && otherBeacon.Storage.storedFlares.Contains(flare)) {
                                     goto SkipAddingFlare;
                                 }
                             }
-                            beacon.storage.FlarebombtoStorage(flare);
+                            beacon.Storage.FlarebombtoStorage(flare);
                             SkipAddingFlare:;
                         }
                     }

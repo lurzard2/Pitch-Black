@@ -187,7 +187,7 @@ public class FlareBombHooks
                 {
                     continue;
                 }
-                if (Plugin.scugCWT.TryGetValue(abstrCrit.realizedCreature as Player, out ScugCWT c) && c is BeaconCWT beaconCWT && beaconCWT.storage.storedFlares.Contains(flarebomb))
+                if (Plugin.scugCWT.TryGetValue(abstrCrit.realizedCreature as Player, out ScugCWT c) && c is BeaconCWT beaconCWT && beaconCWT.Storage.storedFlares.Contains(flarebomb))
                 {
                     return 0;
                 }

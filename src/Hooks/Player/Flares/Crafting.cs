@@ -45,7 +45,7 @@ public static class Crafting
                     break;
                 }
 
-                if (self.grasps[i]?.grabbed is Rock && beaconCWT.storage != null) {
+                if (self.grasps[i]?.grabbed is Rock && beaconCWT.Storage != null) {
                     self.SubtractFood(1);
                     self.DeleteGrasp(i);
 
@@ -54,8 +54,8 @@ public static class Crafting
                     item.RealizeInRoom();
                     self.SlugcatGrab(item.realizedObject, i);
 
-                    if (beaconCWT.storage.storedFlares.Count <= beaconCWT.storage.capacity) {
-                        beaconCWT.storage.FlarebombtoStorage(item.realizedObject as FlareBomb);
+                    if (beaconCWT.Storage.storedFlares.Count <= beaconCWT.Storage.capacity) {
+                        beaconCWT.Storage.FlarebombtoStorage(item.realizedObject as FlareBomb);
                         beaconCWT.heldCraft = true;
                     }
                     else if (self.FreeHand() != -1)

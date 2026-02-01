@@ -47,7 +47,7 @@ public static class FlareStorageHooks
                 
                 if (scugCWT.TryGetValue(abstrCrit.realizedCreature as Player, out ScugCWT cwt) && cwt is BeaconCWT beaconCWT) 
                 {
-                    if (beaconCWT.storage != null && beaconCWT.storage.storedFlares.Contains(flare))
+                    if (beaconCWT.Storage != null && beaconCWT.Storage.storedFlares.Contains(flare))
                     {
                         return Player.ObjectGrabability.CantGrab;
                     }
@@ -101,9 +101,9 @@ public static class FlareStorageHooks
     {
         if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
         {
-            if (cwt.storage != null)
+            if (cwt.Storage != null)
             {
-                cwt.storage.GraphicsModuleUpdated(eu);
+                cwt.Storage.GraphicsModuleUpdated(eu);
             }
         }
         
@@ -198,10 +198,10 @@ public static class FlareStorageHooks
     /// </summary>
     private static void Player_Die(On.Player.orig_Die orig, Player self)
     {
-        if (ModManager.CoopAvailable && scugCWT.TryGetValue(self, out var c) && c is BeaconCWT cwt && cwt.storage != null)
+        if (ModManager.CoopAvailable && scugCWT.TryGetValue(self, out var c) && c is BeaconCWT cwt && cwt.Storage != null)
         {
             // refund amount of flares that were in storage
-            cwt.coopRefundFlares = Mathf.Max(cwt.coopRefundFlares, cwt.storage.storedFlares.Count);
+            cwt.coopRefundFlares = Mathf.Max(cwt.coopRefundFlares, cwt.Storage.storedFlares.Count);
         }
         
         // on death, all of beacon's stored flarebombs gets popped off -spinch
@@ -230,7 +230,7 @@ public static class FlareStorageHooks
             {
                 if (self.grasps[i] != null && (self.IsObjectThrowable(self.grasps[i].grabbed) || self.grasps[i].grabbed is Creature))
                 {
-                    if (self.slugOnBack != null && self.input[0].pckp && self.grasps[i].grabbed is FlareBomb && bCWT1.storage != null && bCWT1.storage.storedFlares.Count < bCWT1.storage.capacity)
+                    if (self.slugOnBack != null && self.input[0].pckp && self.grasps[i].grabbed is FlareBomb && bCWT1.Storage != null && bCWT1.Storage.storedFlares.Count < bCWT1.Storage.capacity)
                     {
                         // if you're trying to put a flarebomb into storage, don't put the slug on back to your hand
                         self.slugOnBack.interactionLocked = true;
@@ -249,12 +249,12 @@ public static class FlareStorageHooks
         if (c is BeaconCWT bCWT)
         {
             // check for auto-store flashbangs if our hands are full
-            if (self.input[0].pckp && !self.input[1].pckp && self.pickUpCandidate != null && self.pickUpCandidate is FlareBomb flare && bCWT.storage != null && bCWT.storage.storedFlares.Count < bCWT.storage.capacity)
+            if (self.input[0].pckp && !self.input[1].pckp && self.pickUpCandidate != null && self.pickUpCandidate is FlareBomb flare && bCWT.Storage != null && bCWT.Storage.storedFlares.Count < bCWT.Storage.capacity)
             {
                 // if we're holding two items or one big two-handed item
                 if (preFreeHand == -1)
                 {
-                    bCWT.storage.FlarebombtoStorage(flare);
+                    bCWT.Storage.FlarebombtoStorage(flare);
                     self.wantToPickUp = 0;
                     return;
                 }
@@ -285,11 +285,11 @@ public static class FlareStorageHooks
         JustGoOverHere:
 
             // don't unstore a flare right after we've created one
-            if ((interactLockStorage || bCWT.heldCraft) && bCWT.storage != null)
+            if ((interactLockStorage || bCWT.heldCraft) && bCWT.Storage != null)
             {
                 // dont take flarebomb from storage if holding food or eating
-                bCWT.storage.interactionLocked = true;
-                bCWT.storage.storageCounter.Reset();
+                bCWT.Storage.interactionLocked = true;
+                bCWT.Storage.storageCounter.Reset();
                 //logger.LogDebug("FlareStorage: RESETING COUNTER");
             }
 
@@ -297,7 +297,7 @@ public static class FlareStorageHooks
                 // once we let go of grab we can move storage again
                 bCWT.heldCraft = false;
 
-            if (bCWT.storage != null)
+            if (bCWT.Storage != null)
             {
                 //logger.LogDebug($"FlareStorage: INCREMENT:{bCWT.storage.increment} - COUNTER:{bCWT.storage.storageCounter} - LOCKED:{bCWT.storage.interactionLocked} - HELDCRAFT:{bCWT.heldCraft}");
 
@@ -305,15 +305,15 @@ public static class FlareStorageHooks
                 if (!self.craftingObject && self.swallowAndRegurgitateCounter < 45)
                 {
                     // dont increment if crafting
-                    bCWT.storage.increment = self.input[0].pckp && !bCWT.heldCraft;
+                    bCWT.Storage.increment = self.input[0].pckp && !bCWT.heldCraft;
                     //logger.LogDebug($"FlareStorage: INCREMENT:{bCWT.storage.increment}");
-                    bCWT.storage.Update(eu);
+                    bCWT.Storage.Update(eu);
                 }
 
-                if (!dontAutoThrowFlarebomb && self.input[0].thrw && !self.input[1].thrw && bCWT.storage.storedFlares.Count > 0)
+                if (!dontAutoThrowFlarebomb && self.input[0].thrw && !self.input[1].thrw && bCWT.Storage.storedFlares.Count > 0)
                 {
                     // auto throw flarebomb on an empty hand
-                    int handWithFlarebomb = bCWT.storage.FlarebombFromStorageToPaw(eu);
+                    int handWithFlarebomb = bCWT.Storage.FlarebombFromStorageToPaw(eu);
                     self.ThrowObject(handWithFlarebomb, eu);
                     self.wantToThrow = 0;
                 }
@@ -367,7 +367,7 @@ public static class FlareStorageHooks
             || !self.slugOnBack.HasASlug
             || !scugCWT.TryGetValue(self, out var c)
             || c is not BeaconCWT cwt
-            || cwt.storage.storedFlares.Count <= 0)
+            || cwt.Storage.storedFlares.Count <= 0)
             {
                 return false;
             }

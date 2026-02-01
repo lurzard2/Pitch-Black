@@ -240,12 +240,12 @@ public class FlareStorage
     {
         if (Plugin.scugCWT.TryGetValue(self, out ScugCWT scugCWT)
             && scugCWT is BeaconCWT beaconCWT
-            && beaconCWT.storage != null)
+            && beaconCWT.Storage != null)
         {
-            while (beaconCWT.storage.storedFlares.Count > 0)
+            while (beaconCWT.Storage.storedFlares.Count > 0)
             {
-                FlareBomb flare = beaconCWT.storage.storedFlares.Pop();
-                AbstractStoredFlare af = beaconCWT.storage.abstractStoredFlares.Pop();
+                FlareBomb flare = beaconCWT.Storage.storedFlares.Pop();
+                AbstractStoredFlare af = beaconCWT.Storage.abstractStoredFlares.Pop();
                 if (flare != null)
                 {
                     flare.firstChunk.vel = self.mainBodyChunk.vel + Custom.RNV() * 3f * Random.value;

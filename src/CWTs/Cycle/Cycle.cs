@@ -53,7 +53,6 @@ public class Cycle
         modules.Add(spacialTracker);
         idleRippleHandler = new(this);
         modules.Add(idleRippleHandler);
-        //modules.Enqueue(new RippleInfluence(this));
         deathHandler = new(this);
         modules.Add(deathHandler);
     }

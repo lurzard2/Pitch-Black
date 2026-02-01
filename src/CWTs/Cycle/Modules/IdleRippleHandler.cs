@@ -86,6 +86,7 @@ public class IdleRippleHandler : CycleModule
             speed = Random.Range(0.5f, 1f);
         }
 
+        // Dev debugging for ripplerings
         if (devMode)
         {
             if (Input.GetKey("e"))
@@ -99,7 +100,7 @@ public class IdleRippleHandler : CycleModule
             if (cycle.RealizedOwner is Player p)
             {
                 string playerName = $"{p.slugcatStats.name}";
-                string playerIndex = $"{p.room.PlayersInRoom.IndexOf(p)}";
+                string playerIndex = $"{p.playerState.playerNumber}";
                 playerCharString = $"Player[{playerName},{playerIndex}]";
                 creatureType = "";
             }
