@@ -84,7 +84,7 @@ class  Plugin : BaseUnityPlugin
 
         On.Room.ctor += Room_ctor;
 
-        CreatureCycleHooks.Apply();
+        CycleHooks.Apply();
         DreamerHooks.Apply();
         WarpPointHooks_ForRift.Apply();
         RotImmunity.Apply();
