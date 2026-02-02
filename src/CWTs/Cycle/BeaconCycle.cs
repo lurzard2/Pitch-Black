@@ -8,17 +8,16 @@ namespace PitchBlack;
 public class BeaconCycle : Cycle
 {
     public Player owner;
+    public BeaconCWT cwt;
+
     public SaveState SaveState => owner.abstractCreature.world.game.GetSaveState();
     // Not a UAD yet, probably won't become one
     public ThanatosisTutorialSequence thanatosisTutorialSequence;
-    public float SpiralLevel => SaveState.GetSpiralLevel();
-    public float MinSpiralLevel => SaveState.GetMinSpiralLevel();
-    public float MaxSpiralLevel => SaveState.GetMaxSpiralLevel();
 
     public bool deathToggle;
     public bool isDead;
     public Counter specInputCounter = new(Int32.MaxValue, 0, true);
-    public float ThanatosisLimit => (40 * 6) * SpiralLevel;
+    public float ThanatosisLimit => (40 * 6) * cwt.SpiralLevel();
     public bool ReachedThanatosisLimit => state == State.Thanatosis && cycleStateTime > ThanatosisLimit;
     public float thanatosisLerp;
     public bool killMe = false;
@@ -26,16 +25,10 @@ public class BeaconCycle : Cycle
     public float targetRippleDeathIntensity;
     public Counter thanatosisDeathCounter = new(80, 0);
 
-    public BeaconCycle(Player owner) : base(owner.abstractCreature)
+    public BeaconCycle(Player owner, BeaconCWT cwt) : base(owner.abstractCreature)
     {
         this.owner = owner;
-
-        // for Playtest, for now
-        if (SaveState.GetCompletedBeacon())
-        {
-            string ptText = $"[THIS MARKS THE END OF THE PLAYTEST CURRENTLY] ~ {MOD_VERSION}";
-            MiscUtils.AddHUDMessage(owner.room.game.cameras[0].hud, true, ptText, 40 * 30, 120, true, true);
-        }
+        this.cwt = cwt;
     }
 
     public void Update()
@@ -54,7 +47,7 @@ public class BeaconCycle : Cycle
             }
 
             // Indicator for being unable to use Thanatosis if unlocked
-            if (MaxSpiralLevel >= 1 && specInputCounter == UnityEngine.Random.Range(60, 140))
+            if (cwt.MaxSpiralLevel() >= 1 && specInputCounter == UnityEngine.Random.Range(60, 140))
             {
                 owner.Stun(120);
                 specInputCounter.Reset();
@@ -76,7 +69,7 @@ public class BeaconCycle : Cycle
         //if (owner.abstractCreature != null)
         //    cycle.AbstractUpdate();
 
-        if (SaveState.GetCanUseThanatosis())
+        if (cwt.CanUseThanatosis())
         {
             ThanatosisUpdate();
         }
@@ -112,7 +105,7 @@ public class BeaconCycle : Cycle
 
         if (ReachedThanatosisLimit && killMe)
         {
-            if (SpiralLevel >= 0f)
+            if (cwt.SpiralLevel() >= 0f)
             {
                 Persist();
             }
@@ -191,7 +184,7 @@ public class BeaconCycle : Cycle
     private void Persist()
     {
         logger.LogDebug("Thanatosis: Persisting!");
-        SaveState.SetSpiralLevel(SpiralLevel - 1f);
+        SaveState.SetSpiralLevel(cwt.SpiralLevel() - 1f);
         ToggleThanatosis();
         owner.Stun(80);
         owner.room.PlaySound(Enums.SoundID.Player_Revived, owner.mainBodyChunk);
