@@ -111,21 +111,16 @@ public static class ScugGraphics
         var GotCWTData = scugCWT.TryGetValue(self.player, out ScugCWT c);
         if (GotCWTData)
         {
-            if (c is BeaconCWT cwt)
+            if (c is BeaconCWT beacon)
             {
                 // Squinting
-                if (cwt.squinter.squintTick > 10)
+                if (beacon.squinter.squintTick > 10)
                 {
                     if (self.blink <= 0 && Random.value < 0.35f) self.player.Blink(Mathf.FloorToInt(Mathf.Lerp(3f, 8f, Random.value)));
                     self.head.vel -= self.lookDirection * 3f;
                 }
             }
-            
-            // If whiskers exists, update
-            if (c.whiskers != null)
-            {
-                c.whiskers.Update();
-            }   
+            c.whiskers?.Update();
         }
     }
     
@@ -204,8 +199,8 @@ public static class ScugGraphics
             eyeColor = Colors.BeaconEyeColor;
             
             if (bCWT.beaconCycle != null
-                && (bCWT.beaconCycle.cycle.state == Cycle.State.Thanatosis
-                    || bCWT.beaconCycle.cycle.state == Cycle.State.ExitThanatosis
+                && (bCWT.beaconCycle.state == Cycle.State.Thanatosis
+                    || bCWT.beaconCycle.state == Cycle.State.ExitThanatosis
                     || bCWT.beaconCycle.thanatosisLerp > 0f))
             {
                 bCWT.currentSkinColor = Color.Lerp(skinColor, SpriteColors[0], bCWT.beaconCycle.thanatosisLerp);

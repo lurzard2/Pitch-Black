@@ -10,34 +10,6 @@ namespace PitchBlack;
 
 public static class ScugHooks
 {
-    /// <summary>
-    /// Beacon's own update function, put things here instead of directly into a Player.Update hook, because counting inside update impacts performance.
-    /// </summary>
-    private static void BeaconUpdate(Player self)
-    {
-        var game = self.abstractCreature.world.game;
-        var storyState = game.GetSaveState();
-        if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beacon)
-        {
-            beacon.squinter?.Update();
-
-            if (storyState != null)
-            {
-                beacon.beaconCycle?.Update();
-
-                if (BeaconSaveData.GetOrSetBool(storyState, BeaconSaveData.canStoreFlares))
-                {
-                    beacon.storage ??= new(self);
-                }
-
-                if (beacon.dontThrowTimer > 0)
-                {
-                    beacon.dontThrowTimer--;
-                }
-            }
-        }
-    }
-
     public static void Apply()
     {
         On.SlugcatStats.SlugcatToTimeline += SlugcatToTimeline_MODIFY;
@@ -128,18 +100,17 @@ public static class ScugHooks
                 self.absoluteHuntPos = targetPos - Custom.DirVec(player.bodyChunks[0].pos, targetPos) * 3f;
                 return false;
             }
-
         }
 
         return orig(self);
     }
 
-    /// <summary>
-    /// Injects BeaconUpdate function into Player.Update before the original code (which maintains performance).
-    /// </summary>
     private static void Player_Update(On.Player.orig_Update orig, Player self, bool eu)
     {
-        BeaconUpdate(self);
+        if (scugCWT.TryGetValue(self, out var c) && c is BeaconCWT beacon)
+        {
+            beacon.Update();
+        }
         orig(self, eu);
     }
     

@@ -266,7 +266,7 @@ public class ThanatosisTutorialSequence
                 }
                 return;
             }
-            cycle.cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
+            cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
             cycle.owner.room.PlaySound(Enums.SoundID.Player_Deactivated_Thanatosis, 0.5f, 1f, 0.9f);
             cycle.owner.room.PlaySound(Enums.SoundID.Player_Activated_Thanatosis, 0.5f, 1f, 0.9f);
             BeaconSaveData.SetCanUseThanatosis(cycle.SaveState, true);
@@ -288,8 +288,8 @@ public class ThanatosisTutorialSequence
             BeaconSaveData.SetHasUsedThanatosis(cycle.SaveState, true);
             // Do not make them do that whole thing over again
             RainWorldGame.ForceSaveNewDenLocation(cycle.owner.room.world.game, cycle.owner.room.abstractRoom.name, true);
-            cycle.cycle.spawnedPendingRipples = false;
-            cycle.cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
+            cycle.spawnedPendingRipples = false;
+            cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
             // Ends sequence
             ChangePhase(Phase.UsedThanatosis);
         }
@@ -365,16 +365,16 @@ public class ThanatosisTutorialSequence
 
         if (holdingInput)
         {
-            if (cycle.cycle.idleRipplesToSpawn < 15)
+            if (cycle.idleRipplesToSpawn < 15)
             {
-                cycle.cycle.idleRipplesToSpawn += UnityEngine.Random.Range(0, UnityEngine.Random.Range(0, 12));
+                cycle.idleRipplesToSpawn += UnityEngine.Random.Range(0, UnityEngine.Random.Range(0, 12));
             }
-            cycle.cycle.spawnedPendingRipples = true;
+            cycle.spawnedPendingRipples = true;
         }
-        if (cycle.cycle.idleRipplesToSpawn >= 8 && cycle.cycle.spawnedPendingRipples)
+        if (cycle.idleRipplesToSpawn >= 8 && cycle.spawnedPendingRipples)
         {
-            cycle.cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
-            cycle.owner.room.PlaySound(Enums.SoundID.Player_Deactivated_Thanatosis, 0.5f, 0.03f * cycle.cycle.idleRipplesToSpawn, 0.85f);
+            cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
+            cycle.owner.room.PlaySound(Enums.SoundID.Player_Deactivated_Thanatosis, 0.5f, 0.03f * cycle.idleRipplesToSpawn, 0.85f);
         }
     }
 
@@ -456,17 +456,17 @@ public class ThanatosisTutorialSequence
 
     private void SpasmerUpdate()
     {
-        if (cycle.cycle.idleRipplesToSpawn == 0)
+        if (cycle.idleRipplesToSpawn == 0)
         {
-            cycle.cycle.idleRipplesToSpawn++;
+            cycle.idleRipplesToSpawn++;
             if (cycle.owner.abstractCreature.rippleLayer == 1)
             {
-                cycle.cycle.idleRipplesToSpawn += UnityEngine.Random.Range(2, 5);
+                cycle.idleRipplesToSpawn += UnityEngine.Random.Range(2, 5);
             }
         }
         else
         {
-            cycle.cycle.spawnedPendingRipples = true;
+            cycle.spawnedPendingRipples = true;
         }
     }
 
