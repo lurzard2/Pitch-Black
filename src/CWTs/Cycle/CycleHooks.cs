@@ -1,7 +1,7 @@
 ﻿using static PitchBlack.Plugin;
 
 namespace PitchBlack;
-public static class CreatureCycleHooks
+public static class CycleHooks
 {
     public static void Apply()
     {
@@ -36,7 +36,7 @@ public static class CreatureCycleHooks
 
         if (!creatureCycle.TryGetValue(self, out var _))
         {
-            creatureCycle.Add(self, new Cycle(self));
+            creatureCycle.Add(self, new CreatureCycle(self));
         }
     }
 }

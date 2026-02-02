@@ -20,11 +20,11 @@ public class MDVector
 
     public float gravity { get; set; }
 
-    public MDVector(float x = 0, float y = 0, float z = 0, float w = 0)
+    public MDVector(float x = 0, float y = 0, float z = 0, float v = 0)
     {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.v = w;
+        this.v = v;
     }
 }
