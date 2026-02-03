@@ -1,0 +1,1 @@
+PlacedObjects: LightSource><935.384><918.8985><0.4673913~Environment~-769~-520~-394.0001~-519.3975~1~1~None~0~0, 

@@ -1,0 +1,6 @@
+Template: NONE
+Grime: 0.3028986
+Palette: 9090909
+EffectColorB: 6
+PlacedObjects: LightSource><518.644><324.0483><0.2115923~Environment~-42.1333~146.4~50~86.60254~1~0~None~0~0, 
+FadePalette: 8, 0.2550726

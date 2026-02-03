@@ -1,0 +1,8 @@
+Template: NONE
+Grime: 0.3434783
+Palette: 9090909
+EffectColorA: 6
+EffectColorB: 6
+Effects: ModifyEffectColorA-0,0.5,0.2391304-20-20, 
+PlacedObjects: CustomDecal><335.5782><-5.778364><-35.20007~627.2~299.2001~641.0667~201.0667~50.13334~0~0~0~1~0~bigorangefacea~0.1579709~1~0.1579709~1~0.1579709~1~0.1579709~1, LightSource><476.548><122.0259><0.04347826~Environment~-34.66663~196.5334~50~86.60254~1~0~None~0~0, LightSource><473.855><121.1105><0.1246364~Environment~-24.53333~123.4667~50~86.60254~1~0~None~0~0, LightSource><454.7797><317.3722><0.05507229~Environment~-54.93335~107.4667~50~86.60254~1~0~None~0~0, 
+FadePalette: 8, 0.2550724
