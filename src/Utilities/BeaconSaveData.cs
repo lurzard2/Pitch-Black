@@ -113,6 +113,14 @@ public static class BeaconSaveData
     public static string canUseThanatosis = "CanUseThanatosis";
     public static bool GetCanUseThanatosis(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(canUseThanatosis, out bool thanatosis) && thanatosis;
     public static void SetCanUseThanatosis(this SaveState save, bool value) => save.deathPersistentSaveData.GetSlugBaseData().Set(canUseThanatosis, value);
+    public static bool GetCanUseThanatosis_CurrentOrDefault(this SaveState save)
+    {
+        if (save is not null)
+        {
+            return save.GetCanUseThanatosis();
+        }
+        return true;
+    }
 
     public static string hasUsedThanatosis = "HasUsedThanatosis";
     public static bool GetHasUsedThanatosis(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(hasUsedThanatosis, out bool usedThanatosis) && usedThanatosis;
@@ -134,6 +142,48 @@ public static class BeaconSaveData
     public static void SetMaxSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(maxSpiralLevel, value);
     #endregion
 
+    #region Death Stage
+    public static readonly string deathStage = "DeathStage";
+    public enum DeathStage
+    {
+        None,
+        Demised,
+        Dreaming,
+        Rotting,
+        Hybrid
+    };
+    public static DeathStage GetDeathStage(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(deathStage, out DeathStage stage) ? stage : DeathStage.None; 
+    public static void SetDeathStage(this SaveState save, DeathStage stage) => save.deathPersistentSaveData.GetSlugBaseData().Set(deathStage, stage);
+    public static DeathStage GetDeathStage_CurrentOrDefault(this SaveState save)
+    {
+        if (save is not null)
+        {
+            return save.GetDeathStage();
+        }
+        return DeathStage.Demised;
+    }
+    #endregion
+
+    #region Story Progress
+    public const string storyProgress = "StoryProgress";
+    public enum StoryProgress
+    {
+        Start,
+        Prologue,
+        Intermission1,
+        Chapter1,
+        Intermission2,
+        Chapter2,
+        Intermission3,
+        Chapter3,
+        Intermission4,
+        Epilogue,
+        End1,
+        End2
+    };
+    public static StoryProgress GetStoryProgress(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(storyProgress, out StoryProgress stage) ? stage : StoryProgress.Start;
+    public static void SetStoryProgress(this SaveState save, StoryProgress stage) => save.deathPersistentSaveData.GetSlugBaseData().Set(storyProgress, stage);
+    #endregion
     // Bools for flares
     public static readonly string canCraftFlares = "CanCraftFlares";
     public static readonly string canStoreFlares = "CanStoreFlares";

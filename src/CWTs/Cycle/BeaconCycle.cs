@@ -17,7 +17,7 @@ public class BeaconCycle : Cycle
     public bool deathToggle;
     public bool isDead;
     public Counter specInputCounter = new(Int32.MaxValue, 0, true);
-    public float ThanatosisLimit => (40 * 6) * cwt.SpiralLevel();
+    public float ThanatosisLimit => (40 * 6) * cwt.SpiralLevel;
     public bool ReachedThanatosisLimit => state == State.Thanatosis && cycleStateTime > ThanatosisLimit;
     public float thanatosisLerp;
     public bool killMe = false;
@@ -69,7 +69,7 @@ public class BeaconCycle : Cycle
         //if (owner.abstractCreature != null)
         //    cycle.AbstractUpdate();
 
-        if (cwt.CanUseThanatosis())
+        if (cwt.SaveState.GetCanUseThanatosis_CurrentOrDefault())
         {
             ThanatosisUpdate();
         }
@@ -105,7 +105,7 @@ public class BeaconCycle : Cycle
 
         if (ReachedThanatosisLimit && killMe)
         {
-            if (cwt.SpiralLevel() >= 0f)
+            if (cwt.SpiralLevel >= 0f)
             {
                 Persist();
             }
@@ -184,7 +184,7 @@ public class BeaconCycle : Cycle
     private void Persist()
     {
         logger.LogDebug("Thanatosis: Persisting!");
-        SaveState.SetSpiralLevel(cwt.SpiralLevel() - 1f);
+        cwt.SpiralLevel -= 1f;
         ToggleThanatosis();
         owner.Stun(80);
         owner.room.PlaySound(Enums.SoundID.Player_Revived, owner.mainBodyChunk);
