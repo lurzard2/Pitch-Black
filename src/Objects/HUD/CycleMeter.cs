@@ -74,7 +74,7 @@ public class CycleMeter : HudPart
         fade.a = 0f;
 
         // Adding cycles, with an extra one to serve as the fixed 0 index cycle
-        for (int i = 0; i < SaveState.GetMaxSpiralLevel() + 1; i++)
+        for (int i = 0; i < SaveState.GetMaxSpiralLevel_CurrentOrArenaDefault() + 1; i++)
         {
             cycles.Add(new HUDCycle(this, i));
         }

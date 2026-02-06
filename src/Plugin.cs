@@ -247,7 +247,7 @@ class  Plugin : BaseUnityPlugin
         var beaconState = self.GetSaveState(true);
         if (devMode && beaconState != null) 
         {
-            beaconState.RemixUpdateSaveState();
+            beaconState.PBConfigUpdateSaveState();
         }
 
         pursuerTracker.Add(self, new List<NTTracker>());

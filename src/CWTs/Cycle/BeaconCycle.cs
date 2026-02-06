@@ -47,7 +47,7 @@ public class BeaconCycle : Cycle
             }
 
             // Indicator for being unable to use Thanatosis if unlocked
-            if (cwt.MaxSpiralLevel() >= 1 && specInputCounter == UnityEngine.Random.Range(60, 140))
+            if (cwt.SaveState.GetMaxSpiralLevel_CurrentOrArenaDefault() >= 1 && specInputCounter == UnityEngine.Random.Range(60, 140))
             {
                 owner.Stun(120);
                 specInputCounter.Reset();
@@ -69,7 +69,7 @@ public class BeaconCycle : Cycle
         //if (owner.abstractCreature != null)
         //    cycle.AbstractUpdate();
 
-        if (cwt.SaveState.GetCanUseThanatosis_CurrentOrDefault())
+        if (cwt.SaveState.GetCanUseThanatosis_CurrentOrArenaDefault())
         {
             ThanatosisUpdate();
         }

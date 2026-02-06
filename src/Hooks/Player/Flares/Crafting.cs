@@ -54,7 +54,7 @@ public static class Crafting
                     item.RealizeInRoom();
                     self.SlugcatGrab(item.realizedObject, i);
 
-                    if (beaconCWT.storage.storedFlares.Count <= beaconCWT.storage.capacity) {
+                    if (beaconCWT.GetFlareStorage() is not null && beaconCWT.storage.storedFlares.Count <= beaconCWT.storage.capacity) {
                         beaconCWT.storage.FlarebombtoStorage(item.realizedObject as FlareBomb);
                         beaconCWT.heldCraft = true;
                     }

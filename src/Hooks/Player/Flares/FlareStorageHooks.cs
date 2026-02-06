@@ -45,9 +45,11 @@ public static class FlareStorageHooks
                     continue;
                 }
                 
-                if (scugCWT.TryGetValue(abstrCrit.realizedCreature as Player, out ScugCWT cwt) && cwt is BeaconCWT beaconCWT) 
+                if (scugCWT.TryGetValue(abstrCrit.realizedCreature as Player, out ScugCWT cwt)
+                    && cwt is BeaconCWT beaconCWT
+                    && beaconCWT.GetFlareStorage() is not null) 
                 {
-                    if (beaconCWT.storage != null && beaconCWT.storage.storedFlares.Contains(flare))
+                    if (beaconCWT.storage.storedFlares.Contains(flare))
                     {
                         return Player.ObjectGrabability.CantGrab;
                     }
@@ -101,7 +103,7 @@ public static class FlareStorageHooks
     {
         if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT cwt)
         {
-            if (cwt.storage != null)
+            if (cwt.GetFlareStorage() is not null)
             {
                 cwt.storage.GraphicsModuleUpdated(eu);
             }
@@ -139,7 +141,7 @@ public static class FlareStorageHooks
         if (self.slugcatStats.name == Enums.SlugcatStatsName.Beacon
             && self.playerState.foodInStomach > 0
             && self.objectInStomach.type == AbstractPhysicalObject.AbstractObjectType.Rock
-            && BeaconSaveData.GetOrSetBool(self.room.world.game.GetStorySession.saveState,BeaconSaveData.canCraftFlares))
+            && self.room.world.game.GetSaveState().GetCanCraftFlares_CurrentOrArenaDefault())
         {
             self.objectInStomach = new AbstractConsumable(self.room.world, AbstractPhysicalObject.AbstractObjectType.FlareBomb, null, self.abstractCreature.pos, self.room.game.GetNewID(), -1, -1, null);
             self.SubtractFood(1);
@@ -198,7 +200,7 @@ public static class FlareStorageHooks
     /// </summary>
     private static void Player_Die(On.Player.orig_Die orig, Player self)
     {
-        if (ModManager.CoopAvailable && scugCWT.TryGetValue(self, out var c) && c is BeaconCWT cwt && cwt.storage != null)
+        if (ModManager.CoopAvailable && scugCWT.TryGetValue(self, out var c) && c is BeaconCWT cwt && cwt.GetFlareStorage() is not null)
         {
             // refund amount of flares that were in storage
             cwt.coopRefundFlares = Mathf.Max(cwt.coopRefundFlares, cwt.storage.storedFlares.Count);
@@ -230,7 +232,11 @@ public static class FlareStorageHooks
             {
                 if (self.grasps[i] != null && (self.IsObjectThrowable(self.grasps[i].grabbed) || self.grasps[i].grabbed is Creature))
                 {
-                    if (self.slugOnBack != null && self.input[0].pckp && self.grasps[i].grabbed is FlareBomb && bCWT1.storage != null && bCWT1.storage.storedFlares.Count < bCWT1.storage.capacity)
+                    if (self.slugOnBack != null
+                        && self.input[0].pckp
+                        && self.grasps[i].grabbed is FlareBomb
+                        && bCWT1.GetFlareStorage() is not null
+                        && bCWT1.storage.storedFlares.Count < bCWT1.storage.capacity)
                     {
                         // if you're trying to put a flarebomb into storage, don't put the slug on back to your hand
                         self.slugOnBack.interactionLocked = true;
@@ -249,7 +255,12 @@ public static class FlareStorageHooks
         if (c is BeaconCWT bCWT)
         {
             // check for auto-store flashbangs if our hands are full
-            if (self.input[0].pckp && !self.input[1].pckp && self.pickUpCandidate != null && self.pickUpCandidate is FlareBomb flare && bCWT.storage != null && bCWT.storage.storedFlares.Count < bCWT.storage.capacity)
+            if (self.input[0].pckp
+                && !self.input[1].pckp
+                && self.pickUpCandidate != null
+                && self.pickUpCandidate is FlareBomb flare
+                && bCWT.GetFlareStorage() is not null
+                && bCWT.storage.storedFlares.Count < bCWT.storage.capacity)
             {
                 // if we're holding two items or one big two-handed item
                 if (preFreeHand == -1)
@@ -264,7 +275,7 @@ public static class FlareStorageHooks
 
             /* if bacon is full and rotund isnt enabled, put flarebomb into storage
             dont even check for grasps if bacon's holding a food item -spinch */
-            if (!Plugin.RotundWorldEnabled && self.FoodInStomach >= self.MaxFoodInStomach)
+            if (!RotundWorldEnabled && self.FoodInStomach >= self.MaxFoodInStomach)
             {
                 goto JustGoOverHere;
             }
@@ -285,7 +296,7 @@ public static class FlareStorageHooks
         JustGoOverHere:
 
             // don't unstore a flare right after we've created one
-            if ((interactLockStorage || bCWT.heldCraft) && bCWT.storage != null)
+            if ((interactLockStorage || bCWT.heldCraft) && bCWT.GetFlareStorage() is not null)
             {
                 // dont take flarebomb from storage if holding food or eating
                 bCWT.storage.interactionLocked = true;
@@ -297,7 +308,7 @@ public static class FlareStorageHooks
                 // once we let go of grab we can move storage again
                 bCWT.heldCraft = false;
 
-            if (bCWT.storage != null)
+            if (bCWT.GetFlareStorage() is not null)
             {
                 //logger.LogDebug($"FlareStorage: INCREMENT:{bCWT.storage.increment} - COUNTER:{bCWT.storage.storageCounter} - LOCKED:{bCWT.storage.interactionLocked} - HELDCRAFT:{bCWT.heldCraft}");
 
@@ -363,23 +374,24 @@ public static class FlareStorageHooks
 
         c.EmitDelegate((Player self) =>
         {
-            if (self.slugOnBack == null
-            || !self.slugOnBack.HasASlug
-            || !scugCWT.TryGetValue(self, out var c)
-            || c is not BeaconCWT cwt
-            || cwt.storage.storedFlares.Count <= 0)
+            if (self.slugOnBack != null
+            && self.slugOnBack.HasASlug
+            && scugCWT.TryGetValue(self, out var c)
+            && c is BeaconCWT cwt
+            && cwt.GetFlareStorage() is not null
+            && cwt.storage.storedFlares.Count > 0)
             {
-                return false;
+                foreach (var item in self.grasps)
+                {
+                    if (item != null && self.IsObjectThrowable(item.grabbed))
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
 
-            foreach (var item in self.grasps)
-            {
-                if (item != null && self.IsObjectThrowable(item.grabbed))
-                {
-                    return false;
-                }
-            }
-            return true;
+            return false;
         });
 
         c.Emit(OpCodes.Brtrue, label);
