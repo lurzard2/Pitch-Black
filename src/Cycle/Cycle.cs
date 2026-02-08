@@ -15,6 +15,8 @@ public abstract class Cycle
     public Creature RealizedOwner => abstractOwner.realizedCreature;
     public CreatureTemplate.Type CycleCreatureTemplateType => abstractOwner.creatureTemplate.type;
 
+    public SaveState SaveState => abstractOwner.world.game.GetSaveState();
+
     public State state;
     public class State : ExtEnum<State>
     {
