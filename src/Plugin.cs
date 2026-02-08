@@ -24,10 +24,12 @@ namespace PitchBlack;
 
 class  Plugin : BaseUnityPlugin
 {
+    #region modinfo dont edit
     public const string MOD_ID = "lurzard.pitchblack";
     public const string MOD_NAME = "Pitch Black";
     public const string MOD_VERSION = "0.6.4";
     public static string MOD_PATH = "";
+    #endregion
 
     private bool init = false;
     public static ManualLogSource logger;
@@ -40,8 +42,8 @@ class  Plugin : BaseUnityPlugin
     public static readonly ConditionalWeakTable<Player, ScugCWT> scugCWT = new();
     public static readonly ConditionalWeakTable<AbstractCreature, NightTerror> NTAbstractCWT = new();
     public static readonly ConditionalWeakTable<AbstractCreature, StrongBox<int>> KILLIT = new();
-    public static readonly ConditionalWeakTable<RainWorldGame, List<NTTracker>> pursuerTracker = new();
-    public static readonly ConditionalWeakTable<MouseGraphics, RotData> rotRatData = new();
+    public static readonly ConditionalWeakTable<RainWorldGame, List<NTTracker>> pursuerTracker = new(); 
+    public static readonly ConditionalWeakTable<MouseGraphics, RotRatData> rotRatData = new();
     public static readonly ConditionalWeakTable<World, List<AbstractRoom>> roomsWithDreamerSpot = new();
     public static readonly ConditionalWeakTable<World, List<DreamerPresence>> dreamerPresence = new();
     public static readonly ConditionalWeakTable<AbstractCreature, Cycle> creatureCycle = new();
@@ -112,77 +114,78 @@ class  Plugin : BaseUnityPlugin
     {
         orig(self);
 
-        if (!init)
+        if (init)
         {
-            // Always gets the correct path, whether it be workshop or mods directly
-            MOD_PATH = ModManager.ActiveMods.First(x => x.id == MOD_ID).path + Path.DirectorySeparatorChar;
-
-            // Remix Menu
-            MachineConnector.SetRegisteredOI(MOD_ID, ModOptions.Instance);
-
-            Enums.SoundID.RegisterValues();
-
-            // Because Fisobs may break with game updates
-            try
-            {
-                Content.Register(new NTCritob());
-                NTHooks.Apply();
-                ScareEverything.Apply();
-
-                Content.Register(new LMLLCritob());
-                LMLLHooks.Apply();
-                if (!MultiplayerUnlocks.CreatureUnlockList.Contains(Enums.SandboxUnlockID.LMiniLongLegs))
-                    MultiplayerUnlocks.CreatureUnlockList.Add(Enums.SandboxUnlockID.LMiniLongLegs);
-
-                Content.Register(new RotDeerCritob());
-                RotDeerHooks.Apply();
-
-                Content.Register(new RotRatCritob());
-                RotRatHooks.Apply();
-                if (!MultiplayerUnlocks.CreatureUnlockList.Contains(Enums.SandboxUnlockID.RotRat))
-                    MultiplayerUnlocks.CreatureUnlockList.Add(Enums.SandboxUnlockID.RotRat);
-
-                Content.Register(new CitizenCritob());
-                CitizenHooks.Apply();
-            }
-            catch (Exception err)
-            {
-                logger.LogDebug($"Error in Critob registry\n{err}");
-            }
-
-            Futile.atlasManager.LoadAtlas("atlases/PBHat");
-            if (!Futile.atlasManager.DoesContainAtlas("lmllspr"))
-                Futile.atlasManager.LoadAtlas("atlases/lmllspr");
-            Futile.atlasManager.LoadAtlas("atlases/nightTerroratlas");
-
-            // Dreamer
-            self.Shaders["EtherealRag"] = FShader.CreateShader("etherealrag", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/etherealrag")).LoadAsset<Shader>("Assets/Shaders/EtherealRag.shader"), new string[]
-            {
-                "ripple_both_sides"
-            });
-            self.Shaders["EtherealSkin"] = FShader.CreateShader("etherealskin", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/etherealskin")).LoadAsset<Shader>("Assets/Shaders/EtherealSkin.shader"), new string[]
-            {
-                "ripple_both_sides"
-            });
-            self.Shaders["EtherealDistortion"] = FShader.CreateShader("etherealdistortion", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/etherealdistortion")).LoadAsset<Shader>("Assets/Shaders/EtherealDistortion.shader"), new string[]
-            {
-                "ripple_both_sides"
-            });
-
-            // DreamSpawn
-            self.Shaders["DreamSpawnBody"] = FShader.CreateShader("dreamspawnbody", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamspawnbody")).LoadAsset<Shader>("Assets/Shaders/DreamSpawnBody.shader"));
-            self.Shaders["RoseGlow"] = FShader.CreateShader("roseglow", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/roseglow")).LoadAsset<Shader>("Assets/Shaders/RoseGlow.shader"));
-
-            // Haizlbliek Pitch Black Assets
-            self.Shaders["PitchBlackBackgroundBuildings"] = FShader.CreateShader("PitchBlackBackgroundBuildings", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/haizlbliekpitchblack")).LoadAsset<Shader>("Assets/Shaders/PBBackgroundBuildings.shader"));
-
-            // Rift Assets
-            self.Shaders["DreamWarpTear"] = FShader.CreateShader("DreamWarpTear", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamwarptear")).LoadAsset<Shader>("Assets/Shaders/DreamWarpTear.shader"));
-            self.Shaders["IntoDreamWarpTear"] = FShader.CreateShader("IntoDreamWarpTear", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/intodreamwarptear")).LoadAsset<Shader>("Assets/Shaders/IntoDreamWarpTear.shader"));
-
-            init = true;
+            return;
         }
-    }   
+        init = true;
+
+        // Always gets the correct path, whether it be workshop or mods directly
+        MOD_PATH = ModManager.ActiveMods.First(x => x.id == MOD_ID).path + Path.DirectorySeparatorChar;
+
+        // Required Remix Menu initialization
+        MachineConnector.SetRegisteredOI(MOD_ID, ModOptions.Instance);
+
+        Enums.SoundID.RegisterValues();
+
+        // Because Fisobs may break with game updates
+        try
+        {
+            Content.Register(new NTCritob());
+            NTHooks.Apply();
+            ScareEverything.Apply();
+
+            Content.Register(new LMLLCritob());
+            LMLLHooks.Apply();
+            if (!MultiplayerUnlocks.CreatureUnlockList.Contains(Enums.SandboxUnlockID.LMiniLongLegs))
+                MultiplayerUnlocks.CreatureUnlockList.Add(Enums.SandboxUnlockID.LMiniLongLegs);
+
+            Content.Register(new RotDeerCritob());
+            RotDeerHooks.Apply();
+
+            Content.Register(new RotRatCritob());
+            RotRatHooks.Apply();
+            if (!MultiplayerUnlocks.CreatureUnlockList.Contains(Enums.SandboxUnlockID.RotRat))
+                MultiplayerUnlocks.CreatureUnlockList.Add(Enums.SandboxUnlockID.RotRat);
+
+            Content.Register(new CitizenCritob());
+            CitizenHooks.Apply();
+        }
+        catch (Exception err)
+        {
+            logger.LogDebug($"Error in Critob registry\n{err}");
+        }
+
+        Futile.atlasManager.LoadAtlas("atlases/PBHat");
+        if (!Futile.atlasManager.DoesContainAtlas("lmllspr"))
+            Futile.atlasManager.LoadAtlas("atlases/lmllspr");
+        Futile.atlasManager.LoadAtlas("atlases/nightTerroratlas");
+
+        // Ghost shaders
+        self.Shaders["EtherealRag"] = FShader.CreateShader("etherealrag", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/etherealrag")).LoadAsset<Shader>("Assets/Shaders/EtherealRag.shader"), new string[]
+        {
+                "ripple_both_sides"
+        });
+        self.Shaders["EtherealSkin"] = FShader.CreateShader("etherealskin", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/etherealskin")).LoadAsset<Shader>("Assets/Shaders/EtherealSkin.shader"), new string[]
+        {
+                "ripple_both_sides"
+        });
+        self.Shaders["EtherealDistortion"] = FShader.CreateShader("etherealdistortion", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/etherealdistortion")).LoadAsset<Shader>("Assets/Shaders/EtherealDistortion.shader"), new string[]
+        {
+                "ripple_both_sides"
+        });
+
+        // DreamSpawn
+        self.Shaders["DreamSpawnBody"] = FShader.CreateShader("dreamspawnbody", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamspawnbody")).LoadAsset<Shader>("Assets/Shaders/DreamSpawnBody.shader"));
+        self.Shaders["RoseGlow"] = FShader.CreateShader("roseglow", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/roseglow")).LoadAsset<Shader>("Assets/Shaders/RoseGlow.shader"));
+
+        // Haizlbliek Pitch Black Assets
+        self.Shaders["PitchBlackBackgroundBuildings"] = FShader.CreateShader("PitchBlackBackgroundBuildings", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/haizlbliekpitchblack")).LoadAsset<Shader>("Assets/Shaders/PBBackgroundBuildings.shader"));
+
+        // Rift Assets
+        self.Shaders["DreamWarpTear"] = FShader.CreateShader("DreamWarpTear", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/dreamwarptear")).LoadAsset<Shader>("Assets/Shaders/DreamWarpTear.shader"));
+        self.Shaders["IntoDreamWarpTear"] = FShader.CreateShader("IntoDreamWarpTear", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/intodreamwarptear")).LoadAsset<Shader>("Assets/Shaders/IntoDreamWarpTear.shader"));
+    }
 
     // Unregistering
     private void DisableMod(On.RainWorld.orig_OnModsDisabled orig, RainWorld self, ModManager.Mod[] newlyDisabledMods)
@@ -206,7 +209,6 @@ class  Plugin : BaseUnityPlugin
 
                 if (MultiplayerUnlocks.CreatureUnlockList.Contains(Enums.SandboxUnlockID.RotRat))
                     MultiplayerUnlocks.CreatureUnlockList.Remove(Enums.SandboxUnlockID.RotRat);
-
 
                 break;
             }
@@ -237,7 +239,9 @@ class  Plugin : BaseUnityPlugin
     private static void RainWorldGame_Update(On.RainWorldGame.orig_Update orig, RainWorldGame self)
     {
         orig(self);
-        if (pursuerTracker.TryGetValue(self, out List<NTTracker> trackers)) foreach (NTTracker tracker in trackers) tracker.Update();
+        if (pursuerTracker.TryGetValue(self, out List<NTTracker> trackers)) 
+            foreach (NTTracker tracker in trackers)
+                tracker.Update();
     }
 
     private static void RainWorldGame_ctor(On.RainWorldGame.orig_ctor orig, RainWorldGame self, ProcessManager manager)

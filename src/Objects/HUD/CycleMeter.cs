@@ -45,9 +45,9 @@ public class CycleMeter : HudPart
         {
             // placeholder
         }
-        if (scugCWT.TryGetValue(HUDOwner, out var c) && c is BeaconCWT beacon)
+        if (scugCWT.TryGetValue(HUDOwner, out var c) && c is Beacon beacon)
         {
-            bool flag = beacon.beaconCycle.isDead || beacon.beaconCycle.thanatosisLerp > 0.1f;
+            bool flag = beacon.cycle.isDead || beacon.cycle.thanatosisLerp > 0.1f;
             flags.Add(flag);
         }
         return flags;
@@ -60,9 +60,9 @@ public class CycleMeter : HudPart
         {
             // placeholder
         }
-        if (scugCWT.TryGetValue(HUDOwner, out var c) && c is BeaconCWT beacon)
+        if (scugCWT.TryGetValue(HUDOwner, out var c) && c is Beacon beacon)
         {
-            bool flag = beacon.beaconCycle.ReachedThanatosisLimit && beacon.beaconCycle.thanatosisDeathCounter.isFinished;
+            bool flag = beacon.cycle.ReachedThanatosisLimit && beacon.cycle.thanatosisDeathCounter.isFinished;
             flags.Add(flag);
         }
         return flags;
@@ -110,9 +110,9 @@ public class CycleMeter : HudPart
                 selectedCycleIndex--;
                 currentCycle = cycles[selectedCycleIndex];
             } 
-            if (scugCWT.TryGetValue(HUDOwner, out var c) && c is BeaconCWT beacon)
+            if (scugCWT.TryGetValue(HUDOwner, out var c) && c is Beacon beacon)
             {
-                beacon.beaconCycle.killMe = true;
+                beacon.cycle.killMe = true;
             }
         }
 

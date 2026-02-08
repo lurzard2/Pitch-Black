@@ -2,19 +2,20 @@
 
 namespace PitchBlack;
 
-public class BeaconCWT : ScugCWT
+public class Beacon : ScugCWT
 {
     public readonly Player player;
     public SaveState SaveState => player.abstractCreature.world.game.GetSaveState();
 
+    public Squinter squinter { get; private set; }
+
     // Values with arena fallbacks
-    public float SpiralLevel = 0;
-    public Squinter squinter {  get; private set; }
+    public float SpiralLevel { get; set; } = 0;
 
     // Stops crafting
     public bool heldCraft = false;
 
-    public FlareStorage storage { get; private set; }
+    public FlareStorage storage { get; private set; } 
     public FlareStorage GetFlareStorage()
     {
         if (SaveState is not null && SaveState.GetCanStoreFlares())
@@ -30,12 +31,12 @@ public class BeaconCWT : ScugCWT
     public int coopRefundFlares = 0;
 
     // Cycle module
-    public BeaconCycle beaconCycle { get; private set; }
+    public BeaconCycle cycle { get; private set; }
 
     public Color currentSkinColor;
     public Color currentEyeColor;
 
-    public BeaconCWT(Player player) : base()
+    public Beacon(Player player) : base()
     {
         this.player = player;
         squinter = new(player);
@@ -45,8 +46,8 @@ public class BeaconCWT : ScugCWT
 
         // absCrit already has its key in creatureCycle before this is created, so we have to re-add it.
         Plugin.creatureCycle.Remove(player.abstractCreature);
-        beaconCycle = new(player, this);
-        Plugin.creatureCycle.Add(player.abstractCreature, beaconCycle);
+        cycle = new(this, player);
+        Plugin.creatureCycle.Add(player.abstractCreature, cycle);
 
         // for Playtest, for now
         if (SaveState is not null && SaveState.GetCompletedBeacon())
@@ -59,7 +60,7 @@ public class BeaconCWT : ScugCWT
     public void Update()
     {
         squinter.Update();
-        beaconCycle.Update();
+        cycle.Update();
 
         if (dontThrowTimer > 0)
         {

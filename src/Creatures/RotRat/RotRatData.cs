@@ -6,9 +6,9 @@ using Random = UnityEngine.Random;
 
 namespace PitchBlack;
 
-public class RotData
+public class RotRatData
 {
-    public RotData (int numOfBulbs) {
+    public RotRatData (int numOfBulbs) {
         numOfSprites = numOfBulbs*2;
         bulbs = new bulb[numOfBulbs];
         for (int i = 0; i < numOfBulbs; i++)

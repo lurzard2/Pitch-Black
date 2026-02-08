@@ -111,7 +111,7 @@ public static class ScugGraphics
         var GotCWTData = scugCWT.TryGetValue(self.player, out ScugCWT c);
         if (GotCWTData)
         {
-            if (c is BeaconCWT beacon)
+            if (c is Beacon beacon)
             {
                 // Squinting
                 if (beacon.squinter.squintTick > 10)
@@ -183,7 +183,7 @@ public static class ScugGraphics
         }
 
         bool GotCWTData = scugCWT.TryGetValue(self.player, out ScugCWT cwt);
-        if (GotCWTData && cwt is BeaconCWT bCWT)
+        if (GotCWTData && cwt is Beacon bCWT)
         {
             // "gets" slugcat color stuff to then be assigned
             Color color = PlayerGraphics.SlugcatColor(self.CharacterForColor);
@@ -198,13 +198,13 @@ public static class ScugGraphics
             skinColor = Color.Lerp(Colors.BeaconDefaultColor, Colors.BeaconFullColor, flares / (float)4);
             eyeColor = Colors.BeaconEyeColor;
             
-            if (bCWT.beaconCycle != null
-                && (bCWT.beaconCycle.state == Cycle.State.Thanatosis
-                    || bCWT.beaconCycle.state == Cycle.State.ExitThanatosis
-                    || bCWT.beaconCycle.thanatosisLerp > 0f))
+            if (bCWT.cycle != null
+                && (bCWT.cycle.state == Cycle.State.Thanatosis
+                    || bCWT.cycle.state == Cycle.State.ExitThanatosis
+                    || bCWT.cycle.thanatosisLerp > 0f))
             {
-                bCWT.currentSkinColor = Color.Lerp(skinColor, SpriteColors[0], bCWT.beaconCycle.thanatosisLerp);
-                bCWT.currentEyeColor = Color.Lerp(eyeColor, SpriteColors[1], bCWT.beaconCycle.thanatosisLerp);
+                bCWT.currentSkinColor = Color.Lerp(skinColor, SpriteColors[0], bCWT.cycle.thanatosisLerp);
+                bCWT.currentEyeColor = Color.Lerp(eyeColor, SpriteColors[1], bCWT.cycle.thanatosisLerp);
             }
             else
             {
@@ -220,7 +220,7 @@ public static class ScugGraphics
                 }
                 else
                 {
-                    if (bCWT.beaconCycle.isDead || (bCWT.beaconCycle.thanatosisTutorialSequence != null && bCWT.beaconCycle.thanatosisTutorialSequence.markedAsDead))
+                    if (bCWT.cycle.isDead || (bCWT.cycle.thanatosisTutorialSequence != null && bCWT.cycle.thanatosisTutorialSequence.markedAsDead))
                     {
                         sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName("FaceDead");
                     }

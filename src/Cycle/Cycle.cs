@@ -63,6 +63,9 @@ public abstract class Cycle
         }
 
         CycleTick();
+
+        if (RealizedOwner is not null)
+            RealizedUpdate();
     }
 
     // Front end
@@ -72,6 +75,12 @@ public abstract class Cycle
         {
             module.Update();
         }
+    }
+
+    public virtual bool KillMe()
+    {
+        // Default to making this kill me
+        return true;
     }
 
     public void AddRipple(CycleRippleSource source)

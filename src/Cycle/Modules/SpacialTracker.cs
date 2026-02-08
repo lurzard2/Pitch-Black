@@ -13,7 +13,6 @@ public class SpacialTracker : CycleModule
     public MDVector pos = new();
 
     // Ripple
-    public const float rippleNone = 0;
     public readonly float rippleSurface = 0.55f;
     public readonly float rippleSurfaceTension = 0.65f;
     public const float rippleWaters = 1f;
@@ -25,14 +24,13 @@ public class SpacialTracker : CycleModule
     public bool InRippleDepths => pos.v >= rippleDepths;
 
     // Dream (Associated with Ripple)
-    public const float dreamNone = 0f;
     public const float dreamInside = 1f;
-    public bool AvailableForDream => MiscUtils.IsRegionOutSideCycle(cycle.abstractOwner.world);
+    public bool InDreamRegion => MiscUtils.IsRegionOutSideCycle(cycle.abstractOwner.world);
     public bool InDream => InRippleDepths && pos.w >= dreamInside;
 
     public SpacialTracker(Cycle owner) : base(owner)
     {
-        pos.v = Random.Range(rippleNone, rippleSurface);
+        pos.v = Random.Range(0, rippleSurface);
     }
 
     public override void Update()
@@ -53,7 +51,7 @@ public class SpacialTracker : CycleModule
     public void W_Axis()
     {
         // Submerged in dream also influences ripple. InRippleDepths should be true if InsideDream is
-        if (AvailableForDream)
+        if (InDreamRegion)
         {
             if (pos.w < dreamInside)
             {
@@ -61,10 +59,10 @@ public class SpacialTracker : CycleModule
                 pos.v = rippleDepths;
             }
         }
-        else if (pos.w > dreamNone)
+        else if (pos.w > 0)
         {
-            pos.w = dreamNone;
-            pos.v = rippleNone;
+            pos.w = 0;
+            pos.v = 0;
         }
     }
     #endregion
@@ -111,7 +109,7 @@ public class SpacialTracker : CycleModule
         if (reboundFromRipple)
         {
             pos.v = Custom.LerpAndTick(pos.v, target, 0.008f, 0.0025f);
-            if (pos.v == rippleNone)
+            if (pos.v == 0)
             {
                 reboundFromRipple = false;
             }

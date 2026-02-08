@@ -47,10 +47,10 @@ public static class ScugHooks
             cursor.EmitDelegate((Player.InputPackage originalInputs, Player self, int num) =>
             {
                 // This needs a proper check for if the player is in thanatosis
-                if (Plugin.scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beaconCWT)
+                if (Plugin.scugCWT.TryGetValue(self, out ScugCWT c) && c is Beacon beaconCWT)
                 {
                     //var state = (self.room.game.session as StoryGameSession).saveState;
-                    if (beaconCWT.beaconCycle.thanatosisTutorialSequence != null && beaconCWT.beaconCycle.thanatosisTutorialSequence.markedAsDead)
+                    if (beaconCWT.cycle.thanatosisTutorialSequence != null && beaconCWT.cycle.thanatosisTutorialSequence.markedAsDead)
                     {
                         // Create new inputs
                         Player.InputPackage newInputs = new Player.InputPackage(self.room.game.rainWorld.options.controls[num].gamePad, self.room.game.rainWorld.options.controls[num].GetActivePreset(), 0, 0, false, false, false, false, false, originalInputs.spec);
@@ -80,7 +80,7 @@ public static class ScugHooks
     {
         var player = self.owner.owner as Player;
         
-        if (scugCWT.TryGetValue(player, out ScugCWT c) && c is BeaconCWT beacon && beacon.squinter.squintTick > 1)
+        if (scugCWT.TryGetValue(player, out ScugCWT c) && c is Beacon beacon && beacon.squinter.squintTick > 1)
         {
             PlayerGraphics pGraphics = player.graphicsModule as PlayerGraphics;
 
@@ -107,7 +107,7 @@ public static class ScugHooks
 
     private static void Player_Update(On.Player.orig_Update orig, Player self, bool eu)
     {
-        if (scugCWT.TryGetValue(self, out var c) && c is BeaconCWT beacon)
+        if (scugCWT.TryGetValue(self, out var c) && c is Beacon beacon)
         {
             beacon.Update();
         }
@@ -127,18 +127,18 @@ public static class ScugHooks
         {
             if (!scugCWT.TryGetValue(self, out _))
             { 
-                scugCWT.Add(self, new BeaconCWT(self));
+                scugCWT.Add(self, new Beacon(self));
             }
             
             // Adding back flares
             if (self.room.abstractRoom.shelter 
-                && scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beacon)
+                && scugCWT.TryGetValue(self, out ScugCWT c) && c is Beacon beacon)
             {
                 foreach (List<PhysicalObject> thingQuar in self.room.physicalObjects) {
                     foreach (PhysicalObject item in thingQuar) {
                         if (item is FlareBomb flare && beacon.storage.storedFlares.Count < beacon.storage.capacity) {
                             foreach (var player in self.room.PlayersInRoom) {
-                                if (player != null && scugCWT.TryGetValue(player, out var op) && op is BeaconCWT otherBeacon && otherBeacon.storage!= null && otherBeacon.storage.storedFlares.Contains(flare)) {
+                                if (player != null && scugCWT.TryGetValue(player, out var op) && op is Beacon otherBeacon && otherBeacon.storage!= null && otherBeacon.storage.storedFlares.Contains(flare)) {
                                     goto SkipAddingFlare;
                                 }
                             }

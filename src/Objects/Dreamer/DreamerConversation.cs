@@ -214,22 +214,26 @@ public class DreamerConversation : PBEntity.BehaviorModule.BehaviorConversation
                 #if false
                 “...”
                 “You are mistaken.”
-                “Crawling here, into the deepest darkest pit of nowhere… It means nothing.”
+                “Crawling here, into the deepest darkest pit of nowhere... It means nothing.”
                 “...”
                 “Your claws scraping against the road, sidewalk, and walls. Dulling with each scrape.”
-                “Stammering and blind you wander…”
-                “Dragging your flesh around like a costume…”
+                “Stammering and blind you wander...”
+                “Dragging your flesh around like a costume...”
                 “Reeking a mix of decayed flesh and dried blood...”
-                “Here at the end… Waiting for something to happen.”
-                “You wander aimlessly, in circles, and circles…”
+                “Here at the end... Waiting for something to happen.”
+                “You wander aimlessly, in circles, and circles...”
                 “Like a stray animal.”
                 “...”
-                “Were you not sick and dying? About to vomit your insides out?”
+                “Were you not sick and dying?”
+                "About to vomit your insides out?"
                 “You crumpled into a ball and lied there, suffocating.”
                 “Your fate was sealed and you should’ve been expunged.”
                 “Instead here you are.”
                 “Barely swimming beneath the waves.”
-                “A lost, lonely, and pathetic stray.”
+                “A lost.”
+                "Lonely."
+                "Pathetic."
+                "Stray."
 #endif
             ]);
         }

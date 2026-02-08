@@ -1,23 +1,21 @@
 ﻿using RWCustom;
 using System;
-using UnityEngine;
 using static PitchBlack.Plugin;
 
 namespace PitchBlack;
 
 public class BeaconCycle : Cycle
 {
-    public Player owner;
-    public BeaconCWT cwt;
+    public Player playerObj;
+    public Beacon beacon;
 
-    public SaveState SaveState => owner.abstractCreature.world.game.GetSaveState();
     // Not a UAD yet, probably won't become one
     public ThanatosisTutorialSequence thanatosisTutorialSequence;
 
     public bool deathToggle;
     public bool isDead;
     public Counter specInputCounter = new(Int32.MaxValue, 0, true);
-    public float ThanatosisLimit => (40 * 6) * cwt.SpiralLevel;
+    public float ThanatosisLimit => (40 * 6) * beacon.SpiralLevel;
     public bool ReachedThanatosisLimit => state == State.Thanatosis && cycleStateTime > ThanatosisLimit;
     public float thanatosisLerp;
     public bool killMe = false;
@@ -25,40 +23,45 @@ public class BeaconCycle : Cycle
     public float targetRippleDeathIntensity;
     public Counter thanatosisDeathCounter = new(80, 0);
 
-    public BeaconCycle(Player owner, BeaconCWT cwt) : base(owner.abstractCreature)
+    public BeaconCycle(Beacon beacon, Player playerRef) : base(playerRef.abstractCreature)
     {
-        this.owner = owner;
-        this.cwt = cwt;
+        this.beacon = beacon;
+        playerObj = playerRef;
+
+        spacialTracker = new(this);
+        modules.Add(spacialTracker);
+        idleRippleTracker = new(this);
+        modules.Add(idleRippleTracker);
     }
 
     public void Update()
     {
-        if (owner.input[0].spec)
+        if (playerObj.input[0].spec)
             specInputCounter.Tick();
         else
             specInputCounter.Reset();
 
         // Stop everything else
-        if (MiscUtils.IsRegionOutSideCycle(owner.abstractCreature.world))
+        if (MiscUtils.IsRegionOutSideCycle(playerObj.abstractCreature.world))
         {
-            if (!MiscUtils.IsNightmareRegion(owner.abstractCreature.world.name) && state == State.Thanatosis)
+            if (!MiscUtils.IsNightmareRegion(playerObj.abstractCreature.world.name) && state == State.Thanatosis)
             {
                 ToggleThanatosis();
             }
 
             // Indicator for being unable to use Thanatosis if unlocked
-            if (cwt.SaveState.GetMaxSpiralLevel_CurrentOrArenaDefault() >= 1 && specInputCounter == UnityEngine.Random.Range(60, 140))
+            if (beacon.SaveState.GetMaxSpiralLevel_CurrentOrArenaDefault() >= 1 && specInputCounter == UnityEngine.Random.Range(60, 140))
             {
-                owner.Stun(120);
+                playerObj.Stun(120);
                 specInputCounter.Reset();
                 string popupText = "";
-                if (MiscUtils.IsNightmareRegion(owner.abstractCreature.world.name))
+                if (MiscUtils.IsNightmareRegion(playerObj.abstractCreature.world.name))
                     popupText = "These tides are sinister";
-                else if (MiscUtils.IsPBSB(owner.abstractCreature.world.name))
+                else if (MiscUtils.IsPBSB(playerObj.abstractCreature.world.name))
                     popupText = "These tides rest still";
                 else
                     popupText = "These tides flow without disturbance";
-                MiscUtils.AddHUDMessage(owner.room.game.cameras[0].hud, true, popupText, 60, 120, false, true);
+                MiscUtils.AddHUDMessage(playerObj.room.game.cameras[0].hud, true, popupText, 60, 120, false, true);
             }
             return;
         }
@@ -69,12 +72,12 @@ public class BeaconCycle : Cycle
         //if (owner.abstractCreature != null)
         //    cycle.AbstractUpdate();
 
-        if (cwt.SaveState.GetCanUseThanatosis_CurrentOrArenaDefault())
+        if (beacon.SaveState.GetCanUseThanatosis_CurrentOrArenaDefault())
         {
             ThanatosisUpdate();
         }
         // Runs once per cycle post-3rd encounter saved: If the sequence has not finished (it enables thanatosis)
-        else if (SaveState.GetDreamerEncountersNumber() == 3)
+        else if (beacon.SaveState.GetDreamerEncountersNumber() == 3)
         {
             #region Thanatosis Sequence
             if (thanatosisTutorialSequence != null)
@@ -84,12 +87,12 @@ public class BeaconCycle : Cycle
                 if (thanatosisTutorialSequence.phase == ThanatosisTutorialSequence.Phase.UsedThanatosis)
                 {
                     thanatosisTutorialSequence = null;
-                    BeaconSaveData.SetCompletedBeacon(SaveState, true);
+                    BeaconSaveData.SetCompletedBeacon(beacon.SaveState, true);
                 }
             }
             else
             {
-                thanatosisTutorialSequence = new(this, owner.room);
+                thanatosisTutorialSequence = new(this, playerObj.room);
             }
             #endregion
         }
@@ -105,7 +108,7 @@ public class BeaconCycle : Cycle
 
         if (ReachedThanatosisLimit && killMe)
         {
-            if (cwt.SpiralLevel >= 0f)
+            if (beacon.SpiralLevel >= 0f)
             {
                 Persist();
             }
@@ -126,7 +129,7 @@ public class BeaconCycle : Cycle
         }
 
         //owner.rippleDeathIntensity = Mathf.Lerp(owner.rippleDeathIntensity, targetRippleDeathIntensity, 0.04f);
-        owner.rippleDeathIntensity = Custom.LerpAndTick(owner.rippleDeathIntensity, targetRippleDeathIntensity, 0.006f, 0.0025f);
+        playerObj.rippleDeathIntensity = Custom.LerpAndTick(playerObj.rippleDeathIntensity, targetRippleDeathIntensity, 0.006f, 0.0025f);
 
         //logger.LogDebug($"{unstableness} - {SpiralLevel}");
     }
@@ -143,7 +146,7 @@ public class BeaconCycle : Cycle
         {
             thanatosisDeathCounter.Reset();
         }
-        else if (owner.rippleDeathIntensity > 0.3f)
+        else if (playerObj.rippleDeathIntensity > 0.3f)
         {
             thanatosisDeathCounter.Tick();
         }
@@ -175,7 +178,7 @@ public class BeaconCycle : Cycle
         }
 
         // Switch back to alive if effects are done being removed
-        if (!isDead && thanatosisLerp < 0f && owner.rippleDeathIntensity < 0f)
+        if (!isDead && thanatosisLerp < 0f && playerObj.rippleDeathIntensity < 0f)
         {
             ChangeState(State.Alive);
         }
@@ -184,18 +187,18 @@ public class BeaconCycle : Cycle
     private void Persist()
     {
         logger.LogDebug("Thanatosis: Persisting!");
-        cwt.SpiralLevel -= 1f;
+        beacon.SpiralLevel -= 1f;
         ToggleThanatosis();
-        owner.Stun(80);
-        owner.room.PlaySound(Enums.SoundID.Player_Revived, owner.mainBodyChunk);
-        MiscUtils.MaterializeDreamSpawn(owner.room, owner.mainBodyChunk.pos, Enums.DreamSpawnSource.Jetsam);
+        playerObj.Stun(80);
+        playerObj.room.PlaySound(Enums.SoundID.Player_Revived, playerObj.mainBodyChunk);
+        MiscUtils.MaterializeDreamSpawn(playerObj.room, playerObj.mainBodyChunk.pos, Enums.DreamSpawnSource.Jetsam);
     }
 
     private void EndCycle()
     {
         logger.LogDebug("Thanatosis: Die!");
         ChangeState(State.MarkedForCache);
-        owner.room.PlaySound(Enums.SoundID.Player_Died_From_Thanatosis, owner.mainBodyChunk);
+        playerObj.room.PlaySound(Enums.SoundID.Player_Died_From_Thanatosis, playerObj.mainBodyChunk);
     }
 
     public void ToggleThanatosis(bool layerSwitches = true)
@@ -216,7 +219,7 @@ public class BeaconCycle : Cycle
 
             AddRipple(CycleRippleSource.Thanatosis);
             ChangeState(cycleState);
-            owner.room.PlaySound(soundEffect, owner.mainBodyChunk);
+            playerObj.room.PlaySound(soundEffect, playerObj.mainBodyChunk);
             if (layerSwitches)
             {
                 abstractOwner.rippleLayer = isDead ? 1 : 0;

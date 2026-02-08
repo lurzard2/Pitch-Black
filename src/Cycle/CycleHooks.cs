@@ -7,16 +7,39 @@ public static class CycleHooks
     {
         On.AbstractCreature.ctor += Add_Cycle_CWT;
         On.AbstractCreature.Update += AbstractCreature_Update;
-        On.Creature.Update += RealizedCreature_Update;
+
+        // Replace functionality conditionally for the same call
+        On.Creature.Die += Creature_Die;
+        On.Player.Die += Player_Die;
     }
 
-    private static void RealizedCreature_Update(On.Creature.orig_Update orig, Creature self, bool eu)
+    private static void Player_Die(On.Player.orig_Die orig, Player self)
     {
-        orig(self, eu);
-
-        if (creatureCycle.TryGetValue(self.abstractCreature, out var cycle) && cycle != null)
+        if (scugCWT.TryGetValue(self, out var c) && c is Beacon beacon)
         {
-            cycle.RealizedUpdate();
+            if (beacon.cycle.KillMe())
+            {
+                orig(self);
+            }
+        }
+        else
+        {
+            orig(self);
+        }
+    }
+
+    private static void Creature_Die(On.Creature.orig_Die orig, Creature self)
+    {
+        if (creatureCycle.TryGetValue(self.abstractCreature, out var cycle))
+        {
+            if (cycle.KillMe())
+            {
+                orig(self);
+            }
+        }
+        else
+        {
+            orig(self);
         }
     }
 
@@ -24,7 +47,7 @@ public static class CycleHooks
     {
         orig(self, time);
 
-        if (creatureCycle.TryGetValue(self, out var cycle) && cycle != null)
+        if (creatureCycle.TryGetValue(self, out var cycle))
         {
             cycle.AbstractUpdate();
         }
