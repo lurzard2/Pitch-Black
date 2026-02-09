@@ -6,7 +6,7 @@ using RWCustom;
 
 namespace PitchBlack;
 
-public static class ScugGraphics
+public static class PlayerGraphicsHooks
 {
     /// <summary>
     /// PlayerGraphics code in RW is a [trash heap]. Here's my general understanding so we can keep this tidy.

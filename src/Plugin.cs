@@ -102,7 +102,7 @@ class  Plugin : BaseUnityPlugin
 
         PBSlugBaseFeatures.Apply();
         ScugHooks.Apply();
-        ScugGraphics.Apply();
+        PlayerGraphicsHooks.Apply();
         FlareStorageHooks.Apply();
         Crafting.Apply();
 

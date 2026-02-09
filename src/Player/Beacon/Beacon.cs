@@ -11,6 +11,21 @@ public class Beacon : ScugCWT
 
     // Values with arena fallbacks
     public float SpiralLevel { get; set; } = 0;
+    public float AvailableCycles => SaveState.GetMaxSpiralLevel_CurrentOrArenaDefault();
+    public float SubtractSpiralLevel()
+    {
+        if (SaveState is not null)
+        {
+            SaveState.SetSpiralLevel(SpiralLevel - 1);
+            SpiralLevel = SaveState.GetSpiralLevel();
+        }
+        else
+        {
+            SpiralLevel--;
+        }
+
+        return SpiralLevel;
+    }
 
     // Stops crafting
     public bool heldCraft = false;
@@ -44,10 +59,12 @@ public class Beacon : ScugCWT
         // Set current level to max once, effectively refreshing the value each cycle. Check savestate properly!!
         SpiralLevel = SaveState.GetMaxSpiralLevel_CurrentOrArenaDefault();
 
+        #region Replace Cycle with BeaconCycle
         // absCrit already has its key in creatureCycle before this is created, so we have to re-add it.
         Plugin.creatureCycle.Remove(player.abstractCreature);
         cycle = new(this, player);
         Plugin.creatureCycle.Add(player.abstractCreature, cycle);
+        #endregion
 
         // for Playtest, for now
         if (SaveState is not null && SaveState.GetCompletedBeacon())

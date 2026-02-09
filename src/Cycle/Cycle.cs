@@ -79,9 +79,8 @@ public abstract class Cycle
         }
     }
 
-    public virtual bool KillMe()
+    public virtual bool Die()
     {
-        // Default to making this kill me
         return true;
     }
 

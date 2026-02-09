@@ -74,7 +74,7 @@ public class HUDCycle
             }
             if (state == State.Limbo)
             {
-                fullAccentColor = ScugGraphics.SpriteColors[1];
+                fullAccentColor = PlayerGraphicsHooks.SpriteColors[1];
                 accentColor = Color.Lerp(baseColor, fullAccentColor, 0.5f);
             }
             if (state == State.Sacrificed)

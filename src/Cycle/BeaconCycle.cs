@@ -97,7 +97,20 @@ public class BeaconCycle : Cycle
             #endregion
         }
     }
-    
+
+    public bool SpiralDie()
+    {
+        if (beacon.SpiralLevel > beacon.AvailableCycles)
+        {
+            beacon.SpiralLevel = beacon.SubtractSpiralLevel();
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
     private void ThanatosisUpdate()
     {
         //logger.LogDebug($"Thanatosis: Doing input - {specInputCounter}");

@@ -5,19 +5,19 @@ public static class CycleHooks
 {
     public static void Apply()
     {
-        On.AbstractCreature.ctor += Add_Cycle_CWT;
-        On.AbstractCreature.Update += AbstractCreature_Update;
+        On.AbstractCreature.ctor += AbstractCreature_Cycle_ctor;
+        On.AbstractCreature.Update += AbstractCreature_Cycle_Update;
 
-        // Replace functionality conditionally for the same call
-        On.Creature.Die += Creature_Die;
-        On.Player.Die += Player_Die;
+        // Control flow of calls
+        On.Creature.Die += RealizedCreature_Cycle_Die;
+        On.Player.Die += Player_Cycle_Die;
     }
 
-    private static void Player_Die(On.Player.orig_Die orig, Player self)
+    private static void Player_Cycle_Die(On.Player.orig_Die orig, Player self)
     {
-        if (scugCWT.TryGetValue(self, out var c) && c is Beacon beacon)
+        if (scugCWT.TryGetValue(self, out var s) && s is Beacon beacon)
         {
-            if (beacon.cycle.KillMe())
+            if (beacon.cycle.SpiralDie())
             {
                 orig(self);
             }
@@ -28,11 +28,11 @@ public static class CycleHooks
         }
     }
 
-    private static void Creature_Die(On.Creature.orig_Die orig, Creature self)
+    private static void RealizedCreature_Cycle_Die(On.Creature.orig_Die orig, Creature self)
     {
-        if (creatureCycle.TryGetValue(self.abstractCreature, out var cycle))
+        if (creatureCycle.TryGetValue(self.abstractCreature, out var cycle) && cycle is not BeaconCycle)
         {
-            if (cycle.KillMe())
+            if (cycle.Die())
             {
                 orig(self);
             }
@@ -43,7 +43,7 @@ public static class CycleHooks
         }
     }
 
-    private static void AbstractCreature_Update(On.AbstractCreature.orig_Update orig, AbstractCreature self, int time)
+    private static void AbstractCreature_Cycle_Update(On.AbstractCreature.orig_Update orig, AbstractCreature self, int time)
     {
         orig(self, time);
 
@@ -53,7 +53,7 @@ public static class CycleHooks
         }
     }
 
-    private static void Add_Cycle_CWT(On.AbstractCreature.orig_ctor orig, AbstractCreature self, World world, CreatureTemplate creatureTemplate, Creature realizedCreature, WorldCoordinate pos, EntityID ID)
+    private static void AbstractCreature_Cycle_ctor(On.AbstractCreature.orig_ctor orig, AbstractCreature self, World world, CreatureTemplate creatureTemplate, Creature realizedCreature, WorldCoordinate pos, EntityID ID)
     {
         orig(self, world, creatureTemplate, realizedCreature, pos, ID);
 

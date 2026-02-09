@@ -17,20 +17,6 @@ public static class ScugHooks
         On.Player.Update += Player_Update;
         On.SlugcatHand.EngageInMovement += SlugcatHand_EngageInMovement;
         IL.Player.checkInput += IL_Player_checkInput_SPECIALONLY;
-        On.Player.Die += Player_Die;
-    }
-
-    private static void Player_Die(On.Player.orig_Die orig, Player self)
-    {
-        var saveState = self.abstractCreature.world.game.GetStorySession.saveState;
-        if (MiscUtils.IsBeacon(self) && saveState.GetSpiralLevel() >= 1 && saveState.GetCanUseThanatosis())
-        {
-            // Don't do anything
-        }
-        else
-        {
-            orig(self);
-        }
     }
 
     // Allowing for special input without any others in certain circumstances
