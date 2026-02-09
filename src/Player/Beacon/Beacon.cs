@@ -48,12 +48,15 @@ public class Beacon : ScugCWT
     // Cycle module
     public BeaconCycle cycle { get; private set; }
 
+    public BeaconInputs inputs { get; private set; }
+
     public Color currentSkinColor;
     public Color currentEyeColor;
 
     public Beacon(Player player) : base()
     {
         this.player = player;
+        inputs = new(player);
         squinter = new(player);
 
         // Set current level to max once, effectively refreshing the value each cycle. Check savestate properly!!

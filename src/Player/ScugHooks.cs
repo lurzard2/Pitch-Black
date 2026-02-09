@@ -16,11 +16,11 @@ public static class ScugHooks
         On.Player.ctor += Player_ctor;
         On.Player.Update += Player_Update;
         On.SlugcatHand.EngageInMovement += SlugcatHand_EngageInMovement;
-        IL.Player.checkInput += IL_Player_checkInput_SPECIALONLY;
+        IL.Player.checkInput += IL_Player_checkInput;
     }
 
     // Allowing for special input without any others in certain circumstances
-    private static void IL_Player_checkInput_SPECIALONLY(ILContext il)
+    private static void IL_Player_checkInput(ILContext il)
     {
         ILCursor cursor = new ILCursor(il);
         try
@@ -32,29 +32,20 @@ public static class ScugHooks
 
             cursor.EmitDelegate((Player.InputPackage originalInputs, Player self, int num) =>
             {
-                // This needs a proper check for if the player is in thanatosis
-                if (Plugin.scugCWT.TryGetValue(self, out ScugCWT c) && c is Beacon beaconCWT)
+                if (scugCWT.TryGetValue(self, out ScugCWT c) && c is Beacon beacon)
                 {
-                    //var state = (self.room.game.session as StoryGameSession).saveState;
-                    if (beaconCWT.cycle.thanatosisTutorialSequence != null && beaconCWT.cycle.thanatosisTutorialSequence.markedAsDead)
-                    {
-                        // Create new inputs
-                        Player.InputPackage newInputs = new Player.InputPackage(self.room.game.rainWorld.options.controls[num].gamePad, self.room.game.rainWorld.options.controls[num].GetActivePreset(), 0, 0, false, false, false, false, false, originalInputs.spec);
-                        newInputs.downDiagonal = 0;
-                        newInputs.analogueDir = Vector2.zero;
-
-                        // Put new values on the stack
-                        return newInputs;
-                    }
+                    // pass inputs to the handler
+                    return beacon.inputs.InputPackage(originalInputs);
                 }
                 // If the prior condition is not met, just return the original inputs to the stack.
-                    return originalInputs;
+                return originalInputs;
             });
-            Plugin.logger.LogDebug($"PB {nameof(IL_Player_checkInput_SPECIALONLY)} applied successfully");
+            logger.LogDebug($"{nameof(IL_Player_checkInput)} applied successfully.");
         }
         catch (Exception err)
         {
-            Plugin.logger.LogDebug($"PB {nameof(IL_Player_checkInput_SPECIALONLY)} could not match IL.\n{err}");
+            logger.LogDebug($"PB {nameof(IL_Player_checkInput)} could not match IL.");
+            MiscUtils.LogExErr(err);
         }
     }
 
