@@ -38,7 +38,7 @@ public static class Crafting
     /// [spinch]
     /// </summary>
     public static void BeaconCrafting(this Player self) {
-        if (Plugin.scugCWT.TryGetValue(self, out ScugCWT scugCWT) && scugCWT is Beacon beaconCWT) {
+        if (self.TryGetBeacon(out var beaconCWT)) {
             // craft rocks into flarebombs instead of swallowing to do that
             for (int i = 0; i < self.grasps.Length; i++) {
                 if (self.FoodInStomach <= 0) {

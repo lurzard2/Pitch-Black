@@ -98,7 +98,7 @@ public static class PlayerGraphicsHooks
         orig(self, ow);
 
         // Each player gets whiskers!
-        if (scugCWT.TryGetValue(self.player, out ScugCWT cwt)) 
+        if (scugCWT.TryGetValue(self.player, out PlayerCWT cwt)) 
         {
             cwt.whiskers = new(self);
         }
@@ -108,10 +108,10 @@ public static class PlayerGraphicsHooks
     {
         orig(self);
         
-        var GotCWTData = scugCWT.TryGetValue(self.player, out ScugCWT c);
+        var GotCWTData = scugCWT.TryGetValue(self.player, out PlayerCWT c);
         if (GotCWTData)
         {
-            if (c is Beacon beacon)
+            if (self.player.TryGetBeacon(out var beacon))
             {
                 // Squinting
                 if (beacon.squinter.squintTick > 10)
@@ -128,7 +128,7 @@ public static class PlayerGraphicsHooks
     {
         orig(self, sLeaser, rCam);
 
-        if (scugCWT.TryGetValue(self.player, out ScugCWT cwt) && !cwt.SpritesInitialized)
+        if (scugCWT.TryGetValue(self.player, out PlayerCWT cwt) && !cwt.SpritesInitialized)
         {
             cwt.SpritesInitialized = true;
 
@@ -155,7 +155,7 @@ public static class PlayerGraphicsHooks
     {
         orig(self, sLeaser, rCam, newContatiner);
 
-        if (Plugin.scugCWT.TryGetValue(self.player, out ScugCWT scugCWT) && scugCWT.SpritesInitialized)
+        if (Plugin.scugCWT.TryGetValue(self.player, out PlayerCWT scugCWT) && scugCWT.SpritesInitialized)
         {
             scugCWT.SpritesInitialized = false;
             
@@ -182,8 +182,8 @@ public static class PlayerGraphicsHooks
             SpriteColors = ColorsForBeaconSprites(self);
         }
 
-        bool GotCWTData = scugCWT.TryGetValue(self.player, out ScugCWT cwt);
-        if (GotCWTData && cwt is Beacon bCWT)
+        bool GotCWTData = scugCWT.TryGetValue(self.player, out PlayerCWT cwt);
+        if (self.player.TryGetBeacon(out var bCWT))
         {
             // "gets" slugcat color stuff to then be assigned
             Color color = PlayerGraphics.SlugcatColor(self.CharacterForColor);
@@ -254,7 +254,7 @@ public static class PlayerGraphicsHooks
     {
         orig(self, sLeaser, rCam, palette);
         
-        if (!scugCWT.TryGetValue(self.player, out ScugCWT c)) 
+        if (!scugCWT.TryGetValue(self.player, out PlayerCWT c)) 
             return;
         
         Colors.PlayerPaletteBlack = palette.blackColor;

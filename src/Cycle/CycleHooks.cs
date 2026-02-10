@@ -15,7 +15,7 @@ public static class CycleHooks
 
     private static void Player_Cycle_Die(On.Player.orig_Die orig, Player self)
     {
-        if (scugCWT.TryGetValue(self, out var s) && s is Beacon beacon)
+        if (self.TryGetBeacon(out var beacon))
         {
             if (beacon.cycle.SpiralDie())
             {

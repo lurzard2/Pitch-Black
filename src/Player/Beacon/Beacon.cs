@@ -2,7 +2,7 @@
 
 namespace PitchBlack;
 
-public class Beacon : ScugCWT
+public class Beacon
 {
     public readonly Player player;
     public SaveState SaveState => player.abstractCreature.world.game.GetSaveState();
@@ -53,7 +53,7 @@ public class Beacon : ScugCWT
     public Color currentSkinColor;
     public Color currentEyeColor;
 
-    public Beacon(Player player) : base()
+    public Beacon(Player player)
     {
         this.player = player;
         inputs = new(player);

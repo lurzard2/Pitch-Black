@@ -39,7 +39,7 @@ class  Plugin : BaseUnityPlugin
     public static bool remixUpdatedSaveData = false;
     
     // CWTs
-    public static readonly ConditionalWeakTable<Player, ScugCWT> scugCWT = new();
+    public static readonly ConditionalWeakTable<Player, PlayerCWT> scugCWT = new();
     public static readonly ConditionalWeakTable<AbstractCreature, NightTerror> NTAbstractCWT = new();
     public static readonly ConditionalWeakTable<AbstractCreature, StrongBox<int>> KILLIT = new();
     public static readonly ConditionalWeakTable<RainWorldGame, List<NTTracker>> pursuerTracker = new(); 

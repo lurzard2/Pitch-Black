@@ -9,8 +9,7 @@ public class RotImmunity
 {
     private static bool DisableRotCollisions(Player player)
     {
-        if (scugCWT.TryGetValue(player, out var c)
-            && c is Beacon cwt
+        if (player.TryGetBeacon(out var cwt)
             && cwt.cycle != null
             && cwt.cycle.thanatosisLerp > 0.05f)
         {

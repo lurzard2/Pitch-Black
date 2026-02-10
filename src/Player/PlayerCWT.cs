@@ -1,6 +1,6 @@
 ﻿namespace PitchBlack;
 
-public abstract class ScugCWT
+public abstract class PlayerCWT
 {
     // bc PlayerGraphics.InitializeSprites calls itself twice in a row gawd dam
     public bool SpritesInitialized;
@@ -8,6 +8,8 @@ public abstract class ScugCWT
     public Whiskers whiskers;
     // index of the hat sprite
     public int hatIndex;
-    
-    public ScugCWT() { }
+
+    public PlayerCWT(Player player)
+    {
+    }
 }

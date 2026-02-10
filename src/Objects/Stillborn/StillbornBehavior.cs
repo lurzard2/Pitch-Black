@@ -58,7 +58,7 @@ public class StillbornBehavior : PBEntity.BehaviorModule
 
         if (visibleCounter.isFinished && target != null)
         {
-            if (Plugin.scugCWT.TryGetValue(target, out var c) && c is Beacon beacon)
+            if (target.TryGetBeacon(out var beacon))
             {
                 if (beacon.cycle != null)
                 {

@@ -238,8 +238,7 @@ public class FlareStorage
 
     public static void DropAllFlares(Player self)
     {
-        if (Plugin.scugCWT.TryGetValue(self, out ScugCWT scugCWT)
-            && scugCWT is Beacon beaconCWT
+        if (self.TryGetBeacon(out var beaconCWT)
             && beaconCWT.GetFlareStorage() is not null)
         {
             while (beaconCWT.storage.storedFlares.Count > 0)

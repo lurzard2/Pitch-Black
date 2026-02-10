@@ -45,7 +45,7 @@ public class CycleMeter : HudPart
         {
             // placeholder
         }
-        if (scugCWT.TryGetValue(HUDOwner, out var c) && c is Beacon beacon)
+        if (HUDOwner.TryGetBeacon(out var beacon))
         {
             bool flag = beacon.cycle.isDead || beacon.cycle.thanatosisLerp > 0.1f;
             flags.Add(flag);
@@ -60,7 +60,7 @@ public class CycleMeter : HudPart
         {
             // placeholder
         }
-        if (scugCWT.TryGetValue(HUDOwner, out var c) && c is Beacon beacon)
+        if (HUDOwner.TryGetBeacon(out var beacon))
         {
             bool flag = beacon.cycle.ReachedThanatosisLimit && beacon.cycle.thanatosisDeathCounter.isFinished;
             flags.Add(flag);
@@ -110,7 +110,7 @@ public class CycleMeter : HudPart
                 selectedCycleIndex--;
                 currentCycle = cycles[selectedCycleIndex];
             } 
-            if (scugCWT.TryGetValue(HUDOwner, out var c) && c is Beacon beacon)
+            if (HUDOwner.TryGetBeacon(out var beacon))
             {
                 beacon.cycle.killMe = true;
             }

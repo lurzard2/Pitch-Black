@@ -32,7 +32,7 @@ public static class ScugHooks
 
             cursor.EmitDelegate((Player.InputPackage originalInputs, Player self, int num) =>
             {
-                if (scugCWT.TryGetValue(self, out ScugCWT c) && c is Beacon beacon)
+                if (scugCWT.TryGetValue(self, out PlayerCWT c) && self.TryGetBeacon(out var beacon))
                 {
                     // pass inputs to the handler
                     return beacon.inputs.InputPackage(originalInputs);
@@ -57,7 +57,7 @@ public static class ScugHooks
     {
         var player = self.owner.owner as Player;
         
-        if (scugCWT.TryGetValue(player, out ScugCWT c) && c is Beacon beacon && beacon.squinter.squintTick > 1)
+        if (player.TryGetBeacon(out var beacon) && beacon.squinter.squintTick > 1)
         {
             PlayerGraphics pGraphics = player.graphicsModule as PlayerGraphics;
 
@@ -84,7 +84,7 @@ public static class ScugHooks
 
     private static void Player_Update(On.Player.orig_Update orig, Player self, bool eu)
     {
-        if (scugCWT.TryGetValue(self, out var c) && c is Beacon beacon)
+        if (self.TryGetBeacon(out var beacon))
         {
             beacon.Update();
         }
@@ -100,22 +100,16 @@ public static class ScugHooks
     {
         orig(self, abstractCreature, world);
         
-        if (BeaconUtils.IsBeacon(self.slugcatStats.name))
-        {
-            if (!scugCWT.TryGetValue(self, out _))
-            { 
-                scugCWT.Add(self, new Beacon(self));
-            }
-            
+        if (self.TryGetBeacon(out var beacon))
+        {   
             // Adding back flares
-            if (self.room.abstractRoom.shelter 
-                && scugCWT.TryGetValue(self, out ScugCWT c) && c is Beacon beacon)
+            if (self.room.abstractRoom.shelter)
             {
                 foreach (List<PhysicalObject> thingQuar in self.room.physicalObjects) {
                     foreach (PhysicalObject item in thingQuar) {
                         if (item is FlareBomb flare && beacon.storage.storedFlares.Count < beacon.storage.capacity) {
                             foreach (var player in self.room.PlayersInRoom) {
-                                if (player != null && scugCWT.TryGetValue(player, out var op) && op is Beacon otherBeacon && otherBeacon.storage!= null && otherBeacon.storage.storedFlares.Contains(flare)) {
+                                if (player != null && player.TryGetBeacon(out var otherBeacon) && otherBeacon.storage!= null && otherBeacon.storage.storedFlares.Contains(flare)) {
                                     goto SkipAddingFlare;
                                 }
                             }
