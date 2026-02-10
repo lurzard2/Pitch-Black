@@ -7,13 +7,6 @@ namespace PitchBlack;
 
 public static class MiscUtils
 {
-    #region Beacon Checks
-    public static bool IsBeacon(GameSession session) => (session is StoryGameSession s) && IsBeacon(s.saveStateNumber);
-    public static bool IsBeacon(Creature crit) => (crit is Player player) && IsBeacon(player.slugcatStats.name);
-    public static bool IsBeacon(SlugcatStats.Name name) => name != null && name == Enums.SlugcatStatsName.Beacon;
-    public static bool IsBeacon(SlugcatStats.Timeline time) => time != null && time == Enums.Timeline.Beacon;
-    #endregion
-
     #region Creature Checks
     public static bool IsNightTerror(this CreatureTemplate creatureTemplate) => creatureTemplate.type == Enums.CreatureTemplateType.NightTerror;
     // Might be a better way to further check specific creatures a bajillion times

@@ -8,8 +8,6 @@ public abstract class ScugCWT
     public Whiskers whiskers;
     // index of the hat sprite
     public int hatIndex;
-    // for petting Solace slugcats
-    public int petTimer = 0;
     
     public ScugCWT() { }
 }

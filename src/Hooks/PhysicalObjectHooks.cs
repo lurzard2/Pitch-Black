@@ -164,7 +164,7 @@ public class FlareBombHooks
     {
         orig(self, sLeaser, rCam, timeStacker, camPos);
 
-        if (MiscUtils.IsBeacon(self.thrownBy))
+        if (BeaconUtils.IsBeacon(self.thrownBy))
         {
             sLeaser.sprites[2].color = new Color(0.4f, 0f, 1f);
         }

@@ -132,7 +132,7 @@ public static class PlayerGraphicsHooks
         {
             cwt.SpritesInitialized = true;
 
-            if (ModOptions.UsesHatSprite && self.player.room.game.session is StoryGameSession session && MiscUtils.IsBeacon(session.saveStateNumber)) {
+            if (ModOptions.UsesHatSprite && self.player.room.game.session is StoryGameSession session && BeaconUtils.IsBeacon(session.saveStateNumber)) {
                 cwt.hatIndex = sLeaser.sprites.Length;
                 Array.Resize(ref sLeaser.sprites, sLeaser.sprites.Length+1);
                 sLeaser.sprites[cwt.hatIndex] = new FSprite("PBHat");
@@ -162,7 +162,7 @@ public static class PlayerGraphicsHooks
             if (ModOptions.UsesHatSprite
                 && sLeaser.sprites.Length > 13
                 && self.player.room.game.session is StoryGameSession session
-                && !MiscUtils.IsBeacon(session.saveStateNumber)) {
+                && !BeaconUtils.IsBeacon(session.saveStateNumber)) {
                 rCam.ReturnFContainer("Foreground").RemoveChild(sLeaser.sprites[scugCWT.hatIndex]);
                 rCam.ReturnFContainer("Midground").AddChild(sLeaser.sprites[scugCWT.hatIndex]);
                 sLeaser.sprites[scugCWT.hatIndex].MoveInFrontOfOtherNode(sLeaser.sprites[9]);
@@ -176,7 +176,7 @@ public static class PlayerGraphicsHooks
     {
         orig(self, sLeaser, rCam, timeStacker, camPos);
         
-        if (MiscUtils.IsBeacon(self.player.abstractCreature.world.game.GetStorySession))
+        if (BeaconUtils.IsBeacon(self.player.abstractCreature.world.game.GetStorySession))
         {
             // Assign DecidedSkinColor OUTSIDE of CWT.
             SpriteColors = ColorsForBeaconSprites(self);
@@ -232,7 +232,7 @@ public static class PlayerGraphicsHooks
 
             bCWT.squinter.DrawSprites(self, sLeaser);
 
-            if (ModOptions.UsesHatSprite && self.player.room != null && self.player.room.game.session is StoryGameSession session && !MiscUtils.IsBeacon(session.saveStateNumber))
+            if (ModOptions.UsesHatSprite && self.player.room != null && self.player.room.game.session is StoryGameSession session && !BeaconUtils.IsBeacon(session.saveStateNumber))
             {
                 Vector2 vector = Vector2.Lerp(self.drawPositions[0, 1], self.drawPositions[0, 0], timeStacker);
                 Vector2 vector2 = Vector2.Lerp(self.drawPositions[1, 1], self.drawPositions[1, 0], timeStacker);

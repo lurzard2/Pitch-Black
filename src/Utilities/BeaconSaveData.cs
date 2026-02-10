@@ -16,7 +16,7 @@ public static class BeaconSaveData
         var storySession = rwg.GetStorySession;
         if (storySession != null)
         {
-            if (onlyForBeacon && !MiscUtils.IsBeacon(storySession))
+            if (onlyForBeacon && !BeaconUtils.IsBeacon(storySession))
             {
                 return null;
             }

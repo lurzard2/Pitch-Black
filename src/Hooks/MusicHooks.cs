@@ -173,7 +173,7 @@ public static class MusicHooks
         {
             RainWorldGame game = self.musicPlayer.manager.currentMainLoop as RainWorldGame;
             Player player = game.Players[self.playerNumber].realizedCreature as Player;
-            if (MiscUtils.IsBeacon(player))
+            if (BeaconUtils.IsBeacon(player))
             {
                 BeaconThreatTracker.UpdateThreatProcess(self, game, player);
             }

@@ -21,7 +21,7 @@ public static class RoomSpecificScriptHooks
     private static void AddScriptToRoom(On.RoomSpecificScript.orig_AddRoomSpecificScript orig, Room room)
     {
         orig(room);
-        if (room.game.session is StoryGameSession storyCheck && !MiscUtils.IsBeacon(storyCheck.saveStateNumber))
+        if (room.game.session is StoryGameSession storyCheck && !BeaconUtils.IsBeacon(storyCheck.saveStateNumber))
         {
             return;
         }

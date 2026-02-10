@@ -100,7 +100,7 @@ public static class ScugHooks
     {
         orig(self, abstractCreature, world);
         
-        if (MiscUtils.IsBeacon(self.slugcatStats.name))
+        if (BeaconUtils.IsBeacon(self.slugcatStats.name))
         {
             if (!scugCWT.TryGetValue(self, out _))
             { 

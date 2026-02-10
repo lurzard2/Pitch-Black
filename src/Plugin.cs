@@ -255,7 +255,7 @@ class  Plugin : BaseUnityPlugin
         }
 
         pursuerTracker.Add(self, new List<NTTracker>());
-        if ((MiscUtils.IsBeacon(self.session) || ModOptions.universalPursuer.Value) && pursuerTracker.TryGetValue(self, out var trackers))
+        if ((BeaconUtils.IsBeacon(self.session) || ModOptions.universalPursuer.Value) && pursuerTracker.TryGetValue(self, out var trackers))
         {
             trackers.Add(new NTTracker(self));
             logger.LogDebug("ADDING NT TRACKER");
@@ -266,7 +266,7 @@ class  Plugin : BaseUnityPlugin
     {
         orig(self, game, world, abstractRoom, devUI);
 
-        if (game != null && game.session != null & MiscUtils.IsBeacon(game.session))
+        if (game != null && game.session != null & BeaconUtils.IsBeacon(game.session))
         {
             // Need this
             self.ripple = true;
