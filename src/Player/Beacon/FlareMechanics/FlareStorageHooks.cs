@@ -374,7 +374,6 @@ public static class FlareStorageHooks
         {
             if (self.slugOnBack != null
             && self.slugOnBack.HasASlug
-            && scugCWT.TryGetValue(self, out var c)
             && self.TryGetBeacon(out var cwt)
             && cwt.GetFlareStorage() is not null
             && cwt.storage.storedFlares.Count > 0)

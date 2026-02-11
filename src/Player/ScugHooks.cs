@@ -32,7 +32,7 @@ public static class ScugHooks
 
             cursor.EmitDelegate((Player.InputPackage originalInputs, Player self, int num) =>
             {
-                if (scugCWT.TryGetValue(self, out PlayerCWT c) && self.TryGetBeacon(out var beacon))
+                if (self.TryGetBeacon(out var beacon))
                 {
                     // pass inputs to the handler
                     return beacon.inputs.InputPackage(originalInputs);
@@ -57,7 +57,7 @@ public static class ScugHooks
     {
         var player = self.owner.owner as Player;
         
-        if (player.TryGetBeacon(out var beacon) && beacon.squinter.squintTick > 1)
+        if (player.TryGetBeacon(out var beacon) && beacon.graphics.squinter.squintTick > 1)
         {
             PlayerGraphics pGraphics = player.graphicsModule as PlayerGraphics;
 
@@ -100,8 +100,10 @@ public static class ScugHooks
     {
         orig(self, abstractCreature, world);
         
-        if (self.TryGetBeacon(out var beacon))
-        {   
+        if (!self.TryGetBeacon(out var beacon))
+        {
+            self.AssignBeacon();
+
             // Adding back flares
             if (self.room.abstractRoom.shelter)
             {

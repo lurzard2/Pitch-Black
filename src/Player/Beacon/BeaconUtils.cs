@@ -18,13 +18,17 @@ internal static class BeaconUtils
     public static bool IsBeacon(SlugcatStats.Timeline time) => time != null && time == Enums.Timeline.Beacon;
     #endregion
 
+    public static void AssignBeacon(this Player p)
+    {
+        BeaconCWT.Add(p, new(p));
+    }
     public static bool TryGetBeacon(this Player p, out Beacon beacon)
     {
         beacon = null;
         // assigns out with out
-        if (!BeaconCWT.TryGetValue(p, out beacon))
+        if (BeaconCWT.TryGetValue(p, out var data))
         {
-            BeaconCWT.Add(p, new(p));
+            beacon = data;
         }
         return p.IsBeacon() && beacon is not null;
     }

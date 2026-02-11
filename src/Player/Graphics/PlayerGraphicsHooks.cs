@@ -97,30 +97,21 @@ public static class PlayerGraphicsHooks
     {
         orig(self, ow);
 
-        // Each player gets whiskers!
-        if (scugCWT.TryGetValue(self.player, out PlayerCWT cwt)) 
+        if (self.player.TryGetBeacon(out var beacon))
         {
-            cwt.whiskers = new(self);
+            beacon.graphics = new(beacon, self.player, self);
+            beacon.graphics.whiskers = new(self);
+            beacon.graphics.squinter = new(self.player, self);
         }
     }
-    
+
     private static void PlayerGraphics_Update(On.PlayerGraphics.orig_Update orig, PlayerGraphics self)
     {
         orig(self);
-        
-        var GotCWTData = scugCWT.TryGetValue(self.player, out PlayerCWT c);
-        if (GotCWTData)
+
+        if (self.player.TryGetBeacon(out var beacon))
         {
-            if (self.player.TryGetBeacon(out var beacon))
-            {
-                // Squinting
-                if (beacon.squinter.squintTick > 10)
-                {
-                    if (self.blink <= 0 && Random.value < 0.35f) self.player.Blink(Mathf.FloorToInt(Mathf.Lerp(3f, 8f, Random.value)));
-                    self.head.vel -= self.lookDirection * 3f;
-                }
-            }
-            c.whiskers?.Update();
+            beacon.graphics.Update();
         }
     }
     
@@ -128,25 +119,10 @@ public static class PlayerGraphicsHooks
     {
         orig(self, sLeaser, rCam);
 
-        if (scugCWT.TryGetValue(self.player, out PlayerCWT cwt) && !cwt.SpritesInitialized)
+        if (self.player.TryGetBeacon(out var beacon) && !beacon.graphics.init)
         {
-            cwt.SpritesInitialized = true;
-
-            if (ModOptions.UsesHatSprite && self.player.room.game.session is StoryGameSession session && BeaconUtils.IsBeacon(session.saveStateNumber)) {
-                cwt.hatIndex = sLeaser.sprites.Length;
-                Array.Resize(ref sLeaser.sprites, sLeaser.sprites.Length+1);
-                sLeaser.sprites[cwt.hatIndex] = new FSprite("PBHat");
-            }
-            
-            #region Whiskers
-            cwt.whiskers.initialWhiskerIndex = sLeaser.sprites.Length;
-            cwt.whiskers.endWhiskerIndex = cwt.whiskers.initialWhiskerIndex + cwt.whiskers.headScales.Length;
-            cwt.whiskers.initialLowerWhiskerIndex = cwt.whiskers.initialWhiskerIndex + cwt.whiskers.headScales.Length / 2;
-
-            Array.Resize(ref sLeaser.sprites, sLeaser.sprites.Length + cwt.whiskers.headScales.Length);
-            cwt.whiskers.InitiateSprites(sLeaser);
-            #endregion
-            
+            beacon.graphics.init = true;
+            beacon.graphics.InitiateSprites(sLeaser, rCam);
             self.AddToContainer(sLeaser, rCam, null);
         }
     }
@@ -155,20 +131,10 @@ public static class PlayerGraphicsHooks
     {
         orig(self, sLeaser, rCam, newContatiner);
 
-        if (Plugin.scugCWT.TryGetValue(self.player, out PlayerCWT scugCWT) && scugCWT.SpritesInitialized)
+        if (self.player.TryGetBeacon(out var beacon) && beacon.graphics.init)
         {
-            scugCWT.SpritesInitialized = false;
-            
-            if (ModOptions.UsesHatSprite
-                && sLeaser.sprites.Length > 13
-                && self.player.room.game.session is StoryGameSession session
-                && !BeaconUtils.IsBeacon(session.saveStateNumber)) {
-                rCam.ReturnFContainer("Foreground").RemoveChild(sLeaser.sprites[scugCWT.hatIndex]);
-                rCam.ReturnFContainer("Midground").AddChild(sLeaser.sprites[scugCWT.hatIndex]);
-                sLeaser.sprites[scugCWT.hatIndex].MoveInFrontOfOtherNode(sLeaser.sprites[9]);
-            }
-            
-            scugCWT.whiskers.AddToContainer(sLeaser, rCam);
+            beacon.graphics.init = false;
+            beacon.graphics.AddToContainer(sLeaser, rCam, newContatiner);
         }
     }
     
@@ -182,71 +148,52 @@ public static class PlayerGraphicsHooks
             SpriteColors = ColorsForBeaconSprites(self);
         }
 
-        bool GotCWTData = scugCWT.TryGetValue(self.player, out PlayerCWT cwt);
-        if (self.player.TryGetBeacon(out var bCWT))
+        if (self.player.TryGetBeacon(out var beacon))
         {
+            beacon.graphics.DrawSprites(sLeaser, rCam, timeStacker, camPos);
+
             // "gets" slugcat color stuff to then be assigned
             Color color = PlayerGraphics.SlugcatColor(self.CharacterForColor);
             Color skinColor = new Color(color.r, color.g, color.b);
             Color eyeColor = new Color(color.r, color.g, color.b);
 
             int flares = 0;
-            if (bCWT.storage != null)
+            if (beacon.storage != null)
             {
-                flares = bCWT.storage.storedFlares.Count;
+                flares = beacon.storage.storedFlares.Count;
             }
             skinColor = Color.Lerp(Colors.BeaconDefaultColor, Colors.BeaconFullColor, flares / (float)4);
             eyeColor = Colors.BeaconEyeColor;
             
-            if (bCWT.cycle != null
-                && (bCWT.cycle.state == Cycle.State.Thanatosis
-                    || bCWT.cycle.state == Cycle.State.ExitThanatosis
-                    || bCWT.cycle.thanatosisLerp > 0f))
+            if (beacon.cycle != null
+                && (beacon.cycle.state == Cycle.State.Thanatosis
+                    || beacon.cycle.state == Cycle.State.ExitThanatosis
+                    || beacon.cycle.thanatosisLerp > 0f))
             {
-                bCWT.currentSkinColor = Color.Lerp(skinColor, SpriteColors[0], bCWT.cycle.thanatosisLerp);
-                bCWT.currentEyeColor = Color.Lerp(eyeColor, SpriteColors[1], bCWT.cycle.thanatosisLerp);
+                beacon.currentSkinColor = Color.Lerp(skinColor, SpriteColors[0], beacon.cycle.thanatosisLerp);
+                beacon.currentEyeColor = Color.Lerp(eyeColor, SpriteColors[1], beacon.cycle.thanatosisLerp);
             }
             else
             {
-                bCWT.currentSkinColor = skinColor;
-                bCWT.currentEyeColor = eyeColor;
+                beacon.currentSkinColor = skinColor;
+                beacon.currentEyeColor = eyeColor;
             }
             for (int i = 0; i < sLeaser.sprites.Length; i++)
             {
                 // eyes
                 if (i != 9)
                 {
-                    sLeaser.sprites[i].color = bCWT.currentSkinColor;
+                    sLeaser.sprites[i].color = beacon.currentSkinColor;
                 }
                 else
                 {
-                    if (bCWT.cycle.isDead || (bCWT.cycle.thanatosisTutorialSequence != null && bCWT.cycle.thanatosisTutorialSequence.markedAsDead))
+                    if (beacon.cycle.isDead || (beacon.cycle.thanatosisTutorialSequence != null && beacon.cycle.thanatosisTutorialSequence.markedAsDead))
                     {
                         sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName("FaceDead");
                     }
-                    sLeaser.sprites[i].color = bCWT.currentEyeColor;
+                    sLeaser.sprites[i].color = beacon.currentEyeColor;
                 }
             }
-
-            //<Lantern Mouse flickering>
-
-            bCWT.squinter.DrawSprites(self, sLeaser);
-
-            if (ModOptions.UsesHatSprite && self.player.room != null && self.player.room.game.session is StoryGameSession session && !BeaconUtils.IsBeacon(session.saveStateNumber))
-            {
-                Vector2 vector = Vector2.Lerp(self.drawPositions[0, 1], self.drawPositions[0, 0], timeStacker);
-                Vector2 vector2 = Vector2.Lerp(self.drawPositions[1, 1], self.drawPositions[1, 0], timeStacker);
-                Vector2 position = sLeaser.sprites[9].GetPosition() + 9f * Vector2.up - 4f * self.lookDirection.x * Vector2.right;
-                position += 4f * Mathf.Clamp(Mathf.Abs(self.player.mainBodyChunk.vel.x), 0, self.player.standing ? 1 : 0) * self.player.flipDirection * Custom.PerpendicularVector(Custom.DirVec(vector, vector2)) * Mathf.Lerp(1, 0, Mathf.Abs(self.player.mainBodyChunk.lastPos.y - self.player.mainBodyChunk.pos.y) * 2f);
-                sLeaser.sprites[cwt.hatIndex].SetPosition(position);
-                sLeaser.sprites[cwt.hatIndex].scaleX = 1.1f;
-                sLeaser.sprites[cwt.hatIndex].scaleY = 0.8f;
-                sLeaser.sprites[cwt.hatIndex].rotation = sLeaser.sprites[9].rotation + 0.15f * sLeaser.sprites[3].rotation + Mathf.Abs(self.player.mainBodyChunk.vel.x);
-                Color colorCustom = SlugBase.DataTypes.PlayerColor.GetCustomColor(self, 0);
-                sLeaser.sprites[cwt.hatIndex].color = new Color(colorCustom.r * 0.75f, colorCustom.g * 0.75f, colorCustom.b * 0.75f, colorCustom.a);
-            }
-
-            cwt.whiskers.DrawSprites(sLeaser, timeStacker, camPos);
         }
     }
     
@@ -254,12 +201,9 @@ public static class PlayerGraphicsHooks
     {
         orig(self, sLeaser, rCam, palette);
         
-        if (!scugCWT.TryGetValue(self.player, out PlayerCWT c)) 
-            return;
-        
-        Colors.PlayerPaletteBlack = palette.blackColor;
-
-        // Apply whisker palette correctly
-        c.whiskers.ApplyPalette(self, sLeaser);
+        if (self.player.TryGetBeacon(out var beacon))
+        {
+            beacon.graphics.ApplyPalette(sLeaser, rCam, palette);
+        }
     }
 }

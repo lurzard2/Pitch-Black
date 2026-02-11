@@ -1,17 +1,19 @@
 ﻿using IL.Menu.Remix.MixedUI.ValueTypes;
+using UnityEngine;
 
 namespace PitchBlack;
 
 public class Squinter
 {
-    public Player owner;
-    public Room Room => owner.room;
+    public Player player;
+    public PlayerGraphics playerGraphics;
+    public Room Room => player.room;
 
     public int squintTick = 0;
     public bool Squinting => squintTick > 0;
     public bool BlindBeaconHere()
     {
-        bool placeIsBright = Room.Darkness(owner.mainBodyChunk.pos) < 0.15f;
+        bool placeIsBright = Room.Darkness(player.mainBodyChunk.pos) < 0.15f;
 
         if (Room.world.singleRoomWorld)
         {
@@ -43,9 +45,10 @@ public class Squinter
         return false;
     }
 
-    public Squinter(Player owner)
+    public Squinter(Player player, PlayerGraphics playerGraphics)
     {
-        this.owner = owner;
+        this.player = player;
+        this.playerGraphics = playerGraphics;
     }
 
     public void Update()
@@ -59,12 +62,12 @@ public class Squinter
             }
             else if (squintTick == 1)
             {
-                owner.Blink(5);
+                player.Blink(5);
             }
             else
             {
                 squintTick = 40 * UnityEngine.Random.Range(5, 7);
-                owner.Blink(8);
+                player.Blink(8);
             }
         }
         // Otherwise, room is dark enough and should stop squinting
@@ -86,6 +89,12 @@ public class Squinter
         {
             sLeaser.sprites[9].x -= pGraphics.lookDirection.x * 2;
             sLeaser.sprites[9].y -= pGraphics.lookDirection.y * 2;
+
+            if (playerGraphics.blink <= 0 && Random.value < 0.35f)
+            {
+                playerGraphics.player.Blink(Mathf.FloorToInt(Mathf.Lerp(3f, 8f, Random.value)));
+            }
+            playerGraphics.head.vel -= playerGraphics.lookDirection * 3f;
         }
     }
 }
