@@ -56,7 +56,8 @@ public class Beacon
     public Beacon(Player player)
     {
         this.player = player;
-        inputs = new(player);
+        graphics = new(this);
+        inputs = new(this);
 
         // Set current level to max once, effectively refreshing the value each cycle. Check savestate properly!!
         SpiralLevel = SaveState.GetMaxSpiralLevel_CurrentOrArenaDefault();

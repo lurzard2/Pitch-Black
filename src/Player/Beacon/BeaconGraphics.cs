@@ -11,20 +11,25 @@ public  class BeaconGraphics
 {
     // addtocontainer safety
     public bool init;
-    public Beacon beacon;
-    public Player playerRef;
+
+    public Beacon owner;
     public PlayerGraphics playerGraphics;
     public Whiskers whiskers;
     public Squinter squinter;
 
     private bool usesHat => ModOptions.UsesHatSprite;
-    public int HatSprite {  get; set; }
+    public int HatSprite { get; set; }
 
-    public BeaconGraphics(Beacon beacon, Player playerRef, PlayerGraphics playerGraphics)
+    public BeaconGraphics(Beacon owner)
     {
-        this.beacon = beacon;
-        this.playerRef = playerRef;
-        this.playerGraphics = playerGraphics;
+        this.owner = owner;
+    }
+
+    public void Set(PlayerGraphics graphics)
+    {
+        playerGraphics = graphics;
+        owner.graphics.whiskers ??= new(graphics);
+        owner.graphics.squinter ??= new(owner.player, graphics);
     }
 
     public void Update()

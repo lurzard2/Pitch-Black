@@ -10,22 +10,22 @@ namespace PitchBlack;
 
 public class BeaconInputs
 {
-    public Player player;
+    public Beacon beacon;
     public bool AllowNone { get; set; }
     public bool AllowSpecialOnly { get; set; }
     public bool UseSpecial { get; set; }
     public Counter specialInputCounter = new(Int32.MaxValue, 0, true);
     public bool SpecialHeldConditionMet => specialInputCounter == 24;
 
-    public BeaconInputs(Player player)
+    public BeaconInputs(Beacon beacon)
     {
-        this.player = player;
+        this.beacon = beacon;
     }
 
     public void Update()
     {
         // Special input press time tracking
-        if (player.input[0].spec)
+        if (beacon.player.input[0].spec)
         {
             specialInputCounter.Tick();
         }
@@ -37,8 +37,8 @@ public class BeaconInputs
 
     public Player.InputPackage InputPackage(Player.InputPackage originalInputs)
     {
-        var beacon = player;
-        var controls = beacon.room.game.rainWorld.options.controls[beacon.playerState.playerNumber];
+        var p = beacon.player;
+        var controls = p.room.game.rainWorld.options.controls[p.playerState.playerNumber];
         Player.InputPackage newInputs = originalInputs;
         Player.InputPackage none = new(controls.gamePad, controls.GetActivePreset(), 0, 0, false, false, false, false, false);
 

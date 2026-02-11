@@ -99,9 +99,8 @@ public static class PlayerGraphicsHooks
 
         if (self.player.TryGetBeacon(out var beacon))
         {
-            beacon.graphics = new(beacon, self.player, self);
-            beacon.graphics.whiskers = new(self);
-            beacon.graphics.squinter = new(self.player, self);
+            beacon.graphics.Set(self);
+            
         }
     }
 
