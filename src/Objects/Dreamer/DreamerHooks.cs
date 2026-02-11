@@ -135,7 +135,7 @@ public static class DreamerMode_Hooks
     {
         orig(self);
 
-        if (dreamerPresence.TryGetValue(self.room.world, out var presences) && MiscUtils.IsBeacon(self.room.world.game.session))
+        if (dreamerPresence.TryGetValue(self.room.world, out var presences) && BeaconUtils.IsBeacon(self.room.world.game.session))
         {
             //logger.LogDebug($"{s} Presence CWT accessed and campaign is Beacon, proceeding to determine ghostMode of room");
             foreach (var presence in presences)
@@ -221,7 +221,7 @@ public static class DreamerMode_Hooks
 	private static void On_RoomCamera_ApplyFade(On.RoomCamera.orig_ApplyFade orig, RoomCamera self)
 	{
 		Texture2D ghostFadeTex = self.ghostFadeTex;
-		if (currentTarget != null || MiscUtils.IsBeacon(self.game.GetStorySession)) {
+		if (currentTarget != null || BeaconUtils.IsBeacon(self.game.GetStorySession)) {
 			self.ghostFadeTex = dreamerFadeTex;
 		}
 

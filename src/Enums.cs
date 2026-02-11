@@ -274,27 +274,28 @@ public static class Enums
 
     public class ConversationID
     {
-        public static Conversation.ID Dreamer_PH = new(nameof(Dreamer_PH), true);
-        public static Conversation.ID Dreamer_1 = new(nameof(Dreamer_1), true);
-        public static Conversation.ID Dreamer_2 = new(nameof(Dreamer_2), true);
-        public static Conversation.ID Dreamer_3 = new(nameof(Dreamer_3), true);
+        public static Conversation.ID Dreamer_Placeholder = new(nameof(Dreamer_Placeholder), true);
+        public static Conversation.ID Dreamer_Start = new(nameof(Dreamer_Start), true);
+        public static Conversation.ID Dreamer_Prologue_1 = new(nameof(Dreamer_Prologue_1), true);
+        public static Conversation.ID Dreamer_Prologue_2 = new(nameof(Dreamer_Prologue_2), true);
+        public static Conversation.ID Dreamer_Prologue_Intermission = new(nameof(Dreamer_Prologue_Intermission), true);
 
         public static void UnregisterValues()
         {
-            if (Dreamer_1 != null)
+            if (Dreamer_Start != null)
             {
-                Dreamer_1.Unregister();
-                Dreamer_1 = null;
+                Dreamer_Start.Unregister();
+                Dreamer_Start = null;
             }
-            if (Dreamer_2 != null)
+            if (Dreamer_Prologue_1 != null)
             {
-                Dreamer_2.Unregister();
-                Dreamer_2 = null;
+                Dreamer_Prologue_1.Unregister();
+                Dreamer_Prologue_1 = null;
             }
-            if (Dreamer_3 != null)
+            if (Dreamer_Prologue_2 != null)
             {
-                Dreamer_3.Unregister();
-                Dreamer_3 = null;
+                Dreamer_Prologue_2.Unregister();
+                Dreamer_Prologue_2 = null;
             }
         }
     }

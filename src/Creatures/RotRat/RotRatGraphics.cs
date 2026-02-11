@@ -10,7 +10,7 @@ internal class RotratGraphics : MouseGraphics
 {
     public RotratGraphics(PhysicalObject ow) : base(ow)
     {
-        rotRatData.Add(this,new RotData(10));
+        rotRatData.Add(this,new RotRatData(10));
         tail.rad = 10f;
     }
     public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
@@ -49,7 +49,7 @@ internal class RotratGraphics : MouseGraphics
         sLeaser.sprites[this.HeadSprite].element = Futile.atlasManager.GetElementWithName("mouseHead0");
         #endregion
 
-        if (rotRatData.TryGetValue(this, out RotData rotData))
+        if (rotRatData.TryGetValue(this, out RotRatData rotData))
         {
             rotData.startSprite = sLeaser.sprites.Length;
             Array.Resize(ref sLeaser.sprites, sLeaser.sprites.Length + rotData.numOfSprites);
@@ -71,7 +71,7 @@ internal class RotratGraphics : MouseGraphics
     public override void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner)
     {
         base.AddToContainer(sLeaser, rCam, newContatiner);
-        if (rotRatData.TryGetValue(this,out RotData rotData))
+        if (rotRatData.TryGetValue(this,out RotRatData rotData))
         {
             FContainer container = rCam.ReturnFContainer("Midground");
             for (int i = rotData.startSprite; i < rotData.startSprite + rotData.numOfSprites; i+=2)
@@ -87,7 +87,7 @@ internal class RotratGraphics : MouseGraphics
     public override void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         base.DrawSprites(sLeaser, rCam, timeStacker, camPos);
-        if (rotRatData.TryGetValue(this, out RotData rotData))
+        if (rotRatData.TryGetValue(this, out RotRatData rotData))
         {
             Vector2 vector = Vector2.Lerp(this.mouse.bodyChunks[1].lastPos, this.mouse.bodyChunks[1].pos, timeStacker);
             Vector2 vector2 = Vector2.Lerp(this.mouse.bodyChunks[0].lastPos, this.mouse.bodyChunks[0].pos, timeStacker);

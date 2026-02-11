@@ -9,11 +9,13 @@ using BepInEx.Bootstrap;
 
 namespace PitchBlack;
 
-public class Cycle
+public abstract class Cycle
 {
     public AbstractCreature abstractOwner;
     public Creature RealizedOwner => abstractOwner.realizedCreature;
     public CreatureTemplate.Type CycleCreatureTemplateType => abstractOwner.creatureTemplate.type;
+
+    public SaveState SaveState => abstractOwner.world.game.GetSaveState();
 
     public State state;
     public class State : ExtEnum<State>
@@ -31,8 +33,6 @@ public class Cycle
 
     public int idleRipplesToSpawn;
     public bool spawnedPendingRipples;
-    private Counter rippleCooldown = new(40, 0, false);
-
     public class CycleRippleSource : ExtEnum<CycleRippleSource>
     {
         public CycleRippleSource(string value, bool register) : base(value, register) { }
@@ -41,18 +41,13 @@ public class Cycle
         public static readonly CycleRippleSource Thanatosis = new(nameof(Thanatosis), true);
         public static readonly CycleRippleSource Cache = new(nameof(Cache), true);
     }
-    private int GetCreatureIdleRippleSpawnLimit()
-    {
-        // Hopefully reducing lag from coalescipedes
-        if (CycleCreatureTemplateType == CreatureTemplate.Type.Spider)
-        {
-            return 3;
-        }
-        return 15;
-    }
 
     public Counter cycleTime = new(Int32.MaxValue, 0, true);
     public Counter cycleStateTime = new(Int32.MaxValue, 0, true);
+
+    public List<CycleModule> modules = [];
+    public IdleRippleTracker idleRippleTracker {  get; set; }
+    public SpacialTracker spacialTracker {  get; set; }
 
     public Cycle(AbstractCreature abstractOwner)
     {
@@ -71,57 +66,22 @@ public class Cycle
 
         CycleTick();
 
-        #region Idle Ripples
-        if (Random.value < 0.1f && idleRipplesToSpawn <= GetCreatureIdleRippleSpawnLimit())
-        {
-            idleRipplesToSpawn++;
-        }
-        #endregion
-
-        if (state == State.MarkedForCache)
-        {
-            switch (cycleStateTime)
-            {
-                case 1:
-                    MarkForCache();
-                    break;
-                case 80:
-                    ChangeState(State.Cached);
-                    break;
-                default: break;
-            }
-        }
-        else if (abstractOwner.state.dead && state == State.Alive)
-        {
-            ChangeState(State.MarkedForCache);
-        }
+        if (RealizedOwner is not null)
+            RealizedUpdate();
     }
 
     // Front end
     public virtual void RealizedUpdate()
     {
-        spawnedPendingRipples = Random.value < 0.003f;
-
-        // Spawn a ripple with a half-second cooldown
-        if (spawnedPendingRipples && rippleCooldown.isFinished)
+        foreach (CycleModule module in modules)
         {
-            for (int i = 0; i < idleRipplesToSpawn; i++)
-            {
-                AddRipple(CycleRippleSource.Idle);
-                idleRipplesToSpawn--;
-                rippleCooldown.Reset();
-                break;
-            }
-        }
-        else
-        {
-            rippleCooldown.Tick();
+            module.Update();
         }
     }
 
-    private void MarkForCache()
+    public virtual bool Die()
     {
-        
+        return true;
     }
 
     public void AddRipple(CycleRippleSource source)
@@ -144,8 +104,6 @@ public class Cycle
         {
             RealizedOwner.room.AddObject(ripple);
             RealizedOwner.room.AddObject(new ShockWave(pos, 0.15f * (intensity / 2f), intensity, life, true));
-            // We need a better sound
-            //RealizedOwner.room.PlaySound(SoundID.Small_Object_Into_Water_Slow, pos, intensity - 0.5f, intensity - 0.2f);
         }
         if (devMode && RealizedOwner.room.updateList.Contains(ripple))
         {
@@ -166,23 +124,9 @@ public class Cycle
         cycleStateTime.Reset();
     }
 
-    public bool TimeInState(State stateToCheck, float timeToCheck)
-    {
-        if (state == stateToCheck && cycleStateTime == timeToCheck)
-        {
-            return true;
-        }
-        return false;
-    }
-
     public void Sync()
     {
-        // We only have to check if it's alive, cause this is when the abstractcreature is first updated, otherwise it is guaranteed dead
-        if (abstractOwner.state.alive)
-        {
-            ChangeState(State.Alive);
-            return;
-        }
-        ChangeState(State.Cached);
+        // We'll add more later
+        ChangeState(State.Alive);
     }
 }

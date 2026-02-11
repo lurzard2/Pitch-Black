@@ -76,7 +76,7 @@ public static class WarpPointHooks_ForRift
 
     private static void Player_ApplyWarpFatigue_MODIFY(On.Player.orig_ApplyWarpFatigue orig, Player self, RainWorldGame game)
     {
-        if (MiscUtils.IsBeacon(self))
+        if (BeaconUtils.IsBeacon(self))
         {
             self.warpExhausionTime = 0;
         }

@@ -17,6 +17,11 @@
       <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     </ItemGroup>
     
+    <ItemGroup>
+      <Folder Include="Hooks\Creatures\Base\" />
+      <Folder Include="Hooks\Creatures\PB\" />
+    </ItemGroup>
+    
     <Target Name="GenerateMod" AfterTargets="PostBuildEvent">
 		<ItemGroup>
 			<RemovePlugins Include="../pitchblack/newest/plugins/pitchblack.dll" />

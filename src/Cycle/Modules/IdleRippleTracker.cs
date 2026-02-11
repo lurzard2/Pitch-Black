@@ -1,0 +1,106 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using RWCustom;
+using static PitchBlack.Plugin;
+using Watcher;
+
+namespace PitchBlack;
+
+public class IdleRippleTracker : CycleModule
+{
+    public SpacialTracker spacialTracker => cycle.spacialTracker;
+
+    private readonly string debug = $"{nameof(Cycle)}.{nameof(IdleRippleTracker)}:";
+    private Counter delayCounter = new(80, 0, true);
+    private readonly int defaultDelay = 80;
+
+    public IdleRippleTracker(Cycle cycle) : base(cycle) { }
+
+    public override void Update()
+    {
+        // If ticked, needs delay, then we wait until the delay is finished to start over
+        if (delayCounter > 0)
+        {
+            delayCounter.Tick();
+            if (delayCounter.isFinished)
+            {
+                delayCounter.Reset();
+            }
+            return;
+        }
+
+        if (spacialTracker.BelowRippleSurface)
+        {
+            // Manipulate counter delay for differently timed ripples
+            if (spacialTracker.pos.v > spacialTracker.rippleSurface)
+            {
+                delayCounter.max = Random.Range(40, 100);
+            }
+            else if (delayCounter.max != defaultDelay)
+            {
+                delayCounter.max = defaultDelay;
+            }
+
+            SpawnRippleRing();
+            delayCounter.Tick();
+        }
+    }
+
+    public void SpawnRippleRing()
+    {
+        float w = spacialTracker.pos.v;
+
+        Vector2 pos = new(spacialTracker.pos.x, spacialTracker.pos.y);
+        int life = Random.Range(20, Random.Range(20, 80));
+        float intensity = w;
+        float speed = 0.15f + intensity;
+
+        if (cycle.RealizedOwner.room == null)
+        {
+            return;
+        }
+
+        if (spacialTracker.InDream)
+        {
+            life = Random.Range(20, 120);
+            intensity = Random.Range(0.3f, spacialTracker.rippleSurface);
+            speed = Random.Range(0.5f, 1f);
+        }
+
+        if (devMode)
+        {
+            if (Input.GetKey("e"))
+            {
+                intensity = 2f;
+            }
+
+            // Can be empty, but shouldn't be if it's a player
+            string playerCharString = "";
+            string creatureType = cycle.CycleCreatureTemplateType.value;
+            if (cycle.RealizedOwner is Player p)
+            {
+                string playerName = $"{p.slugcatStats.name}";
+                string playerIndex = $"{p.room.PlayersInRoom.IndexOf(p)}";
+                playerCharString = $"Player[{playerName},{playerIndex}]";
+                creatureType = "";
+            }
+            Custom.LogImportant(
+            [
+                $"{debug} ",
+                "Spawned ripple for ",
+                $"{playerCharString}",
+                $"{creatureType}",
+                $"~ {life}, {intensity}, {speed}",
+            ]);
+        }
+
+        // RippleRing
+        RippleRing ripple = new(pos, life, intensity, speed);
+        cycle.RealizedOwner.room.AddObject(ripple);
+
+        // Shockwave
+        float intensity2 = intensity - 0.35f;
+        cycle.RealizedOwner.room.AddObject(new ShockWave(pos, intensity2, intensity, life));
+    }
+}

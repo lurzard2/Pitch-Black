@@ -111,7 +111,7 @@ public class DreamerConversation : PBEntity.BehaviorModule.BehaviorConversation
             volume = Random.Range(0.75f, 1f);
             pitch = Random.Range(0.80f, 1.25f);
         }
-       Owner.Dreamer.room.PlaySound(VoiceID(), 0.5f, volume, pitch);
+        Owner.Dreamer.room.PlaySound(VoiceID(), 0.5f, volume, pitch);
     }
 
     public SoundID VoiceID()
@@ -130,11 +130,11 @@ public class DreamerConversation : PBEntity.BehaviorModule.BehaviorConversation
 
     public override void GetEvents(List<DialogueEvent> e)
     {
-        if (id == Enums.ConversationID.Dreamer_PH)
+        if (id == Enums.ConversationID.Dreamer_Placeholder)
         {
             e.Add(Text("...", 40));
         }
-        else if (id == Enums.ConversationID.Dreamer_1)
+        else if (id == Enums.ConversationID.Dreamer_Start)
         {
             e.AddRange([
                 Text("...", 40),
@@ -155,7 +155,7 @@ public class DreamerConversation : PBEntity.BehaviorModule.BehaviorConversation
                 Text("Forever somewhere, yet always somewhere else.")
             ]);
         }
-        else if (id == Enums.ConversationID.Dreamer_2)
+        else if (id == Enums.ConversationID.Dreamer_Prologue_1)
         {
             e.AddRange([
                 Text("The little sleeper follows the tide once more."),
@@ -179,7 +179,7 @@ public class DreamerConversation : PBEntity.BehaviorModule.BehaviorConversation
                 Text("No matter how long it takes, for another when and another you.", 20)
             ]);
         }
-        else if (id == Enums.ConversationID.Dreamer_3)
+        else if (id == Enums.ConversationID.Dreamer_Prologue_2)
         {
             e.AddRange([
                 Text("Ah... you've brought another, I see?"),
@@ -205,6 +205,36 @@ public class DreamerConversation : PBEntity.BehaviorModule.BehaviorConversation
                 Text("Find somewhere comfortable where you can curl up and die peacefully, please."),
                 Text("Don't struggle. Don't cry. I can't bear to see it anymore.", 20),
                 Text("Then, come and find me, when you finally wake.")
+            ]);
+        }
+        else if (id == Enums.ConversationID.Dreamer_Prologue_Intermission)
+        {
+            e.AddRange([
+                Text("mrow")
+                #if false
+                “...”
+                “You are mistaken.”
+                “Crawling here, into the deepest darkest pit of nowhere... It means nothing.”
+                “...”
+                “Your claws scraping against the road, sidewalk, and walls. Dulling with each scrape.”
+                “Stammering and blind you wander...”
+                “Dragging your flesh around like a costume...”
+                “Reeking a mix of decayed flesh and dried blood...”
+                “Here at the end... Waiting for something to happen.”
+                “You wander aimlessly, in circles, and circles...”
+                “Like a stray animal.”
+                “...”
+                “Were you not sick and dying?”
+                "About to vomit your insides out?"
+                “You crumpled into a ball and lied there, suffocating.”
+                “Your fate was sealed and you should’ve been expunged.”
+                “Instead here you are.”
+                “Barely swimming beneath the waves.”
+                “A lost.”
+                "Lonely."
+                "Pathetic."
+                "Stray."
+#endif
             ]);
         }
     }

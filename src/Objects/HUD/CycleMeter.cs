@@ -45,9 +45,9 @@ public class CycleMeter : HudPart
         {
             // placeholder
         }
-        if (scugCWT.TryGetValue(HUDOwner, out var c) && c is BeaconCWT beacon)
+        if (HUDOwner.TryGetBeacon(out var beacon))
         {
-            bool flag = beacon.beaconCycle.isDead || beacon.beaconCycle.thanatosisLerp > 0.1f;
+            bool flag = beacon.cycle.isDead || beacon.cycle.thanatosisLerp > 0.1f;
             flags.Add(flag);
         }
         return flags;
@@ -60,9 +60,9 @@ public class CycleMeter : HudPart
         {
             // placeholder
         }
-        if (scugCWT.TryGetValue(HUDOwner, out var c) && c is BeaconCWT beacon)
+        if (HUDOwner.TryGetBeacon(out var beacon))
         {
-            bool flag = beacon.beaconCycle.ReachedThanatosisLimit && HUDOwner.rippleDeathTime >= 80;
+            bool flag = beacon.cycle.ReachedThanatosisLimit && beacon.cycle.thanatosisDeathCounter.isFinished;
             flags.Add(flag);
         }
         return flags;
@@ -74,7 +74,7 @@ public class CycleMeter : HudPart
         fade.a = 0f;
 
         // Adding cycles, with an extra one to serve as the fixed 0 index cycle
-        for (int i = 0; i < SaveState.GetMaxSpiralLevel() + 1; i++)
+        for (int i = 0; i < SaveState.GetMaxSpiralLevel_CurrentOrArenaDefault() + 1; i++)
         {
             cycles.Add(new HUDCycle(this, i));
         }
@@ -110,9 +110,9 @@ public class CycleMeter : HudPart
                 selectedCycleIndex--;
                 currentCycle = cycles[selectedCycleIndex];
             } 
-            if (scugCWT.TryGetValue(HUDOwner, out var c) && c is BeaconCWT beacon)
+            if (HUDOwner.TryGetBeacon(out var beacon))
             {
-                beacon.beaconCycle.killMe = true;
+                beacon.cycle.killMe = true;
             }
         }
 

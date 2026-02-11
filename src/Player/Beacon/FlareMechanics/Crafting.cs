@@ -38,7 +38,7 @@ public static class Crafting
     /// [spinch]
     /// </summary>
     public static void BeaconCrafting(this Player self) {
-        if (Plugin.scugCWT.TryGetValue(self, out ScugCWT scugCWT) && scugCWT is BeaconCWT beaconCWT) {
+        if (self.TryGetBeacon(out var beaconCWT)) {
             // craft rocks into flarebombs instead of swallowing to do that
             for (int i = 0; i < self.grasps.Length; i++) {
                 if (self.FoodInStomach <= 0) {
@@ -54,7 +54,7 @@ public static class Crafting
                     item.RealizeInRoom();
                     self.SlugcatGrab(item.realizedObject, i);
 
-                    if (beaconCWT.storage.storedFlares.Count <= beaconCWT.storage.capacity) {
+                    if (beaconCWT.GetFlareStorage() is not null && beaconCWT.storage.storedFlares.Count <= beaconCWT.storage.capacity) {
                         beaconCWT.storage.FlarebombtoStorage(item.realizedObject as FlareBomb);
                         beaconCWT.heldCraft = true;
                     }

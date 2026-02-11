@@ -124,23 +124,30 @@ public class DreamerBehavior : PBEntity.BehaviorModule
 
     private Conversation.ID GetConversationID()
     {
-        StoryGameSession session = Dreamer.room.game.GetStorySession;
         Conversation.ID result;
-        switch ((session != null) ? BeaconSaveData.GetDreamerEncountersNumber(session.saveState) : 0)
+        var save = Dreamer.room.game.GetSaveState();
+        int encounters = save.GetDreamerEncountersNumber();
+
+        switch (encounters)
         {
             case 0:
-                result = Enums.ConversationID.Dreamer_1;
+                result = Enums.ConversationID.Dreamer_Start;
                 break;
             case 1:
-                result = Enums.ConversationID.Dreamer_2;
+                result = Enums.ConversationID.Dreamer_Prologue_1;
                 break;
             case 2:
-                result = Enums.ConversationID.Dreamer_3;
+                result = Enums.ConversationID.Dreamer_Prologue_2;
+                break;
+            case 3:
+                // Unfinished
+                result = Enums.ConversationID.Dreamer_Prologue_Intermission;
                 break;
             default:
-                result = Enums.ConversationID.Dreamer_PH;
+                result = Enums.ConversationID.Dreamer_Placeholder;
                 break;
         }
+
         return result;
     }
     #endregion

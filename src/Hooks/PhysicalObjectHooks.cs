@@ -164,7 +164,7 @@ public class FlareBombHooks
     {
         orig(self, sLeaser, rCam, timeStacker, camPos);
 
-        if (MiscUtils.IsBeacon(self.thrownBy))
+        if (BeaconUtils.IsBeacon(self.thrownBy))
         {
             sLeaser.sprites[2].color = new Color(0.4f, 0f, 1f);
         }
@@ -187,7 +187,7 @@ public class FlareBombHooks
                 {
                     continue;
                 }
-                if (Plugin.scugCWT.TryGetValue(abstrCrit.realizedCreature as Player, out ScugCWT c) && c is BeaconCWT beaconCWT && beaconCWT.storage.storedFlares.Contains(flarebomb))
+                if ((abstrCrit.realizedCreature as Player).TryGetBeacon(out var beaconCWT) && beaconCWT.storage.storedFlares.Contains(flarebomb))
                 {
                     return 0;
                 }

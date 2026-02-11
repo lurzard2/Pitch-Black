@@ -14,7 +14,7 @@ public class ThanatosisTutorialSequence
     public InGameTranslator Translator => room.world.game.manager.rainWorld.inGameTranslator;
     public string SequenceText => Translator.Translate("Hold SPECIAL to maintain stasis, but only if it gets too close...");
     public string SequenceInvertedText => Translator.Translate("The tides are shifting...");
-    public string CycleDisplayText => Translator.Translate($"Cycle {cycle.SaveState.cycleNumber} ~ {Region.GetRegionFullName(cycle.owner.room.world.region.name, SlugcatStats.Name.White)}");
+    public string CycleDisplayText => Translator.Translate($"Cycle {cycle.SaveState.cycleNumber} ~ {Region.GetRegionFullName(cycle.playerObj.room.world.region.name, SlugcatStats.Name.White)}");
     public string SequenceCompleteText => Translator.Translate("Hold SPECIAL to enter and exit a state of thanatosis");
     #endregion
 
@@ -77,7 +77,7 @@ public class ThanatosisTutorialSequence
     {
         this.cycle = cycle;
         this.room = room;
-        rCam = cycle.owner.room.game.cameras[0];
+        rCam = cycle.playerObj.room.game.cameras[0];
         phase = Phase.Init;
         //saveGameFramesDefault = cycle.owner.room.world.game.framesPerSecond;
         markedAsDead = false;
@@ -102,7 +102,7 @@ public class ThanatosisTutorialSequence
         // Tracking RippleRings in room
         if (!stopShowingCycleCount || rCam.hud.textPrompt.messages.Count == 0)
         {
-            foreach (var ring in cycle.owner.room.updateList.OfType<RippleRing>())
+            foreach (var ring in cycle.playerObj.room.updateList.OfType<RippleRing>())
             {
                 if (ring.intensity > 0.6f)
                 {
@@ -122,24 +122,25 @@ public class ThanatosisTutorialSequence
             targetDeathIntensity = 0;
         }
         tutorialDeathIntensity = Mathf.Lerp(tutorialDeathIntensity, targetDeathIntensity, 0.01f);
-        cycle.owner.rippleDeathIntensity = tutorialDeathIntensity;
+        cycle.playerObj.rippleDeathIntensity = tutorialDeathIntensity;
 
         // Drowning
         if (markedAsDead)
         {
-            cycle.owner.animation = Player.AnimationIndex.Dead;
-            cycle.owner.bodyMode = Player.BodyModeIndex.Dead;
-           
+            cycle.playerObj.animation = Player.AnimationIndex.Dead;
+            cycle.playerObj.bodyMode = Player.BodyModeIndex.Dead;
+            (cycle.playerObj.graphicsModule as PlayerGraphics).LookAtNothing();
+
         }
-        else if (!cycle.owner.Stunned && !cycle.owner.dead && cycle.owner.bodyMode == Player.BodyModeIndex.Dead && phase == Phase.UsedThanatosis)
+        else if (!cycle.playerObj.Stunned && !cycle.playerObj.dead && cycle.playerObj.bodyMode == Player.BodyModeIndex.Dead && phase == Phase.UsedThanatosis)
         {
-            cycle.owner.animation = Player.AnimationIndex.DownOnFours;
-            cycle.owner.bodyMode = Player.BodyModeIndex.Crawl;
-            cycle.owner.Blink(40);
+            cycle.playerObj.animation = Player.AnimationIndex.DownOnFours;
+            cycle.playerObj.bodyMode = Player.BodyModeIndex.Crawl;
+            cycle.playerObj.Blink(40);
         }
         else
         {
-            cycle.owner.airInLungs -= tutorialDeathIntensity;
+            cycle.playerObj.airInLungs -= tutorialDeathIntensity;
         }
 
         //logger.LogDebug($"EFFECT:{targetDeathIntensity} - PHASE:{phase.value} - THANATOSISLERP:{cycle.thanatosisLerp}");
@@ -220,9 +221,9 @@ public class ThanatosisTutorialSequence
         if (phase == Phase.InitiateDie
             || phase == Phase.Dead)
         {
-            if (cycle.owner.abstractCreature.rippleLayer == 0)
+            if (cycle.playerObj.abstractCreature.rippleLayer == 0)
             {
-                cycle.owner.abstractCreature.rippleLayer = 1;
+                cycle.playerObj.abstractCreature.rippleLayer = 1;
             }
             KillingUpdate();
             return;
@@ -259,19 +260,19 @@ public class ThanatosisTutorialSequence
             }
             if (sequencePhaseTime <= 40)
             {
-                if (!cycle.owner.Malnourished)
+                if (!cycle.playerObj.Malnourished)
                 {
-                    cycle.owner.SetMalnourished(true, false);
+                    cycle.playerObj.SetMalnourished(true, false);
                 }
                 return;
             }
-            cycle.cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
-            cycle.owner.room.PlaySound(Enums.SoundID.Player_Deactivated_Thanatosis, 0.5f, 1f, 0.9f);
-            cycle.owner.room.PlaySound(Enums.SoundID.Player_Activated_Thanatosis, 0.5f, 1f, 0.9f);
+            cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
+            cycle.playerObj.room.PlaySound(Enums.SoundID.Player_Deactivated_Thanatosis, 0.5f, 1f, 0.9f);
+            cycle.playerObj.room.PlaySound(Enums.SoundID.Player_Activated_Thanatosis, 0.5f, 1f, 0.9f);
             BeaconSaveData.SetCanUseThanatosis(cycle.SaveState, true);
             cycle.ToggleThanatosis(false);
             markedAsDead = false;
-            cycle.owner.Stun(80);
+            cycle.playerObj.Stun(80);
             ChangePhase(Phase.Thanatosis);
         }
 
@@ -286,9 +287,9 @@ public class ThanatosisTutorialSequence
 
             BeaconSaveData.SetHasUsedThanatosis(cycle.SaveState, true);
             // Do not make them do that whole thing over again
-            RainWorldGame.ForceSaveNewDenLocation(cycle.owner.room.world.game, cycle.owner.room.abstractRoom.name, true);
-            cycle.cycle.spawnedPendingRipples = false;
-            cycle.cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
+            RainWorldGame.ForceSaveNewDenLocation(cycle.playerObj.room.world.game, cycle.playerObj.room.abstractRoom.name, true);
+            cycle.spawnedPendingRipples = false;
+            cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
             // Ends sequence
             ChangePhase(Phase.UsedThanatosis);
         }
@@ -296,12 +297,12 @@ public class ThanatosisTutorialSequence
 
     private void Fight(int time, bool inputDown)
     {
-        float lastIntensity = cycle.owner.rippleDeathIntensity;
+        float lastIntensity = cycle.playerObj.rippleDeathIntensity;
         bool inverted = time >= (40 * 45);
         float increment = 0.006f;
 
         // Show prompt when inverted!
-        var prompt = cycle.owner.room.game.cameras[0].hud.textPrompt;
+        var prompt = cycle.playerObj.room.game.cameras[0].hud.textPrompt;
         if (inverted && !seenPromptForTidesShifting)
         {
             MiscUtils.AddHUDMessage(rCam.hud, true, SequenceInvertedText, 40, 220, true, true);
@@ -337,13 +338,13 @@ public class ThanatosisTutorialSequence
         if (deathTime.isFinished)
         {
             // For now, before I rewrite it.
-            cycle.owner.Die();
+            cycle.playerObj.Die();
         }
     }
 
     private void FightDeathUpdate()
     {
-        if (cycle.owner.rippleDeathIntensity <= 0.11f || cycle.owner.rippleDeathIntensity >= 0.79f)
+        if (cycle.playerObj.rippleDeathIntensity <= 0.11f || cycle.playerObj.rippleDeathIntensity >= 0.79f)
         {
             TickDeath();
         }
@@ -364,16 +365,16 @@ public class ThanatosisTutorialSequence
 
         if (holdingInput)
         {
-            if (cycle.cycle.idleRipplesToSpawn < 15)
+            if (cycle.idleRipplesToSpawn < 15)
             {
-                cycle.cycle.idleRipplesToSpawn += UnityEngine.Random.Range(0, UnityEngine.Random.Range(0, 12));
+                cycle.idleRipplesToSpawn += UnityEngine.Random.Range(0, UnityEngine.Random.Range(0, 12));
             }
-            cycle.cycle.spawnedPendingRipples = true;
+            cycle.spawnedPendingRipples = true;
         }
-        if (cycle.cycle.idleRipplesToSpawn >= 8 && cycle.cycle.spawnedPendingRipples)
+        if (cycle.idleRipplesToSpawn >= 8 && cycle.spawnedPendingRipples)
         {
-            cycle.cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
-            cycle.owner.room.PlaySound(Enums.SoundID.Player_Deactivated_Thanatosis, 0.5f, 0.03f * cycle.cycle.idleRipplesToSpawn, 0.85f);
+            cycle.AddRipple(Cycle.CycleRippleSource.Thanatosis);
+            cycle.playerObj.room.PlaySound(Enums.SoundID.Player_Deactivated_Thanatosis, 0.5f, 0.03f * cycle.idleRipplesToSpawn, 0.85f);
         }
     }
 
@@ -387,8 +388,8 @@ public class ThanatosisTutorialSequence
         {
             if (!markedAsDead)
             {
-                cycle.owner.animation = Player.AnimationIndex.Dead;
-                cycle.owner.bodyMode = Player.BodyModeIndex.Dead;
+                cycle.playerObj.animation = Player.AnimationIndex.Dead;
+                cycle.playerObj.bodyMode = Player.BodyModeIndex.Dead;
                 markedAsDead = true;
             }
             else
@@ -442,30 +443,30 @@ public class ThanatosisTutorialSequence
             ChangePhase(Phase.InitiateDie);
         }
 
-        cycle.owner.Stun(40);
+        cycle.playerObj.Stun(40);
         if (spasmer != null)
         {
             SpasmerUpdate();
         }
         else
         {
-            spasmer = new CreatureSpasmer(cycle.owner, true, sequenceTime);
+            spasmer = new CreatureSpasmer(cycle.playerObj, true, sequenceTime);
         }
     }
 
     private void SpasmerUpdate()
     {
-        if (cycle.cycle.idleRipplesToSpawn == 0)
+        if (cycle.idleRipplesToSpawn == 0)
         {
-            cycle.cycle.idleRipplesToSpawn++;
-            if (cycle.owner.abstractCreature.rippleLayer == 1)
+            cycle.idleRipplesToSpawn++;
+            if (cycle.playerObj.abstractCreature.rippleLayer == 1)
             {
-                cycle.cycle.idleRipplesToSpawn += UnityEngine.Random.Range(2, 5);
+                cycle.idleRipplesToSpawn += UnityEngine.Random.Range(2, 5);
             }
         }
         else
         {
-            cycle.cycle.spawnedPendingRipples = true;
+            cycle.spawnedPendingRipples = true;
         }
     }
 

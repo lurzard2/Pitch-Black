@@ -29,7 +29,7 @@
 		"has_dreams": false,
 		"perma_unlock_gates": false,
 		"the_mark": false,
-		"the_glow": true,
+		"the_glow": false,
 		"auto_grab_batflies": true,
 
 		"start_room": "VV_E01",

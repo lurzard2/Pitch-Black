@@ -10,59 +10,17 @@ namespace PitchBlack;
 
 public static class ScugHooks
 {
-    /// <summary>
-    /// Beacon's own update function, put things here instead of directly into a Player.Update hook, because counting inside update impacts performance.
-    /// </summary>
-    private static void BeaconUpdate(Player self)
-    {
-        var game = self.abstractCreature.world.game;
-        var storyState = game.GetSaveState();
-        if (scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beacon)
-        {
-            beacon.squinter?.Update();
-
-            if (storyState != null)
-            {
-                beacon.beaconCycle?.Update();
-
-                if (BeaconSaveData.GetOrSetBool(storyState, BeaconSaveData.canStoreFlares))
-                {
-                    beacon.storage ??= new(self);
-                }
-
-                if (beacon.dontThrowTimer > 0)
-                {
-                    beacon.dontThrowTimer--;
-                }
-            }
-        }
-    }
-
     public static void Apply()
     {
         On.SlugcatStats.SlugcatToTimeline += SlugcatToTimeline_MODIFY;
         On.Player.ctor += Player_ctor;
         On.Player.Update += Player_Update;
         On.SlugcatHand.EngageInMovement += SlugcatHand_EngageInMovement;
-        IL.Player.checkInput += IL_Player_checkInput_SPECIALONLY;
-        On.Player.Die += Player_Die;
-    }
-
-    private static void Player_Die(On.Player.orig_Die orig, Player self)
-    {
-        var saveState = self.abstractCreature.world.game.GetStorySession.saveState;
-        if (MiscUtils.IsBeacon(self) && BeaconSaveData.GetSpiralLevel(saveState) > -1 && BeaconSaveData.GetCanUseThanatosis(saveState))
-        {
-            // Don't do anything
-        }
-        else
-        {
-            orig(self);
-        }
+        IL.Player.checkInput += IL_Player_checkInput;
     }
 
     // Allowing for special input without any others in certain circumstances
-    private static void IL_Player_checkInput_SPECIALONLY(ILContext il)
+    private static void IL_Player_checkInput(ILContext il)
     {
         ILCursor cursor = new ILCursor(il);
         try
@@ -74,29 +32,20 @@ public static class ScugHooks
 
             cursor.EmitDelegate((Player.InputPackage originalInputs, Player self, int num) =>
             {
-                // This needs a proper check for if the player is in thanatosis
-                if (Plugin.scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beaconCWT)
+                if (self.TryGetBeacon(out var beacon))
                 {
-                    //var state = (self.room.game.session as StoryGameSession).saveState;
-                    if (beaconCWT.beaconCycle.thanatosisTutorialSequence != null && beaconCWT.beaconCycle.thanatosisTutorialSequence.markedAsDead)
-                    {
-                        // Create new inputs
-                        Player.InputPackage newInputs = new Player.InputPackage(self.room.game.rainWorld.options.controls[num].gamePad, self.room.game.rainWorld.options.controls[num].GetActivePreset(), 0, 0, false, false, false, false, false, originalInputs.spec);
-                        newInputs.downDiagonal = 0;
-                        newInputs.analogueDir = Vector2.zero;
-
-                        // Put new values on the stack
-                        return newInputs;
-                    }
+                    // pass inputs to the handler
+                    return beacon.inputs.InputPackage(originalInputs);
                 }
                 // If the prior condition is not met, just return the original inputs to the stack.
-                    return originalInputs;
+                return originalInputs;
             });
-            Plugin.logger.LogDebug($"PB {nameof(IL_Player_checkInput_SPECIALONLY)} applied successfully");
+            logger.LogDebug($"{nameof(IL_Player_checkInput)} applied successfully.");
         }
         catch (Exception err)
         {
-            Plugin.logger.LogDebug($"PB {nameof(IL_Player_checkInput_SPECIALONLY)} could not match IL.\n{err}");
+            logger.LogDebug($"PB {nameof(IL_Player_checkInput)} could not match IL.");
+            MiscUtils.LogExErr(err);
         }
     }
 
@@ -108,7 +57,7 @@ public static class ScugHooks
     {
         var player = self.owner.owner as Player;
         
-        if (scugCWT.TryGetValue(player, out ScugCWT c) && c is BeaconCWT beacon && beacon.squinter.squintTick > 1)
+        if (player.TryGetBeacon(out var beacon) && beacon.graphics.squinter.squintTick > 1)
         {
             PlayerGraphics pGraphics = player.graphicsModule as PlayerGraphics;
 
@@ -128,18 +77,17 @@ public static class ScugHooks
                 self.absoluteHuntPos = targetPos - Custom.DirVec(player.bodyChunks[0].pos, targetPos) * 3f;
                 return false;
             }
-
         }
 
         return orig(self);
     }
 
-    /// <summary>
-    /// Injects BeaconUpdate function into Player.Update before the original code (which maintains performance).
-    /// </summary>
     private static void Player_Update(On.Player.orig_Update orig, Player self, bool eu)
     {
-        BeaconUpdate(self);
+        if (self.TryGetBeacon(out var beacon))
+        {
+            beacon.Update();
+        }
         orig(self, eu);
     }
     
@@ -152,22 +100,18 @@ public static class ScugHooks
     {
         orig(self, abstractCreature, world);
         
-        if (MiscUtils.IsBeacon(self.slugcatStats.name))
+        if (!self.TryGetBeacon(out var beacon))
         {
-            if (!scugCWT.TryGetValue(self, out _))
-            { 
-                scugCWT.Add(self, new BeaconCWT(self));
-            }
-            
+            self.SetBeacon();
+
             // Adding back flares
-            if (self.room.abstractRoom.shelter 
-                && scugCWT.TryGetValue(self, out ScugCWT c) && c is BeaconCWT beacon)
+            if (self.room.abstractRoom.shelter)
             {
                 foreach (List<PhysicalObject> thingQuar in self.room.physicalObjects) {
                     foreach (PhysicalObject item in thingQuar) {
                         if (item is FlareBomb flare && beacon.storage.storedFlares.Count < beacon.storage.capacity) {
                             foreach (var player in self.room.PlayersInRoom) {
-                                if (player != null && scugCWT.TryGetValue(player, out var op) && op is BeaconCWT otherBeacon && otherBeacon.storage!= null && otherBeacon.storage.storedFlares.Contains(flare)) {
+                                if (player != null && player.TryGetBeacon(out var otherBeacon) && otherBeacon.storage!= null && otherBeacon.storage.storedFlares.Contains(flare)) {
                                     goto SkipAddingFlare;
                                 }
                             }
