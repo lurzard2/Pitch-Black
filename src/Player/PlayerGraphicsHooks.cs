@@ -99,7 +99,7 @@ public static class PlayerGraphicsHooks
 
         if (self.player.TryGetBeacon(out var beacon))
         {
-            beacon.graphics.Set(self);
+            beacon.graphics.Setup(self);
             
         }
     }

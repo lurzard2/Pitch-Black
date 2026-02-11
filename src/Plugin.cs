@@ -39,7 +39,6 @@ class  Plugin : BaseUnityPlugin
     public static bool remixUpdatedSaveData = false;
     
     // CWTs
-    public static readonly ConditionalWeakTable<Player, PlayerCWT> scugCWT = new();
     public static readonly ConditionalWeakTable<AbstractCreature, NightTerror> NTAbstractCWT = new();
     public static readonly ConditionalWeakTable<AbstractCreature, StrongBox<int>> KILLIT = new();
     public static readonly ConditionalWeakTable<RainWorldGame, List<NTTracker>> pursuerTracker = new(); 
@@ -160,6 +159,7 @@ class  Plugin : BaseUnityPlugin
         if (!Futile.atlasManager.DoesContainAtlas("lmllspr"))
             Futile.atlasManager.LoadAtlas("atlases/lmllspr");
         Futile.atlasManager.LoadAtlas("atlases/nightTerroratlas");
+        Futile.atlasManager.LoadAtlas("atlases/FaceThanatosis");
 
         // Ghost shaders
         self.Shaders["EtherealRag"] = FShader.CreateShader("etherealrag", AssetBundle.LoadFromFile(AssetManager.ResolveFilePath("assetbundles/etherealrag")).LoadAsset<Shader>("Assets/Shaders/EtherealRag.shader"), new string[]

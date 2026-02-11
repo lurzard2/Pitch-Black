@@ -9,23 +9,27 @@ namespace PitchBlack;
 
 public  class BeaconGraphics
 {
+    public Beacon owner;
     // addtocontainer safety
     public bool init;
-
-    public Beacon owner;
+    // will nullref if currently referencing between rooms
     public PlayerGraphics playerGraphics;
+
     public Whiskers whiskers;
     public Squinter squinter;
 
     private bool usesHat => ModOptions.UsesHatSprite;
     public int HatSprite { get; set; }
+    public Color DefaultColor => Colors.BeaconDefaultColor;
+    public Color CurrentSkinColor;
+    public Color CurrentEyeColor;
 
     public BeaconGraphics(Beacon owner)
     {
         this.owner = owner;
     }
 
-    public void Set(PlayerGraphics graphics)
+    public void Setup(PlayerGraphics graphics)
     {
         playerGraphics = graphics;
         owner.graphics.whiskers ??= new(graphics);
@@ -41,7 +45,7 @@ public  class BeaconGraphics
     public void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
         if (usesHat)
-        { 
+        {
             HatSprite = sLeaser.sprites.Length;
             Array.Resize(ref sLeaser.sprites, sLeaser.sprites.Length + 1);
             sLeaser.sprites[HatSprite] = new FSprite("PBHat");
@@ -51,10 +55,10 @@ public  class BeaconGraphics
         whiskers.endWhiskerIndex = whiskers.initialWhiskerIndex + whiskers.headScales.Length;
         whiskers.initialLowerWhiskerIndex = whiskers.initialWhiskerIndex + whiskers.headScales.Length / 2;
         Array.Resize(ref sLeaser.sprites, sLeaser.sprites.Length + whiskers.headScales.Length);
-        whiskers.InitiateSprites(sLeaser);
+        whiskers.InitiateSprites(sLeaser); 
     }
 
-    public void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner)
+    public void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner) 
     {
         if (usesHat)
         {

@@ -18,10 +18,11 @@ internal static class BeaconUtils
     public static bool IsBeacon(SlugcatStats.Timeline time) => time != null && time == Enums.Timeline.Beacon;
     #endregion
 
-    public static void AssignBeacon(this Player p)
+    public static void SetBeacon(this Player p)
     {
         BeaconCWT.Add(p, new(p));
     }
+
     public static bool TryGetBeacon(this Player p, out Beacon beacon)
     {
         beacon = null;
@@ -32,6 +33,7 @@ internal static class BeaconUtils
         }
         return p.IsBeacon() && beacon is not null;
     }
+
     public static bool TryGetBeaconSaveState(this RainWorldGame rwg, out SaveState beaconSaveState)
     {
         beaconSaveState = rwg.GetSaveState(true);

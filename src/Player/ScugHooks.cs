@@ -102,7 +102,7 @@ public static class ScugHooks
         
         if (!self.TryGetBeacon(out var beacon))
         {
-            self.AssignBeacon();
+            self.SetBeacon();
 
             // Adding back flares
             if (self.room.abstractRoom.shelter)

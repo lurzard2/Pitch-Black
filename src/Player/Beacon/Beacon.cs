@@ -8,6 +8,8 @@ public class Beacon
     public SaveState SaveState => player.abstractCreature.world.game.GetSaveState();
 
     public BeaconGraphics graphics;
+    public BeaconInputs inputs;
+    public BeaconCycle cycle;
 
     // Values with arena fallbacks
     public float SpiralLevel { get; set; } = 0;
@@ -44,11 +46,6 @@ public class Beacon
     public int dontThrowTimer = 0;
     //flashbangs to recover after respawning in jollycoop
     public int coopRefundFlares = 0;
-
-    // Cycle module
-    public BeaconCycle cycle { get; private set; }
-
-    public BeaconInputs inputs { get; private set; }
 
     public Color currentSkinColor;
     public Color currentEyeColor;
