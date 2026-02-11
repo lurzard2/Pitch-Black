@@ -61,6 +61,13 @@ public class Beacon
         // Set current level to max once, effectively refreshing the value each cycle. Check savestate properly!!
         SpiralLevel = SaveState.GetMaxSpiralLevel_CurrentOrArenaDefault();
 
+        #region Replace Cycle with BeaconCycle
+        // absCrit already has its key in creatureCycle before this is created, so we have to re-add it.
+        Plugin.creatureCycle.Remove(player.abstractCreature);
+        cycle = new(this, player);
+        Plugin.creatureCycle.Add(player.abstractCreature, cycle);
+        #endregion
+
         // for Playtest, for now
         if (SaveState is not null && SaveState.GetCompletedBeacon())
         {
@@ -71,8 +78,6 @@ public class Beacon
 
     public void Update()
     {
-        cycle.Update();
-
         if (dontThrowTimer > 0)
         {
             dontThrowTimer--;

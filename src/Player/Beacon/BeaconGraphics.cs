@@ -29,8 +29,8 @@ public  class BeaconGraphics
 
     public void Update()
     {
-        whiskers.Update();
         squinter.Update();
+        whiskers.Update();
     }
 
     public void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
@@ -47,11 +47,6 @@ public  class BeaconGraphics
         whiskers.initialLowerWhiskerIndex = whiskers.initialWhiskerIndex + whiskers.headScales.Length / 2;
         Array.Resize(ref sLeaser.sprites, sLeaser.sprites.Length + whiskers.headScales.Length);
         whiskers.InitiateSprites(sLeaser);
-
-        for (int i = 0; i < sLeaser.sprites.Length; i++)
-        {
-            Plugin.logger.LogDebug($"{nameof(BeaconGraphics)}: [{i},{sLeaser.sprites[i].element.name}]");
-        }
     }
 
     public void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner)

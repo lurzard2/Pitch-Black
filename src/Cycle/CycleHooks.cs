@@ -5,7 +5,7 @@ public static class CycleHooks
 {
     public static void Apply()
     {
-        //On.AbstractCreature.ctor += AbstractCreature_Cycle_ctor;
+        On.AbstractCreature.ctor += AbstractCreature_Cycle_ctor;
         On.AbstractCreature.Update += AbstractCreature_Cycle_Update;
 
         // Control flow of calls
