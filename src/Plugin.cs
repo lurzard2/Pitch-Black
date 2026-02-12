@@ -104,6 +104,7 @@ class  Plugin : BaseUnityPlugin
         PlayerGraphicsHooks.Apply();
         FlareStorageHooks.Apply();
         Crafting.Apply();
+        BeaconVisibilityBonus.Apply();
 
         logger.LogDebug("Hooks successfully applied!");
     }
