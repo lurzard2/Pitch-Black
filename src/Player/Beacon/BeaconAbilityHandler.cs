@@ -1,29 +1,31 @@
 ﻿using RWCustom;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using System;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace PitchBlack;
 
 public class BeaconAbilityHandler
 {
     public Beacon owner;
-    public bool ActivationConditionMet => owner.inputs.specialInputCounter == 80;
+    public bool ActivationConditionMet => owner.inputs.specialInputCounter == 40;
 
     public ThanatosisData thanatosisData;
     public class ThanatosisData()
     {
         public bool Dead { get; set; }
         public bool ToggleConditionMet { get; set; }
-        private bool toggleFlag = false;
+        public float creatureDeterrence; //unused
         public State state;
         public enum State
         {
             // MISC
-            None,
+            Init,
             Stuck,
             Blacklisted,
             // ON
@@ -32,7 +34,7 @@ public class BeaconAbilityHandler
             // TIMED
             Safe,
             Drowning,
-            Persist,
+            Persisting,
             Drowned,
             // OFF
             Exiting,
@@ -57,22 +59,20 @@ public class BeaconAbilityHandler
                 }
                 else
                 {
-                    ThanatosisToggle(player);
+                    ToggleThanatosis(player);
                 }
                 ToggleConditionMet = false;
             }
         }
 
-        private void ThanatosisToggle(Player player)
+        private void ToggleThanatosis(Player player)
         {
             Dead = !Dead;
-            if (Dead)
+            state = Dead ? State.Exiting : State.Entering;
+            SoundID sound = Dead ? Enums.SoundID.Player_Deactivated_Thanatosis : Enums.SoundID.Player_Activated_Thanatosis;
+            if (player.room != null)
             {
-                state = State.Exiting;
-            }
-            else
-            {
-                state = State.Entering;
+                player.room.PlaySound(sound, player.mainBodyChunk);
             }
         }
 
@@ -95,8 +95,12 @@ public class BeaconAbilityHandler
     public BeaconAbilityHandler(Beacon owner)
     {
         this.owner = owner;
+        thanatosisData = new()
+        {
+            state = ThanatosisData.State.Init
+        };
     }
-
+     
     public void Update()
     {
         if (ActivationConditionMet && owner.SaveState.GetCanUseThanatosis_CurrentOrArenaDefault())
@@ -105,14 +109,10 @@ public class BeaconAbilityHandler
         }
 
         thanatosisData.Toggle(owner.player);
+    }
 
-        if (thanatosisData.Dead)
-        {
-
-        }
-        else
-        {
-
-        }
+    public void ChangeState(ThanatosisData.State newState)
+    {
+        thanatosisData.state = newState;
     }
 }
