@@ -9,6 +9,7 @@ public class Beacon
 
     public BeaconGraphics graphics;
     public BeaconInputs inputs;
+    public BeaconAbilityHandler abilityHandler;
     public BeaconCycle cycle;
 
     // Values with arena fallbacks
@@ -53,6 +54,7 @@ public class Beacon
     public Beacon(Player player)
     {
         this.player = player;
+        abilityHandler = new(this);
         graphics = new(this);
         inputs = new(this);
 
@@ -76,6 +78,9 @@ public class Beacon
 
     public void Update()
     {
+        abilityHandler.Update();
+        // graphics + inputs are ran by hooks
+
         if (dontThrowTimer > 0)
         {
             dontThrowTimer--;

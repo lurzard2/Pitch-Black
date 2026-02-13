@@ -26,7 +26,6 @@ internal static class BeaconUtils
     public static bool TryGetBeacon(this Player p, out Beacon beacon)
     {
         beacon = null;
-        // assigns out with out
         if (BeaconCWT.TryGetValue(p, out var data))
         {
             beacon = data;
