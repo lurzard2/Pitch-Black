@@ -11,6 +11,23 @@ public static class MiscUtils
     public static bool IsNightTerror(this CreatureTemplate creatureTemplate) => creatureTemplate.type == Enums.CreatureTemplateType.NightTerror;
     // Might be a better way to further check specific creatures a bajillion times
     public static bool IsCreature(this CreatureTemplate creatureTemplate, CreatureTemplate.Type type) => type != null && creatureTemplate.type == type;
+
+    public static bool IsRotCreature(this AbstractCreature creature)
+    {
+        if (creature.creatureTemplate.TopAncestor().type == CreatureTemplate.Type.LizardTemplate)
+        {
+            return (creature.state as LizardState)!.rotType != LizardState.RotType.None;
+        }
+
+        if (creature.creatureTemplate.TopAncestor().type == CreatureTemplate.Type.DaddyLongLegs)
+        {
+            return true;
+        }
+
+        if (creature.creatureTemplate.type == Enums.CreatureTemplateType.RotDeer) return true;
+        
+        return false;
+    }
     #endregion
 
     #region Region Checks
