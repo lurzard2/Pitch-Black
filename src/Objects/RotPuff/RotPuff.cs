@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using MoreSlugcats;
 using RWCustom;
@@ -307,14 +308,20 @@ public class RotPuff : Weapon
 		}
 		for (int j = 0; j < 70; j++)
 		{
-			room.AddObject(new SporeCloud(base.firstChunk.pos, Custom.RNV() * (Random.value * 10f), sporeColor, 1f, (thrownBy != null) ? thrownBy.abstractCreature : null, j % 20, null, abstractPhysicalObject.rippleLayer));
+			room.AddObject(new RotSporeCloud(base.firstChunk.pos, Custom.RNV() * (Random.value * 10f), sporeColor, 1f, (thrownBy != null) ? thrownBy.abstractCreature : null, j % 20, null, abstractPhysicalObject.rippleLayer));
 		}
-		room.AddObject(new SporePuffVisionObscurer(base.firstChunk.pos, abstractPhysicalObject.rippleLayer));
+		//custom logic! not attracting deer
+		room.AddObject(new SporePuffVisionObscurer(base.firstChunk.pos, abstractPhysicalObject.rippleLayer) { doNotCallDeer = true});
 		for (int k = 0; k < 7; k++)
 		{
 			room.AddObject(new PuffBallSkin(base.firstChunk.pos, Custom.RNV() * (Random.value * 16f), color, Color.Lerp(color, sporeColor, 0.5f)));
 		}
 		room.PlaySound(SoundID.Puffball_Eplode, base.firstChunk);
+		//another bit of custom logic
+		IEnumerable<AbstractCreature> rotDeers = room.abstractRoom.creatures.Where(
+			abscrit => abscrit.creatureTemplate.type == Enums.CreatureTemplateType.RotDeer);
+		if (rotDeers.Count() > 0) room.PlaySound(SoundID.In_Room_Deer_Summoned, 0f, 1f, 1f);
+		(rotDeers.FirstOrDefault()?.abstractAI as DeerAbstractAI).AttractToSporeCloud(room.GetWorldCoordinate(firstChunk.pos));
 		Destroy();
 	}
 
