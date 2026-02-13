@@ -149,6 +149,8 @@ class  Plugin : BaseUnityPlugin
 
             Content.Register(new CitizenCritob());
             CitizenHooks.Apply();
+            
+            Objects.RotPuff._Meta.Apply();
         }
         catch (Exception err)
         {
@@ -198,7 +200,6 @@ class  Plugin : BaseUnityPlugin
             {
                 Enums.MenuSceneID.UnregisterValues();
                 Enums.CreatureTemplateType.UnregisterValues();
-                Enums.SandboxUnlockID.UnregisterValues();
                 Enums.RoomEffectType.UnregisterValues();
                 Enums.PlacedObjectType.UnregisterValues();
                 Enums.SoundID.UnregisterValues();

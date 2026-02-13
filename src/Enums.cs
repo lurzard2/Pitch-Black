@@ -37,19 +37,8 @@ public static class Enums
 
     public static class AbstractObjectType
     {
-        public static AbstractPhysicalObject.AbstractObjectType DreamSpawn;
-        public static void RegisterValues()
-        {
-            DreamSpawn = new AbstractPhysicalObject.AbstractObjectType(nameof(DreamSpawn));
-        }
-        public static void UnregisterValues()
-        {
-            if (DreamSpawn != null)
-            {
-                DreamSpawn.Unregister();
-                DreamSpawn = null;
-            }
-        }
+        public static AbstractPhysicalObject.AbstractObjectType DreamSpawn = new(nameof(DreamSpawn), true);
+        public static AbstractPhysicalObject.AbstractObjectType RotPuff = new("RotPuff", true);
     }
     public static class CreatureTemplateType
     {
@@ -85,28 +74,10 @@ public static class Enums
     }
     public static class SandboxUnlockID
     {
-        [AllowNull] public static MultiplayerUnlocks.SandboxUnlockID LMiniLongLegs = new(nameof(LMiniLongLegs), true);
-        [AllowNull] public static MultiplayerUnlocks.SandboxUnlockID NightTerror = new(nameof(NightTerror), true);
-        [AllowNull] public static MultiplayerUnlocks.SandboxUnlockID RotRat = new(nameof(RotRat), true);
-
-        public static void UnregisterValues()
-        {
-            if (LMiniLongLegs != null)
-            {
-                LMiniLongLegs.Unregister();
-                LMiniLongLegs = null;
-            }
-            if (NightTerror != null)
-            {
-                NightTerror.Unregister();
-                NightTerror = null;
-            }
-            if (RotRat != null)
-            {
-                RotRat.Unregister();
-                RotRat = null;
-            }
-        }
+        public static MultiplayerUnlocks.SandboxUnlockID LMiniLongLegs = new(nameof(LMiniLongLegs), true);
+        public static MultiplayerUnlocks.SandboxUnlockID NightTerror = new(nameof(NightTerror), true);
+        public static MultiplayerUnlocks.SandboxUnlockID RotRat = new(nameof(RotRat), true);
+        public static MultiplayerUnlocks.SandboxUnlockID RotPuffUnlockID = new("RotPuff", true);
     }
     
     public static class RoomEffectType
