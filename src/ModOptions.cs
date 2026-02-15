@@ -11,53 +11,46 @@ public class ModOptions : OptionInterface
 
     public static Configurable<bool> pursuer;
     public static Configurable<int> pursuerAgro;
-    private static Configurable<bool> universalPursuer;
     public static bool UniversalPursuer => universalPursuer.Value;
-
-    public static Configurable<bool> shockStun;
-	public static Configurable<bool> elecImmune;
-	public static Configurable<bool> chargeSpears;
+    private static Configurable<bool> universalPursuer;
 
     // Hat graphic in player sprites
-    private static Configurable<bool> hazHat;
     public static bool UsesHatSprite => hazHat.Value;
+    private static Configurable<bool> hazHat;
 
     // Enable beacon's thanatosis mechanic
-    public static Configurable<bool> thanatosisEnabaled;
     public static bool ThanatosisEnabled => thanatosisEnabaled.Value;
+    public static Configurable<bool> thanatosisEnabaled;
 
     // Change beacon's cosmetic effects for thanatosis depending on progression stage   
-    public static Configurable<int> thanatosisVariant;
     public static int ThanatosisVariant => thanatosisVariant.Value;
+    public static Configurable<int> thanatosisVariant;
 
     // Stops the Thanatosis tutorial from spawning
-    public static Configurable<bool> skipThanatosisSequence;
     public static bool SkipThanatosisSequence => skipThanatosisSequence.Value;
+    public static Configurable<bool> skipThanatosisSequence;
 
     // Amount of "times" beacon met Dreamer
-    public static Configurable<int> dreamerEncounters;
     public static int DreamerEncounters => dreamerEncounters.Value;
+    public static Configurable<int> dreamerEncounters;
 
     // Toggle beacon flare crafting and storage
-    public static Configurable<bool> usesFlareMechanics;
     public static bool UsesFlareMechanics => usesFlareMechanics.Value;
+    public static Configurable<bool> usesFlareMechanics;
 
     // Thanatosis dropping flares
-    private static Configurable<bool> rippleLayerDropsFlares;
     public static bool RippleLayerDropsFlares => rippleLayerDropsFlares.Value;
+    private static Configurable<bool> rippleLayerDropsFlares;
 
     public ModOptions()
     {
 		pursuer = config.Bind("pursuer", true);
         pursuerAgro = config.Bind("pursuerAgro", 2, new ConfigAcceptableRange<int>(0, 10));
         universalPursuer = config.Bind("universalPursuer", false);
-        //shockStun = config.Bind<bool>("shockStun", true);
-        elecImmune = config.Bind("elecImmune", false);
-        chargeSpears = config.Bind("chargeSpears", false);
+
         hazHat = config.Bind("hazHat", false);
 
         rippleLayerDropsFlares = config.Bind("RippleLayerDropsFlares", true);
-
 
         thanatosisEnabaled = config.Bind("ThanatosisEnabled", false);
         thanatosisVariant = config.Bind("ThanatosisVariant", 0);
@@ -99,9 +92,6 @@ public class ModOptions : OptionInterface
             // Make the options on the left side
             new OpCheckBox(pursuer, new Vector2(leftSidePos, 520)) {description=Translate("Something is pursuing you...")},
             new OpLabel(leftSidePos+30, 523, Translate("Beacon's Pursuer Spawns")),
-
-            new OpCheckBox(elecImmune, new Vector2(leftSidePos, 360)) {description = Translate("Photomaniac gains resistance to electricity")},
-            new OpLabel(leftSidePos+30, 363, Translate("Photomaniac's Electricity Resistance")),
 
             // Put the universal pursuer option in the middle
             new OpCheckBox(universalPursuer, new Vector2(230f, 280f)) {description = Translate("The pursuer appears in all campaigns for all slugcats")},

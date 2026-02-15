@@ -15,12 +15,6 @@ public class Beacon
     // Values with arena fallbacks
     public float SpiralLevel { get; set; }
     public float AvailableCycles => SaveState.GetMaxSpiralLevel_CurrentOrArenaDefault();
-    public float SubtractSpiralLevel()
-    {
-        SpiralLevel--;
-        return SpiralLevel;
-    }
-
     // Stops crafting
     public bool heldCraft = false;
 
@@ -50,7 +44,7 @@ public class Beacon
         inputs = new(this);
 
         // Set current level to max once, effectively refreshing the value each cycle. Check savestate properly!!
-        SpiralLevel = SaveState.GetMaxSpiralLevel_CurrentOrArenaDefault();
+        SpiralLevel = SaveState.GetPlayerSpiralLevelFromIndex(player.playerState.playerNumber);
 
         #region Replace Cycle with BeaconCycle
         // absCrit already has its key in creatureCycle before this is created, so we have to re-add it.

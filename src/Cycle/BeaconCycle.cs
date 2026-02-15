@@ -72,7 +72,7 @@ public class BeaconCycle : Cycle
         //if (owner.abstractCreature != null)
         //    cycle.AbstractUpdate();
 
-        if (beacon.SaveState.GetCanUseThanatosis_CurrentOrArenaDefault())
+        if (beacon.SaveState.GetCanUseThanatosis())
         {
             ThanatosisUpdate();
         }
@@ -102,7 +102,7 @@ public class BeaconCycle : Cycle
     {
         if (beacon.SpiralLevel > beacon.AvailableCycles)
         {
-            beacon.SpiralLevel = beacon.SubtractSpiralLevel();
+            beacon.SpiralLevel--;
             return false;
         }
         else

@@ -95,7 +95,7 @@ public class BeaconAbilityHandler
             return;
         }
     }
-
+     
     public BeaconAbilityHandler(Beacon owner)
     {
         this.owner = owner;
@@ -104,10 +104,10 @@ public class BeaconAbilityHandler
             state = ThanatosisData.State.None
         };
     }
-     
+
     public void Update()
     {
-        if (ActivationConditionMet && owner.SaveState.GetCanUseThanatosis_CurrentOrArenaDefault())
+        if (ActivationConditionMet && owner.SaveState.GetCanUseThanatosis())
         {
             thanatosisData.ToggleConditionMet = true;
         }
