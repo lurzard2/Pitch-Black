@@ -11,7 +11,8 @@ public class ModOptions : OptionInterface
 
     public static Configurable<bool> pursuer;
     public static Configurable<int> pursuerAgro;
-    public static Configurable<bool> universalPursuer;
+    private static Configurable<bool> universalPursuer;
+    public static bool UniversalPursuer => universalPursuer.Value;
 
     public static Configurable<bool> shockStun;
 	public static Configurable<bool> elecImmune;

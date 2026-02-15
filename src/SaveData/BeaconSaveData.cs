@@ -11,18 +11,14 @@ public static class BeaconSaveData
     /// </summary>
     /// <param name="rwg">The RainWorldGame instance.</param>
     /// <returns>An instance of SaveState from GetStorySession. Returns null if GameSession is not a StoryGameSession</returns>
-    public static SaveState GetSaveState(this RainWorldGame rwg, bool onlyForBeacon = false)
+    public static bool TryGetSaveState(this RainWorldGame rwg, out SaveState saveState, bool onlyForBeacon = false)
     {
-        var storySession = rwg.GetStorySession;
-        if (storySession != null)
+        saveState = rwg.IsStorySession ? rwg.GetStorySession.saveState : null;
+        if (onlyForBeacon)
         {
-            if (onlyForBeacon && !BeaconUtils.IsBeacon(storySession))
-            {
-                return null;
-            }
-            return storySession.saveState;
+            return saveState is not null && BeaconUtils.IsBeacon(rwg.session);
         }
-        return null;
+        return saveState is not null;
     }
 
     // Called in RWG ctor, to update savedata on cycle 0 depending on remix config
@@ -46,16 +42,13 @@ public static class BeaconSaveData
                 case 1:
                     // Starving
                     beaconSaveState.SetMaxSpiralLevel(1f);
-                    beaconSaveState.SetSpiralLevel(1f);
                     break;
                 case 2:
                     // Rot
                     beaconSaveState.SetMaxSpiralLevel(2f);
-                    beaconSaveState.SetSpiralLevel(2f);
                     break;
                 case 3:
                     // Hybrid
-                    beaconSaveState.SetMaxSpiralLevel(4f);
                     beaconSaveState.SetMaxSpiralLevel(4f);
                     break;
                 default: break;
@@ -136,20 +129,8 @@ public static class BeaconSaveData
 
     #region Spiral Level
 
-    // Floats
-
-    // Assigned: Incremented by using revives, set to max at the start of the cycle
-    // Used: Current level, tracking revive usage.
-
-    public static string spiralLevel = "SpiralLevel";
-    public static float GetSpiralLevel(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(spiralLevel, out float value) ? value : 0f;
-    public static void SetSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(spiralLevel, value);
-
-    // Used: Minimum possible level
-
-    public static string minSpiralLevel = "MinSpiralLevel";
-    public static float GetMinSpiralLevel(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(minSpiralLevel, out float value) ? value : 0f;
-    public static void SetMinSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(minSpiralLevel, value);
+    public static float minimumSpiralForAbility = 1;
+    public static float maximumSpiral = 5;
 
     // Assigned: Incremented by encountering The Dreamer (0.25 before 0.5, then 0.5 each subsequent encounter)
     // Used: Max amount of revives available (floors to int)

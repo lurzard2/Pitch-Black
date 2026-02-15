@@ -27,7 +27,7 @@ public class CycleMeter : HudPart
             return hud.owner as Player;
         } 
     }
-    public SaveState SaveState => HUDOwner.abstractCreature.world.game.GetSaveState();
+    public SaveState SaveState => HUDOwner.abstractCreature.world.game.TryGetSaveState(out var data) ? data : null;
     public PlayerSpecificMultiplayerHud multiHud;
 
     public List<HUDCycle> cycles = [];

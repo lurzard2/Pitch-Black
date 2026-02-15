@@ -5,7 +5,7 @@ namespace PitchBlack;
 public class Beacon
 {
     public readonly Player player;
-    public SaveState SaveState => player.abstractCreature.world.game.GetSaveState();
+    public SaveState SaveState => player.abstractCreature.world.game.TryGetSaveState(out var data) ? data : null;
 
     public BeaconGraphics graphics;
     public BeaconInputs inputs;
@@ -13,20 +13,11 @@ public class Beacon
     public BeaconCycle cycle;
 
     // Values with arena fallbacks
-    public float SpiralLevel { get; set; } = 0;
+    public float SpiralLevel { get; set; }
     public float AvailableCycles => SaveState.GetMaxSpiralLevel_CurrentOrArenaDefault();
     public float SubtractSpiralLevel()
     {
-        if (SaveState is not null)
-        {
-            SaveState.SetSpiralLevel(SpiralLevel - 1);
-            SpiralLevel = SaveState.GetSpiralLevel();
-        }
-        else
-        {
-            SpiralLevel--;
-        }
-
+        SpiralLevel--;
         return SpiralLevel;
     }
 

@@ -18,16 +18,19 @@ public class BeaconAbilityHandler
     public ThanatosisData thanatosisData;
     public class ThanatosisData()
     {
+        // Softer check for state, able to group states, and used for mainly player x-eyes
         public bool Dead { get; set; }
+        // Set for toggle by proxy
         public bool ToggleConditionMet { get; set; }
-        public float creatureDeterrence; //unused
+        // Prevent player from switching out
+        public bool Stuck { get; set; }
+        // Prevent player from using it with a popup
+        public bool Blacklisted { get; set; }
+
         public State state;
         public enum State
         {
-            // MISC
-            Init,
-            Stuck,
-            Blacklisted,
+            None,
             // ON
             Entering,
             Inside,
@@ -47,13 +50,14 @@ public class BeaconAbilityHandler
         /// <param name="involuntary">Set to true to guarantee toggle</param>
         public void Toggle(Player player, bool involuntary = false)
         {
+            // Stop if stuck but not if involuntary
+            if (Stuck && !involuntary)
+            {
+                return;
+            }
             if (involuntary || ToggleConditionMet)
             {
-                if (state == State.Stuck)
-                {
-                    return;
-                }
-                else if (state == State.Blacklisted)
+                if (Blacklisted)
                 {
                     PenaltyInteraction(player);
                 }
@@ -97,7 +101,7 @@ public class BeaconAbilityHandler
         this.owner = owner;
         thanatosisData = new()
         {
-            state = ThanatosisData.State.Init
+            state = ThanatosisData.State.None
         };
     }
      
@@ -109,6 +113,15 @@ public class BeaconAbilityHandler
         }
 
         thanatosisData.Toggle(owner.player);
+
+        if (thanatosisData.Dead)
+        {
+
+        }
+        else
+        {
+
+        }
     }
 
     public void ChangeState(ThanatosisData.State newState)
