@@ -1,6 +1,7 @@
 ﻿using SlugBase.SaveData;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PitchBlack;
 
@@ -131,76 +132,21 @@ public static class BeaconSaveData
 
     // General purpose is to influence beacon's mechanics and such.
 
-    public static bool SpiralLevelWillGameOver(float currentLevel) => currentLevel < 1;
-    public static float minimumSpiralForAbility = 1;
     public static float maximumSpiralLimit = 5;
-
-    #region Current Level
-    // "Current level" system Supporting multiple players (inlcuding 4+) and prevents unwanted resets
-    // Assigned: To max at start, and subtracted from on each individual player death (saves to player index)
-    // Used: Tracked to allow revives
-    public static string PlayerSpiralLevels = "PlayerSpiralLevels";
-    public static List<float> GetPlayerSpiralLevels(this SaveState save, bool updateToMax = false)
-    {
-        // create default based on the max float value (which can fall back in arena to its default)
-        float maxLvl = save.GetMaxSpiralLevel();
-        List<float> defaultLvls = [maxLvl, maxLvl, maxLvl, maxLvl];
-        // grab from savedata
-        List<float> lvls = save.deathPersistentSaveData.GetSlugBaseData().TryGet(PlayerSpiralLevels, out List<float> levels) ? levels : defaultLvls;
-        if (updateToMax)
-        {
-            for (int i = 0; i < lvls.Count; i++)
-            {
-                // Increase to max level but only if needed
-                lvls[i] = save.GetMaxSpiralLevel() > lvls[i] ? save.GetMaxSpiralLevel() : lvls[i];
-            }
-        }
-        return lvls;
-    }
-    public static float GetPlayerSpiralLevelFromIndex(this SaveState save, int index)
-    {
-        List<float> lvls = save.GetPlayerSpiralLevels();
-        if (index > -1)
-        {
-            // Add usable indeces at end of list
-            if (index >= lvls.Count)
-            {
-                for (int i = lvls.Count; i < index; i++)
-                {
-                    lvls.Add(lvls[0]);
-                }
-            }
-            return lvls[index];
-        }
-        return 0;
-    }
-    public static void SetPlayerSpiralLevelFromIndex(this SaveState save, int index, float value)
-    {
-        List<float> lvls = save.GetPlayerSpiralLevels();
-        if (index > lvls.Count)
-        {
-            for (int i = lvls.Count; i < index; i++)
-            {
-                lvls.Add(lvls[0]);
-            }
-        }
-        lvls[index] = value;
-    }
-    #endregion
 
     // Assigned: Incremented by encountering The Dreamer (0.25 before 0.5, then 0.5 each subsequent encounter)
     // Used: Max amount of cycles/lives available (floors to int)
     public static string maxSpiralLevel = "MaxSpiralLevel";
-    public static float GetMaxSpiralLevel(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(maxSpiralLevel, out float value) ? value : 0f;
-    public static void SetMaxSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(maxSpiralLevel, value);
-    public static float GetMaxSpiralLevel_CurrentOrArenaDefault(this SaveState save)
+    public static float GetMaxSpiralLevel(this SaveState save)
     {
-        if (save is not null)
+        // Arena fallback value
+        if (save is null)
         {
-            return save.GetMaxSpiralLevel();
+            return 1;
         }
-        return 1;
+        return save.deathPersistentSaveData.GetSlugBaseData().TryGet(maxSpiralLevel, out float value) ? value : 0f;
     }
+    public static void SetMaxSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(maxSpiralLevel, value);
     #endregion
 
     #region Death Stage

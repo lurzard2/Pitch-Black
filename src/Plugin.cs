@@ -255,9 +255,6 @@ class  Plugin : BaseUnityPlugin
 
         if (self.TryGetSaveState(out var save))
         {
-            // Call for update to max each time game is initialized, updating each player's level
-            save.GetPlayerSpiralLevels(true);
-
             if (devMode)
             {
                 save.PBConfigUpdateSaveState();

@@ -15,6 +15,7 @@ public class BeaconInputs
     public bool AllowSpecialOnly { get; set; }
     public bool UseSpecial { get; set; }
     public Counter specialInputCounter = new(Int32.MaxValue, 0, true);
+    public bool noSpecInput => !owner.player.input[1].spec;
 
     public BeaconInputs(Beacon beacon)
     {

@@ -20,6 +20,7 @@ public  class BeaconGraphics
 
     private bool usesHat => ModOptions.UsesHatSprite;
     public int HatSprite { get; set; }
+
     public Color DefaultColor => Colors.BeaconDefaultColor;
     public Color CurrentSkinColor;
     public Color CurrentEyeColor;

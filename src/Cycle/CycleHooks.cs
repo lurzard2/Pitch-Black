@@ -10,22 +10,6 @@ public static class CycleHooks
 
         // Control flow of calls
         On.Creature.Die += RealizedCreature_Cycle_Die;
-        On.Player.Die += Player_Cycle_Die;
-    }
-
-    private static void Player_Cycle_Die(On.Player.orig_Die orig, Player self)
-    {
-        if (self.TryGetBeacon(out var beacon))
-        {
-            if (beacon.cycle.SpiralDie())
-            {
-                orig(self);
-            }
-        }
-        else
-        {
-            orig(self);
-        }
     }
 
     private static void RealizedCreature_Cycle_Die(On.Creature.orig_Die orig, Creature self)

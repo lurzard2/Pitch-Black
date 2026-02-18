@@ -50,7 +50,7 @@ public class BeaconCycle : Cycle
             }
 
             // Indicator for being unable to use Thanatosis if unlocked
-            if (beacon.SaveState.GetMaxSpiralLevel_CurrentOrArenaDefault() >= 1 && specInputCounter == UnityEngine.Random.Range(60, 140))
+            if (beacon.SaveState.GetMaxSpiralLevel() >= 1 && specInputCounter == UnityEngine.Random.Range(60, 140))
             {
                 playerObj.Stun(120);
                 specInputCounter.Reset();
@@ -95,19 +95,6 @@ public class BeaconCycle : Cycle
                 thanatosisTutorialSequence = new(this, playerObj.room);
             }
             #endregion
-        }
-    }
-
-    public bool SpiralDie()
-    {
-        if (beacon.SpiralLevel > beacon.AvailableCycles)
-        {
-            beacon.SpiralLevel--;
-            return false;
-        }
-        else
-        {
-            return true;
         }
     }
 
