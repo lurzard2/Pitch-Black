@@ -52,7 +52,6 @@ public class CycleMeter : HudPart
         }
         return flags;
     }
-
     public List<bool> BeaconOutOfTimeInThanatosis()
     {
         List<bool> flags = [];

@@ -23,14 +23,11 @@ public partial class BeaconAbilityHandler
         public enum State
         {
             None,
-            Reverting,
-            SkipToSide,
             // ON
             Entering,
             Inside,
             Safe,
             Drowning,
-            Persisting,
             Drowned,
             // OFF
             Exiting,
@@ -45,16 +42,9 @@ public partial class BeaconAbilityHandler
             state = newState;
             timeInState.Reset();
         }
-        public void ChangeSide(bool inv = false)
+        public void ChangeSide()
         {
-            if (inv)
-            {
-                ChangeState(Dead ? State.Outside : State.Inside);
-            }
-            else
-            {
-                ChangeState(Dead ? State.Inside : State.Outside);
-            }
+            ChangeState(Dead ? State.Inside : State.Outside);
         }
 
         public Counter timeInState = new(Int32.MaxValue, 0, true);
@@ -65,7 +55,6 @@ public partial class BeaconAbilityHandler
         {
             None,
             Involuntary,
-            Revert,
             ON,
             OFF,
         }
@@ -103,8 +92,6 @@ public partial class BeaconAbilityHandler
             {
                 case Type.Involuntary:
                     ChangeSide(); break;
-                case Type.Revert:
-                    ChangeSide(true); break;
                 case Type.ON: ChangeState(State.Inside); break;
                 case Type.OFF: ChangeState(State.Outside); break;
                 default:

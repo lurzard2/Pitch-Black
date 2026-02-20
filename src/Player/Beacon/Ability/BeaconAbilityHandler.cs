@@ -12,16 +12,19 @@ namespace PitchBlack;
 public partial class BeaconAbilityHandler
 {
     public Beacon owner;
-    public Thanatosis theta;
 
+    public Thanatosis theta;
     public bool ThanatosisToggleConditionMet => owner.inputs.specialInputCounter == 40;
     // This can be static because it will be true for all players
     public static bool CanUseThanatosis { get; set; } = false;
+
+    public CycleController cycleController;
 
     public BeaconAbilityHandler(Beacon owner)
     {
         this.owner = owner;
         theta = new();
+        cycleController = new((int)owner.MaxSpiralLevel);
     }
 
     public void Update()
@@ -81,11 +84,11 @@ public partial class BeaconAbilityHandler
 
     private void Switching()
     {
-        // past 1.5s there's an oppurtunity to "scum" thanatosis or fully proceed. Scumming contributed to instability.
+        // past 1.5s there's an opportunity to "scum" thanatosis or fully proceed. Thanatosis Scumming contributes to instability.
         bool STOP = false;
-        if (theta.timeInState > 40 * 1.5)
+        if (theta.timeInState > 40 * 1.25)
         {
-            if (theta.timeInState >= 40 * 3)
+            if (theta.timeInState >= 40 * 2.5)
             {
                 theta.ChangeSide();
             }
@@ -102,14 +105,12 @@ public partial class BeaconAbilityHandler
 
         if (STOP)
         {
-            theta.Toggle(this, Thanatosis.Type.Revert);
+            theta.Toggle(this, Thanatosis.Type.Involuntary);
         }
     }
 
     private void Inside()
     {
-        bool die = false;
-
         switch (theta.GetState)
         {
             case Thanatosis.State.Inside:
@@ -126,23 +127,12 @@ public partial class BeaconAbilityHandler
             case Thanatosis.State.Drowning:
                 if (theta.timeInState >= 40 * 3)
                 {
-                    theta.ChangeState(owner.SpiralLevel > 0 ? Thanatosis.State.Persisting : Thanatosis.State.Drowned);
+                    theta.ChangeState(Thanatosis.State.Drowned);
                 }
                 break;
 
-            case Thanatosis.State.Persisting:
-                die = true;
-                theta.Toggle(this);
-                break;
-
             case Thanatosis.State.Drowned:
-                die = true;
                 break;
-        }
-
-        if (die)
-        {
-            owner.player.Die();
         }
     }
 
