@@ -1,0 +1,143 @@
+﻿using RWCustom;
+using System;
+using UnityEngine;
+
+namespace PitchBlack;
+
+public partial class BeaconAbilityHandler
+{
+    public class Thanatosis()
+    {
+        // Conditional effects from abusing the mechanic
+        public float instability;
+
+        // Softer check for state, able to group states, and used for mainly player x-eyes
+        public bool Dead { get; set; }
+        // Set for toggle by proxy
+        public bool ManualToggleConditionMet { get; set; }
+        // Prevent player from switching out
+        public bool Stuck { get; set; } = false;
+        // Prevent player from using it with a popup
+        public bool Blacklisted { get; set; } = false;
+
+        public enum State
+        {
+            None,
+            Reverting,
+            SkipToSide,
+            // ON
+            Entering,
+            Inside,
+            Safe,
+            Drowning,
+            Persisting,
+            Drowned,
+            // OFF
+            Exiting,
+            Outside,
+        }
+        private State state = State.None;
+        public State GetState => state;
+        public bool IsInbetween => IsState(State.Entering) || IsState(State.Exiting);
+        public bool IsState(State stateCheck) => state == stateCheck;
+        public void ChangeState(State newState)
+        {
+            state = newState;
+            timeInState.Reset();
+        }
+        public void ChangeSide(bool inv = false)
+        {
+            if (inv)
+            {
+                ChangeState(Dead ? State.Outside : State.Inside);
+            }
+            else
+            {
+                ChangeState(Dead ? State.Inside : State.Outside);
+            }
+        }
+
+        public Counter timeInState = new(Int32.MaxValue, 0, true);
+        // Values can be: 120, 240, 360, 480, 600 (ie. 3-15s)
+        public int MaxAvailableSafeTime { get; set; } = 40*4;
+
+        public enum Type
+        {
+            None,
+            Involuntary,
+            Revert,
+            ON,
+            OFF,
+        }
+        public void Toggle(BeaconAbilityHandler a, Type type = Type.None)
+        {
+            Player player = a.owner.player;
+            int spiral = (int)a.owner.SpiralLevel;
+            bool involuntary = type == Type.Involuntary;
+            bool toggleFlag = involuntary || ManualToggleConditionMet;
+
+            // Conditionally determine whether to toggle or not
+            if (Blacklisted)
+            {
+                PenaltyInteraction(player);
+                toggleFlag = false;
+            }
+            else if (Stuck)
+            {
+                toggleFlag = involuntary;
+            }
+
+            if (toggleFlag)
+            {
+                ToggleThanatosis(player, type, spiral);
+            }
+
+            ManualToggleConditionMet = false;
+        }
+
+        private void ToggleThanatosis(Player player, Type type, int spiral)
+        {
+            Dead = !Dead;
+
+            switch (type)
+            {
+                case Type.Involuntary:
+                    ChangeSide(); break;
+                case Type.Revert:
+                    ChangeSide(true); break;
+                case Type.ON: ChangeState(State.Inside); break;
+                case Type.OFF: ChangeState(State.Outside); break;
+                default:
+                    ChangeState(Dead ? State.Entering : State.Exiting); break;
+            }
+
+            if (Dead)
+            {
+                float timeAvailable = 120 * spiral;
+                float maxAllowedSafeTime = timeAvailable - instability;
+                MaxAvailableSafeTime = (int)Mathf.Clamp(timeAvailable, 0, maxAllowedSafeTime);
+            }
+
+            if (player.room != null)
+            {
+                SoundID sound = Dead ? Enums.SoundID.Player_Deactivated_Thanatosis : Enums.SoundID.Player_Activated_Thanatosis;
+                player.room.PlaySound(sound, player.mainBodyChunk);
+            }
+        }
+
+        private void PenaltyInteraction(Player player)
+        {
+            // Indicator for being unable to use Thanatosis if unlocked
+            player.Stun(120);
+            string popupText = "";
+            if (MiscUtils.IsNightmareRegion(player.abstractCreature.world.name))
+                popupText = "These tides are sinister";
+            else if (MiscUtils.IsPBSB(player.abstractCreature.world.name))
+                popupText = "These tides rest still";
+            else
+                popupText = "These tides flow without disturbance";
+            MiscUtils.AddHUDMessage(player.room.game.cameras[0].hud, true, popupText, 60, 120, false, true);
+            return;
+        }
+    }
+}
