@@ -321,7 +321,7 @@ public class RotPuff : Weapon
 		IEnumerable<AbstractCreature> rotDeers = room.abstractRoom.creatures.Where(
 			abscrit => abscrit.creatureTemplate.type == Enums.CreatureTemplateType.RotDeer);
 		if (rotDeers.Count() > 0) room.PlaySound(SoundID.In_Room_Deer_Summoned, 0f, 1f, 1f);
-		(rotDeers.FirstOrDefault()?.abstractAI as DeerAbstractAI).AttractToSporeCloud(room.GetWorldCoordinate(firstChunk.pos));
+		(rotDeers.FirstOrDefault()?.abstractAI as DeerAbstractAI)?.AttractToSporeCloud(room.GetWorldCoordinate(firstChunk.pos));
 		Destroy();
 	}
 
