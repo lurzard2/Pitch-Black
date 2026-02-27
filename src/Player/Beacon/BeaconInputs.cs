@@ -15,6 +15,7 @@ public class BeaconInputs
     public bool AllowSpecialOnly { get; set; }
     public bool UseSpecial { get; set; }
     public Counter specialInputCounter = new(Int32.MaxValue, 0, true);
+    public bool noSpecInput => !owner.player.input[0].spec;
 
     public BeaconInputs(Beacon beacon)
     {
@@ -39,7 +40,7 @@ public class BeaconInputs
         var p = owner.player;
         var controls = p.room.game.rainWorld.options.controls[p.playerState.playerNumber];
         Player.InputPackage newInputs = originalInputs;
-        Player.InputPackage none = new(controls.gamePad, controls.GetActivePreset(), 0, 0, false, false, false, false, false);
+        Player.InputPackage none = new(controls.gamePad, controls.GetActivePreset(), 0, 0, false, false, false, false, false, false);
 
         // Only special input is passed through
         if (AllowSpecialOnly)
@@ -53,7 +54,6 @@ public class BeaconInputs
         {
             newInputs.spec = true;
         }
-
         if (AllowNone)
         {
             newInputs = none;

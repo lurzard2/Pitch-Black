@@ -140,7 +140,7 @@ public static class FlareStorageHooks
         if (self.slugcatStats.name == Enums.SlugcatStatsName.Beacon
             && self.playerState.foodInStomach > 0
             && self.objectInStomach.type == AbstractPhysicalObject.AbstractObjectType.Rock
-            && self.room.world.game.GetSaveState().GetCanCraftFlares_CurrentOrArenaDefault())
+            && self.room.world.game.TryGetSaveState(out var data) && data.GetCanCraftFlares_CurrentOrArenaDefault())
         {
             self.objectInStomach = new AbstractConsumable(self.room.world, AbstractPhysicalObject.AbstractObjectType.FlareBomb, null, self.abstractCreature.pos, self.room.game.GetNewID(), -1, -1, null);
             self.SubtractFood(1);

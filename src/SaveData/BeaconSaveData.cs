@@ -1,6 +1,7 @@
 ﻿using SlugBase.SaveData;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PitchBlack;
 
@@ -11,18 +12,14 @@ public static class BeaconSaveData
     /// </summary>
     /// <param name="rwg">The RainWorldGame instance.</param>
     /// <returns>An instance of SaveState from GetStorySession. Returns null if GameSession is not a StoryGameSession</returns>
-    public static SaveState GetSaveState(this RainWorldGame rwg, bool onlyForBeacon = false)
+    public static bool TryGetSaveState(this RainWorldGame rwg, out SaveState saveState, bool onlyForBeacon = false)
     {
-        var storySession = rwg.GetStorySession;
-        if (storySession != null)
+        saveState = rwg.IsStorySession ? rwg.GetStorySession.saveState : null;
+        if (onlyForBeacon)
         {
-            if (onlyForBeacon && !BeaconUtils.IsBeacon(storySession))
-            {
-                return null;
-            }
-            return storySession.saveState;
+            return saveState is not null && BeaconUtils.IsBeacon(rwg.session);
         }
-        return null;
+        return saveState is not null;
     }
 
     // Called in RWG ctor, to update savedata on cycle 0 depending on remix config
@@ -46,16 +43,13 @@ public static class BeaconSaveData
                 case 1:
                     // Starving
                     beaconSaveState.SetMaxSpiralLevel(1f);
-                    beaconSaveState.SetSpiralLevel(1f);
                     break;
                 case 2:
                     // Rot
                     beaconSaveState.SetMaxSpiralLevel(2f);
-                    beaconSaveState.SetSpiralLevel(2f);
                     break;
                 case 3:
                     // Hybrid
-                    beaconSaveState.SetMaxSpiralLevel(4f);
                     beaconSaveState.SetMaxSpiralLevel(4f);
                     break;
                 default: break;
@@ -111,16 +105,16 @@ public static class BeaconSaveData
     // Used: Checking if the player has unlocked Thanatosis
 
     public static string canUseThanatosis = "CanUseThanatosis";
-    public static bool GetCanUseThanatosis(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(canUseThanatosis, out bool thanatosis) && thanatosis;
-    public static void SetCanUseThanatosis(this SaveState save, bool value) => save.deathPersistentSaveData.GetSlugBaseData().Set(canUseThanatosis, value);
-    public static bool GetCanUseThanatosis_CurrentOrArenaDefault(this SaveState save)
+    public static bool GetCanUseThanatosis(this SaveState save)
     {
-        if (save is not null)
+        // Arena fallback
+        if (save is null)
         {
-            return save.GetCanUseThanatosis();
+            return true;
         }
-        return true;
+        return save.deathPersistentSaveData.GetSlugBaseData().TryGet(canUseThanatosis, out bool thanatosis) && thanatosis;
     }
+    public static void SetCanUseThanatosis(this SaveState save, bool value) => save.deathPersistentSaveData.GetSlugBaseData().Set(canUseThanatosis, value);
     #endregion
 
     #region Has Used Thanatosis
@@ -136,36 +130,23 @@ public static class BeaconSaveData
 
     #region Spiral Level
 
-    // Floats
+    // General purpose is to influence beacon's mechanics and such.
 
-    // Assigned: Incremented by using revives, set to max at the start of the cycle
-    // Used: Current level, tracking revive usage.
-
-    public static string spiralLevel = "SpiralLevel";
-    public static float GetSpiralLevel(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(spiralLevel, out float value) ? value : 0f;
-    public static void SetSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(spiralLevel, value);
-
-    // Used: Minimum possible level
-
-    public static string minSpiralLevel = "MinSpiralLevel";
-    public static float GetMinSpiralLevel(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(minSpiralLevel, out float value) ? value : 0f;
-    public static void SetMinSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(minSpiralLevel, value);
+    public static float maximumSpiralLimit = 5;
 
     // Assigned: Incremented by encountering The Dreamer (0.25 before 0.5, then 0.5 each subsequent encounter)
-    // Used: Max amount of revives available (floors to int)
-
+    // Used: Max amount of cycles/lives available (floors to int)
     public static string maxSpiralLevel = "MaxSpiralLevel";
-    public static float GetMaxSpiralLevel(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(maxSpiralLevel, out float value) ? value : 0f;
-    public static void SetMaxSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(maxSpiralLevel, value);
-    public static float GetMaxSpiralLevel_CurrentOrArenaDefault(this SaveState save)
+    public static float GetMaxSpiralLevel(this SaveState save)
     {
-        if (save is not null)
+        // Arena fallback value
+        if (save is null)
         {
-            return save.GetMaxSpiralLevel();
+            return 1;
         }
-        return 1;
+        return save.deathPersistentSaveData.GetSlugBaseData().TryGet(maxSpiralLevel, out float value) ? value : 0f;
     }
-
+    public static void SetMaxSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(maxSpiralLevel, value);
     #endregion
 
     #region Death Stage
@@ -183,16 +164,16 @@ public static class BeaconSaveData
         Rotting, // Chapter 2 Effects
         Hybrid // Epilogue Effects
     };
-    public static DeathStage GetDeathStage(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(deathStage, out DeathStage stage) ? stage : DeathStage.None; 
-    public static void SetDeathStage(this SaveState save, DeathStage stage) => save.deathPersistentSaveData.GetSlugBaseData().Set(deathStage, stage);
-    public static DeathStage GetDeathStage_CurrentOrArenaDefault(this SaveState save)
+    public static DeathStage GetDeathStage(this SaveState save)
     {
-        if (save is not null)
+        // Arena fallback
+        if (save is null)
         {
-            return save.GetDeathStage();
+            return DeathStage.Dreaming;
         }
-        return DeathStage.Demised;
-    }
+        return save.deathPersistentSaveData.GetSlugBaseData().TryGet(deathStage, out DeathStage stage) ? stage : DeathStage.None;
+    } 
+    public static void SetDeathStage(this SaveState save, DeathStage stage) => save.deathPersistentSaveData.GetSlugBaseData().Set(deathStage, stage);
     #endregion
 
     #region Can Craft Flares

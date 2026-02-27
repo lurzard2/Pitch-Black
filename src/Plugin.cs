@@ -41,10 +41,13 @@ class  Plugin : BaseUnityPlugin
     // CWTs
     public static readonly ConditionalWeakTable<AbstractCreature, NightTerror> NTAbstractCWT = new();
     public static readonly ConditionalWeakTable<AbstractCreature, StrongBox<int>> KILLIT = new();
-    public static readonly ConditionalWeakTable<RainWorldGame, List<NTTracker>> pursuerTracker = new(); 
+    public static readonly ConditionalWeakTable<RainWorldGame, List<NTTracker>> pursuerTracker = new();
+
     public static readonly ConditionalWeakTable<MouseGraphics, RotRatData> rotRatData = new();
+
     public static readonly ConditionalWeakTable<World, List<AbstractRoom>> roomsWithDreamerSpot = new();
     public static readonly ConditionalWeakTable<World, List<DreamerPresence>> dreamerPresence = new();
+
     public static readonly ConditionalWeakTable<AbstractCreature, Cycle> creatureCycle = new();
 
     // Colors moved to Colors.cs after I saw Alduris set up his codespace that way -Lur 
@@ -250,17 +253,21 @@ class  Plugin : BaseUnityPlugin
     {
         orig(self, manager);
 
-        var beaconState = self.GetSaveState(true);
-        if (devMode && beaconState != null) 
+        if (self.TryGetSaveState(out var save))
         {
-            beaconState.PBConfigUpdateSaveState();
-        }
+            if (devMode)
+            {
+                save.PBConfigUpdateSaveState();
+            }
 
-        pursuerTracker.Add(self, new List<NTTracker>());
-        if ((BeaconUtils.IsBeacon(self.session) || ModOptions.universalPursuer.Value) && pursuerTracker.TryGetValue(self, out var trackers))
-        {
-            trackers.Add(new NTTracker(self));
-            logger.LogDebug("ADDING NT TRACKER");
+            // Pursuer allowed globally / specifically beacon's campaign
+            if (ModOptions.UniversalPursuer || BeaconUtils.IsBeacon(self.session))
+            {
+                pursuerTracker.Add(self, new List<NTTracker>());
+                pursuerTracker.TryGetValue(self, out var trackers);
+                trackers.Add(new NTTracker(self));
+                logger.LogDebug("NightTerror Tracker: Adding tracker!");
+            }
         }
     }
 

@@ -125,7 +125,7 @@ public class DreamerBehavior : PBEntity.BehaviorModule
     private Conversation.ID GetConversationID()
     {
         Conversation.ID result;
-        var save = Dreamer.room.game.GetSaveState();
+        SaveState save = Dreamer.room.game.TryGetSaveState(out var s) ? s : null;
         int encounters = save.GetDreamerEncountersNumber();
 
         switch (encounters)

@@ -27,7 +27,7 @@ public class CycleMeter : HudPart
             return hud.owner as Player;
         } 
     }
-    public SaveState SaveState => HUDOwner.abstractCreature.world.game.GetSaveState();
+    public SaveState SaveState => HUDOwner.abstractCreature.world.game.TryGetSaveState(out var data) ? data : null;
     public PlayerSpecificMultiplayerHud multiHud;
 
     public List<HUDCycle> cycles = [];
@@ -52,7 +52,6 @@ public class CycleMeter : HudPart
         }
         return flags;
     }
-
     public List<bool> BeaconOutOfTimeInThanatosis()
     {
         List<bool> flags = [];
@@ -74,7 +73,7 @@ public class CycleMeter : HudPart
         fade.a = 0f;
 
         // Adding cycles, with an extra one to serve as the fixed 0 index cycle
-        for (int i = 0; i < SaveState.GetMaxSpiralLevel_CurrentOrArenaDefault() + 1; i++)
+        for (int i = 0; i < SaveState.GetMaxSpiralLevel() + 1; i++)
         {
             cycles.Add(new HUDCycle(this, i));
         }
