@@ -44,6 +44,7 @@ public class Beacon
         abilityHandler = new(this);
         graphics = new(this);
         inputs = new(this);
+        cycle = new(this, player);
 
         // Set current level to max once, effectively refreshing the value each cycle.
         SpiralLevel = MaxSpiralLevel;
