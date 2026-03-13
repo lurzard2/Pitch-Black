@@ -17,7 +17,7 @@ public class HUDHooks
     {
         if ((self.owner as Player).SlugCatClass == Enums.SlugcatStatsName.Beacon)
         {
-            self.AddPart(new CycleMeter(self, null, self.fContainers[1]));
+            // Remaking this
         }
         orig(self, cam);
     }

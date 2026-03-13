@@ -3,7 +3,18 @@
 	"name": "The Beacon",
 	"description": "A frail dreamer, lost in a dissonant reality. Your unnatural will to<LINE>live lights the way, carving a path of entropy through painful lucidity.",
 	"features": {
-		"color": "1a1041",	
+		"custom_colors": [
+			{
+				"name": "Body",
+				"story": "1a1041",
+				"arena": [ "1a1041", "1a1041", "1a1041", "1a1041" ]
+			},
+			{
+				"name": "Eyes",
+				"story": "ffffff",
+				"arena": [ "ffffff", "ffffff", "ffffff", "ffffff" ]
+			}
+		],	
 		"food_min": 4,
 		"food_max": 6,
 		"diet": {

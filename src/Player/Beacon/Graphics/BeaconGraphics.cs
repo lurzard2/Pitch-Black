@@ -94,8 +94,7 @@ public  class BeaconGraphics
 
     public void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
-        whiskers.ApplyPalette(playerGraphics, sLeaser);
-
         Colors.PlayerPaletteBlack = palette.blackColor;
+        whiskers.ApplyPalette(playerGraphics, sLeaser);
     }
 }

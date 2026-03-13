@@ -18,13 +18,10 @@ public partial class BeaconAbilityHandler
     // This can be static because it will be true for all players
     public static bool CanUseThanatosis { get; set; } = false;
 
-    public CycleController cycleController;
-
     public BeaconAbilityHandler(Beacon owner)
     {
         this.owner = owner;
         theta = new();
-        cycleController = new((int)owner.MaxSpiralLevel);
     }
 
     public void Update()

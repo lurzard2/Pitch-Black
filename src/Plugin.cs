@@ -91,7 +91,6 @@ class  Plugin : BaseUnityPlugin
         CycleHooks.Apply();
         DreamerHooks.Apply();
         WarpPointHooks_ForRift.Apply();
-        RotImmunity.Apply();
         CreatureHooks.Apply();
 
         MenuSceneHooks.Apply();
@@ -107,7 +106,6 @@ class  Plugin : BaseUnityPlugin
         PlayerGraphicsHooks.Apply();
         FlareStorageHooks.Apply();
         Crafting.Apply();
-        BeaconVisibilityBonus.Apply();
 
         logger.LogDebug("Hooks successfully applied!");
     }
