@@ -104,7 +104,7 @@ public class DreamerBehavior : PBEntity.BehaviorModule
         {
             for (int i = 0; i < afterConversationCounter; i++)
             {
-                (Dreamer.visibleEntity as EtherealGraphics).AfterEncounteredVisual();
+                (Dreamer.visibleEntity as PlaceholderEchoGraphics).AfterEncounteredVisual();
             }
         }
     }

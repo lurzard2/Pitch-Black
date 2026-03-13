@@ -22,7 +22,7 @@ public class Dreamer : PBEntity
     {
         this.placedObject = placedObject;
 
-        visibleEntity = new EtherealGraphics(this);
+        visibleEntity = new PlaceholderEchoGraphics(this);
         room.AddObject(visibleEntity);
 
         DreamerBehavior.EncounterType type = null;

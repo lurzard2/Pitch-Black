@@ -13,7 +13,7 @@ namespace PitchBlack;
 public class StillbornBehavior : PBEntity.BehaviorModule
 {
     public Stillborn Stillborn => owner as Stillborn;
-    public EtherealGraphics GhostGraphics => Stillborn.visibleEntity as EtherealGraphics;
+    public PlaceholderEchoGraphics GhostGraphics => Stillborn.visibleEntity as PlaceholderEchoGraphics;
     public EncounterType encounterType;
     public Counter visibleCounter = new(100, 0, true);
     private float deathFac = 0.01f;

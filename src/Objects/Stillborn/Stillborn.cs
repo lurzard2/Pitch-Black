@@ -42,7 +42,7 @@ public class Stillborn : PBEntity
         if (room.world != null && room.world.name.ToLowerInvariant() == "pbsb")
         {
             type = StillbornBehavior.EncounterType.Ghost;
-            visibleEntity = new EtherealGraphics(this);
+            visibleEntity = new PlaceholderEchoGraphics(this);
         }
         if (!spawned && visibleEntity != null && type != null)
         {

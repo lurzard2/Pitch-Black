@@ -9,7 +9,7 @@ using Watcher;
 
 namespace PitchBlack;
 
-public class EtherealGraphics : PBEntity.GraphicsModule
+public class PlaceholderEchoGraphics : PBEntity.GraphicsModule
 {
     public Dreamer Dreamer => owner as Dreamer;
     public Stillborn Stillborn => owner as Stillborn;
@@ -137,7 +137,7 @@ public class EtherealGraphics : PBEntity.GraphicsModule
     public int DreamSpawnCaught => BeaconSaveData.GetDreamerEncountersNumber(Dreamer.room.world.game.GetStorySession.saveState);
     private bool spawnedWorms = false;
 
-    public EtherealGraphics(PBEntity owner) : base(owner)
+    public PlaceholderEchoGraphics(PBEntity owner) : base(owner)
     {
         this.owner = owner;
         if (owner is Dreamer)
@@ -390,7 +390,7 @@ public class EtherealGraphics : PBEntity.GraphicsModule
     /// </summary>
     public class Rags
     {
-        public Rags(EtherealGraphics dreamer, int firstSprite)
+        public Rags(PlaceholderEchoGraphics dreamer, int firstSprite)
         {
             this.dreamer = dreamer;
             this.firstSprite = firstSprite;
@@ -507,7 +507,7 @@ public class EtherealGraphics : PBEntity.GraphicsModule
             return Vector2.Lerp(dreamer.spine[4].lastPos, dreamer.spine[4].pos, timeStacker);
         }
 
-        public EtherealGraphics dreamer;
+        public PlaceholderEchoGraphics dreamer;
         public int firstSprite;
         public int totalSprites; //6
         private float conRad;
@@ -519,7 +519,7 @@ public class EtherealGraphics : PBEntity.GraphicsModule
     /// </summary>
     public class Chains
     {
-        public Chains(EtherealGraphics dreamer, int firstSprite)
+        public Chains(PlaceholderEchoGraphics dreamer, int firstSprite)
         {
             this.dreamer = dreamer;
             this.firstSprite = firstSprite;
@@ -680,7 +680,7 @@ public class EtherealGraphics : PBEntity.GraphicsModule
             return Vector2.Lerp(dreamer.legs[chain, 2].lastPos, dreamer.legs[chain, 2].pos, timeStacker);
         }
 
-        public EtherealGraphics dreamer;
+        public PlaceholderEchoGraphics dreamer;
         public int firstSprite;
         public int totalSprites;
         public Vector2[][,] segments;
@@ -697,7 +697,7 @@ public class EtherealGraphics : PBEntity.GraphicsModule
             return;
         }
         // No warp OR About to completely dissapear
-        if (data.destPos == null || (Dreamer.visibleEntity as EtherealGraphics).scale <= 0.01f)
+        if (data.destPos == null || (Dreamer.visibleEntity as PlaceholderEchoGraphics).scale <= 0.01f)
         {
             AddRippleRing();
             (Dreamer.behaviorModule as DreamerBehavior).FinishAfterConversationCounter();
