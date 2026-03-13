@@ -14,9 +14,9 @@ public partial class BeaconAbilityHandler
     public Beacon owner;
 
     public Thanatosis theta;
-    public bool ThanatosisToggleConditionMet => owner.inputs.specialInputCounter == 40;
     // This can be static because it will be true for all players
     public static bool CanUseThanatosis { get; set; } = false;
+    public bool ThanatosisToggleConditionMet => owner.inputs.specialInputCounter == 40;
 
     public BeaconAbilityHandler(Beacon owner)
     {
@@ -48,6 +48,7 @@ public partial class BeaconAbilityHandler
             theta.Toggle(this);
         }
 
+        // Instability ticking
         if (theta.instability > 0)
         {
             theta.instability -= 0.02f;
@@ -56,7 +57,8 @@ public partial class BeaconAbilityHandler
             {
                 theta.instability += 5f;
             }
-            if (theta.instability > 50f && Random.value < 0.05f)
+            // Potential for involuntary thanatosis
+            if (theta.instability > 50f && Random.value < 0.0005f)
             {
                 theta.Toggle(this, Thanatosis.Type.Involuntary);
             }
@@ -83,9 +85,9 @@ public partial class BeaconAbilityHandler
     {
         // past 1.5s there's an opportunity to "scum" thanatosis or fully proceed. Thanatosis Scumming contributes to instability.
         bool STOP = false;
-        if (theta.timeInState > 40 * 1.25)
+        if (theta.timeInState > 40 * 1)
         {
-            if (theta.timeInState >= 40 * 2.5)
+            if (theta.timeInState >= 40 * 1.5)
             {
                 theta.ChangeSide();
             }
@@ -103,6 +105,7 @@ public partial class BeaconAbilityHandler
         if (STOP)
         {
             theta.Toggle(this, Thanatosis.Type.Involuntary);
+            owner.player.room.PlaySound(Enums.SoundID.Player_Canceled_Thanatosis, owner.player.mainBodyChunk);
         }
     }
 

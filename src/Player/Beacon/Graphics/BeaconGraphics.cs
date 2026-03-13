@@ -4,10 +4,11 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using RWCustom;
+using IL;
 
 namespace PitchBlack;
 
-public  class BeaconGraphics
+public class BeaconGraphics
 {
     public Beacon owner;
     // addtocontainer safety
@@ -24,6 +25,8 @@ public  class BeaconGraphics
     public Color DefaultColor => Colors.BeaconDefaultColor;
     public Color CurrentSkinColor;
     public Color CurrentEyeColor;
+
+    public bool UsingThanatosisFace { get; set; }
 
     public BeaconGraphics(Beacon owner)
     {
@@ -90,6 +93,45 @@ public  class BeaconGraphics
 
         whiskers.DrawSprites(sLeaser, timeStacker, camPos);
         squinter.DrawSprites(playerGraphics, sLeaser);
+        
+        // Replaces eye sprite, maintaining dynamics
+        //string face = "Face";
+        //string deadFace = "FaceThanatosis";
+        //if (owner.abilityHandler.theta.Dead && !UsingThanatosisFace)
+        //{
+        //    sLeaser.sprites[eyes].element.name.Replace(face, deadFace);
+        //    UsingThanatosisFace = true;
+        //}
+        //else if (UsingThanatosisFace)
+        //{
+        //    sLeaser.sprites[eyes].element.name.Replace(deadFace, face);
+        //    UsingThanatosisFace = false;
+        //}
+
+        if (owner.abilityHandler.theta.Dead)
+        {
+            // 9 - eyes
+            sLeaser.sprites[9].element = Futile.atlasManager.GetElementWithName("FaceDead");
+            playerGraphics.ApplyPalette(sLeaser, rCam, rCam.currentPalette);
+        }
+
+        if (Plugin.devMode)
+        {
+            var theta = owner.abilityHandler.theta;
+
+            if (theta.IsInbetween)
+            {
+                sLeaser.sprites[9].color = Color.yellow;
+            }
+            else if (theta.Dead)
+            {
+                sLeaser.sprites[9].color = Color.red;
+            }
+            else
+            {
+                sLeaser.sprites[9].color = Color.green;
+            }
+        }
     }
 
     public void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)

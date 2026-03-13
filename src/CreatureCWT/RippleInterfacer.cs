@@ -56,7 +56,7 @@ namespace PitchBlack.CreatureCWT
                 return;
             }
             // Spawn then begin delay
-            if (absCrit.TryGetRealized(out var crit) && BelowRippleSurface(data.rippleAxisPoint))
+            if (absCrit.TryGetRealized(out var crit) && crit.room is not null && BelowRippleSurface(data.rippleAxisPoint))
             {
                 data.rippleSpawnDelay.max = Random.Range(40, 100);
                 SpawnRippleRing(crit, data.rippleAxisPoint);
@@ -70,44 +70,39 @@ namespace PitchBlack.CreatureCWT
             int life = Random.Range(20, Random.Range(20, 80));
             float speed = 0.15f + intensity;
 
-            //if (cycle.RealizedOwner.room == null)
-            //{
-            //    return;
-            //}
-
-            //if (spacialTracker.InDream)
-            //{
-            //    life = Random.Range(20, 120);
-            //    intensity = Random.Range(0.3f, spacialTracker.rippleSurface);
-            //    speed = Random.Range(0.5f, 1f);
-            //}
-
-            if (Plugin.devMode)
+            if (MiscUtils.IsRegionOutSideCycle(crit.room.world))
             {
-                if (Input.GetKey("e"))
-                {
-                    intensity = 2f;
-                }
+                life = Random.Range(20, 120);
+                intensity = Random.Range(0.3f, rippleSurface);
+                speed = Random.Range(0.5f, 1f);
+            }
 
-                // Can be empty, but shouldn't be if it's a player
-                string playerCharString = "";
-                string creatureType = crit.abstractCreature.creatureTemplate.type.value;
-                if (crit is Player p)
-                {
-                    string playerName = $"{p.slugcatStats.name}";
-                    string playerIndex = $"{p.room.PlayersInRoom.IndexOf(p)}";
-                    playerCharString = $"Player[{playerName},{playerIndex}]";
-                    creatureType = "";
-                }
-                Custom.LogImportant(
-                [
-                    $"{nameof(RippleInterfacer)} ",
+            if (Plugin.devMode && Input.GetKey("e"))
+            {
+                intensity = 2f;
+                Plugin.logger.LogDebug($"{nameof(RippleInterfacer)}: Ripple intensity modified for debugging.");
+            }
+
+            #region logging
+            // Can be empty, but shouldn't be if it's a player
+            string playerCharString = "";
+            string creatureType = crit.abstractCreature.creatureTemplate.type.value;
+            if (crit is Player p)
+            {
+                string playerName = $"{p.slugcatStats.name}";
+                string playerIndex = $"{p.room.PlayersInRoom.IndexOf(p)}";
+                playerCharString = $"Player[{playerName},{playerIndex}]";
+                creatureType = "";
+            }
+            Custom.LogImportant(
+            [
+                $"{nameof(RippleInterfacer)} ",
                 "Spawned ripple for ",
                 $"{playerCharString}",
                 $"{creatureType}",
                 $"~ {life}, {intensity}, {speed}",
             ]);
-            }
+            #endregion
 
             // RippleRing
             RippleRing ripple = new(pos, life, intensity, speed);

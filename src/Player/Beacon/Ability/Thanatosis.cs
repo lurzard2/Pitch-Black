@@ -82,6 +82,8 @@ public partial class BeaconAbilityHandler
             }
 
             ManualToggleConditionMet = false;
+
+            Plugin.logger.LogDebug($"{nameof(Thanatosis)}: Thanatosis toggled {Dead}!");
         }
 
         private void ToggleThanatosis(Player player, Type type, int spiral)
@@ -100,15 +102,14 @@ public partial class BeaconAbilityHandler
 
             if (Dead)
             {
-                float timeAvailable = 120 * spiral;
-                float maxAllowedSafeTime = timeAvailable - instability;
-                MaxAvailableSafeTime = (int)Mathf.Clamp(timeAvailable, 0, maxAllowedSafeTime);
+                int timeAvailable = 120 * spiral;
+                int maxAllowedSafeTime = timeAvailable - (int)instability;
+                MaxAvailableSafeTime = maxAllowedSafeTime;
             }
 
-            if (player.room != null)
+            if (player.room is not null)
             {
-                SoundID sound = Dead ? Enums.SoundID.Player_Deactivated_Thanatosis : Enums.SoundID.Player_Activated_Thanatosis;
-                player.room.PlaySound(sound, player.mainBodyChunk);
+                player.room.PlaySound(Enums.SoundID.Player_Inducing_Thanatosis, player.mainBodyChunk);
             }
         }
 

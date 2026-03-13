@@ -57,6 +57,7 @@ public class Beacon
 
     public void Update()
     {
+        inputs.Update();
         abilityHandler.Update();
         // graphics + inputs are ran by hooks
 

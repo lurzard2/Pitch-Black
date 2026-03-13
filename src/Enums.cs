@@ -172,8 +172,8 @@ public static class Enums
     // These apparently HAVE to be registered to play ingame. -Lur
     public static class SoundID
     {
-        public static global::SoundID Player_Activated_Thanatosis;
-        public static global::SoundID Player_Deactivated_Thanatosis;
+        public static global::SoundID Player_Canceled_Thanatosis;
+        public static global::SoundID Player_Inducing_Thanatosis;
         public static global::SoundID Player_Deactivated_Thanatosis_From_Stun;
         public static global::SoundID Player_Died_From_Thanatosis;
         public static global::SoundID Player_Revived;
@@ -183,8 +183,8 @@ public static class Enums
         public static global::SoundID Beacon_Hybrid_Voice;
         public static void RegisterValues()
         {
-            Player_Activated_Thanatosis = new global::SoundID("Player_Activated_Thanatosis", true);
-            Player_Deactivated_Thanatosis = new global::SoundID("Player_Deactivated_Thanatosis", true);
+            Player_Canceled_Thanatosis = new global::SoundID("Player_Activated_Thanatosis", true);
+            Player_Inducing_Thanatosis = new global::SoundID("Player_Deactivated_Thanatosis", true);
             Player_Deactivated_Thanatosis_From_Stun = new global::SoundID("Player_Deactivated_Thanatosis_From_Stun", true);
             Player_Died_From_Thanatosis = new global::SoundID("Player_Died_From_Thanatosis", true);
             Player_Revived = new global::SoundID("Player_Revived", true);
@@ -195,15 +195,15 @@ public static class Enums
         }
         public static void UnregisterValues()
         {
-            if (Player_Activated_Thanatosis != null)
+            if (Player_Canceled_Thanatosis != null)
             {
-                Player_Activated_Thanatosis.Unregister();
-                Player_Activated_Thanatosis = null;
+                Player_Canceled_Thanatosis.Unregister();
+                Player_Canceled_Thanatosis = null;
             }
-            if (Player_Deactivated_Thanatosis != null)
+            if (Player_Inducing_Thanatosis != null)
             {
-                Player_Deactivated_Thanatosis.Unregister();
-                Player_Deactivated_Thanatosis = null;
+                Player_Inducing_Thanatosis.Unregister();
+                Player_Inducing_Thanatosis = null;
             }
             if (Player_Deactivated_Thanatosis_From_Stun != null)
             {

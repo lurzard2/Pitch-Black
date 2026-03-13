@@ -27,8 +27,6 @@ namespace PitchBlack.CreatureCWT
         public float rippleAxisPoint;
         public bool reboundFromRipple;
         public bool AbleToPassRippleSurface { get; set; }
-
         public Counter rippleSpawnDelay = new(80, 0, true);
-
     }
 }
