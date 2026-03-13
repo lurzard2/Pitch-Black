@@ -15,7 +15,6 @@ public class Beacon
     public BeaconGraphics graphics;
     public BeaconInputs inputs;
     public BeaconAbilityHandler abilityHandler;
-    public BeaconCycle cycle;
 
     // Stops crafting
     public bool heldCraft = false;
@@ -44,7 +43,6 @@ public class Beacon
         abilityHandler = new(this);
         graphics = new(this);
         inputs = new(this);
-        cycle = new(this, player);
 
         // Set current level to max once, effectively refreshing the value each cycle.
         SpiralLevel = MaxSpiralLevel;

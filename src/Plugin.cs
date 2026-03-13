@@ -48,8 +48,6 @@ class  Plugin : BaseUnityPlugin
     public static readonly ConditionalWeakTable<World, List<AbstractRoom>> roomsWithDreamerSpot = new();
     public static readonly ConditionalWeakTable<World, List<DreamerPresence>> dreamerPresence = new();
 
-    public static readonly ConditionalWeakTable<AbstractCreature, Cycle> creatureCycle = new();
-
     // Colors moved to Colors.cs after I saw Alduris set up his codespace that way -Lur 
 
     // SlugBase Features for PB:
@@ -88,7 +86,6 @@ class  Plugin : BaseUnityPlugin
 
         On.Room.ctor += Room_ctor;
 
-        CycleHooks.Apply();
         DreamerHooks.Apply();
         WarpPointHooks_ForRift.Apply();
         CreatureHooks.Apply();

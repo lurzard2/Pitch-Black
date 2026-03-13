@@ -149,33 +149,6 @@ public static class BeaconSaveData
     public static void SetMaxSpiralLevel(this SaveState save, float value) => save.deathPersistentSaveData.GetSlugBaseData().Set(maxSpiralLevel, value);
     #endregion
 
-    #region Death Stage
-
-    // Death Stage Enum
-    // Assigned: Based on MaxSpiralLevel
-    // Used: Thanatosis cosmetics and misc progressions
-
-    public static readonly string deathStage = "DeathStage";
-    public enum DeathStage
-    {
-        None, // No progress
-        Demised, // Thanatosis Sequence condition
-        Dreaming, // Post-Thanatosis effects
-        Rotting, // Chapter 2 Effects
-        Hybrid // Epilogue Effects
-    };
-    public static DeathStage GetDeathStage(this SaveState save)
-    {
-        // Arena fallback
-        if (save is null)
-        {
-            return DeathStage.Dreaming;
-        }
-        return save.deathPersistentSaveData.GetSlugBaseData().TryGet(deathStage, out DeathStage stage) ? stage : DeathStage.None;
-    } 
-    public static void SetDeathStage(this SaveState save, DeathStage stage) => save.deathPersistentSaveData.GetSlugBaseData().Set(deathStage, stage);
-    #endregion
-
     #region Can Craft Flares
 
     // Assigned: Unused for now
@@ -202,32 +175,6 @@ public static class BeaconSaveData
     public static readonly string canStoreFlares = "CanStoreFlares";
     public static bool GetCanStoreFlares(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(canStoreFlares, out bool store) && store;
     public static void SetCanStoreFlares(this SaveState save, bool value) => save.deathPersistentSaveData.GetSlugBaseData().Set(canStoreFlares, value);
-    #endregion
-
-    #region Story Progress
-
-    // Story Progress Enum
-    // Assigned: Retroactively based on events in the campaign, should only progress
-    // Used: Misc things in the campaign
-
-    public const string storyProgress = "StoryProgress";
-    public enum StoryProgress
-    {
-        Start,
-        Prologue,
-        Prologue_Intermission,
-        Chapter1,
-        Chapter1_Intermission,
-        Chapter2,
-        Chapter2_Intermission,
-        Chapter3,
-        Chapter3_Intermission,
-        Epilogue,
-        End1,
-        End2
-    };
-    public static StoryProgress GetStoryProgress(this SaveState save) => save.deathPersistentSaveData.GetSlugBaseData().TryGet(storyProgress, out StoryProgress stage) ? stage : StoryProgress.Start;
-    public static void SetStoryProgress(this SaveState save, StoryProgress stage) => save.deathPersistentSaveData.GetSlugBaseData().Set(storyProgress, stage);
     #endregion
 
     #region Campaign Completion
