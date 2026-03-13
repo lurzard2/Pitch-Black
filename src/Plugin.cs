@@ -89,6 +89,7 @@ class  Plugin : BaseUnityPlugin
         DreamerHooks.Apply();
         WarpPointHooks_ForRift.Apply();
         CreatureHooks.Apply();
+        CreatureCWT._Hooks.Apply();
 
         MenuSceneHooks.Apply();
         PhysicalObjectHooks.Apply();
