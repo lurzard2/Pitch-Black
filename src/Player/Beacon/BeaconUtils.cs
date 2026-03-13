@@ -35,7 +35,7 @@ internal static class BeaconUtils
 
     public static bool TryGetBeaconSaveState(this RainWorldGame rwg, out SaveState beaconSaveState)
     {
-        rwg.TryGetSaveState(out beaconSaveState, true);
-        return beaconSaveState is not null;
+        rwg.TryGetSaveState(out beaconSaveState);
+        return beaconSaveState is not null && IsBeacon(rwg.session);
     }
 }
