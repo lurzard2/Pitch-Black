@@ -18,10 +18,7 @@ namespace PitchBlack.CreatureCWT
 
         public void Update()
         {
-            if (owner.TryGetRealized(out var r))
-            {
-
-            }
+            owner.RippleInteract();
         }
 
         public AbstractCreature owner;
