@@ -43,7 +43,8 @@ public partial class BeaconAbilityHandler
         theta.timeInState.Tick();
 
         theta.ManualToggleConditionMet = ThanatosisToggleConditionMet;
-        if (theta.ManualToggleConditionMet)
+        // Briefly hardcoding thanatosis to work outside VV without dynamics since that'll require more
+        if (theta.ManualToggleConditionMet && MiscUtils.IsRegionOutSideCycle(owner.player.abstractCreature.Room.world))
         {
             theta.Toggle(this);
         }
