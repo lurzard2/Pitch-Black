@@ -31,7 +31,7 @@ namespace PitchBlack.AbstractDimensionData
             if (MiscUtils.IsRegionOutSideCycle(room.world))
             {
                 life = Random.Range(20, 120);
-                intensity = Random.Range(0.3f, AbstractDimensionData.rippleSurfacePos);
+                intensity = Random.Range(0.3f, SurfacePos);
                 speed = Random.Range(0.5f, 1f);
             }
 

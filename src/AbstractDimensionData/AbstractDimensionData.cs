@@ -8,7 +8,7 @@ namespace PitchBlack.AbstractDimensionData
         public AbstractDimensionData(AbstractPhysicalObject absOwner)
         {
             owner = absOwner;
-            rippleAxisPos = Random.Range(0, rippleSurfacePos);
+            rippleAxisPos = Random.Range(0, RippleDimension.SurfacePos);
         }
 
         public void Update()
@@ -27,7 +27,7 @@ namespace PitchBlack.AbstractDimensionData
             // Tick up with rebound edge case
             else if (IsAboveRippleSurface && Random.value < 0.5f)
             {
-                rippleAxisPos = Custom.LerpAndTick(rippleAxisPos, rippleSurfaceTensionPos, globalLerpRate, globalTickRate);
+                rippleAxisPos = Custom.LerpAndTick(rippleAxisPos, RippleDimension.SurfaceTensionPos, globalLerpRate, globalTickRate);
 
                 // value can increase over surface tension, Activate rebound either:
                 // A- Randomly if we're getting very close to submerging.
@@ -39,7 +39,7 @@ namespace PitchBlack.AbstractDimensionData
                 }
                 else if (InsideRippleWater)
                 {
-                    rippleAxisPos = rippleSurfaceTensionPos;
+                    rippleAxisPos = RippleDimension.SurfacePos;
                     reboundFromRipple = true;
                 }
             }
@@ -72,8 +72,6 @@ namespace PitchBlack.AbstractDimensionData
         public static float globalTickRate = 0.0025f;
         public static float globalLerpRate = 0.008f;
 
-        public const float rippleSurfacePos = 0.45f;
-        public const float rippleSurfaceTensionPos = 0.65f;
         public bool IsAboveRippleSurface => rippleAxisPos <= RippleDimension.SurfaceTensionPos;
         public bool IsAgainstRippleSurfaceTension => rippleAxisPos >= RippleDimension.SurfacePos && !InsideRippleWater;
         public bool InsideRippleWater => rippleAxisPos > RippleDimension.SurfaceTensionPos;
