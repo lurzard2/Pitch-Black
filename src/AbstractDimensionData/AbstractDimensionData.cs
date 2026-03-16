@@ -5,46 +5,72 @@ namespace PitchBlack.AbstractDimensionData
 {
     public class AbstractDimensionData
     {
+        public AbstractPhysicalObject owner;
+        public bool IsRealized => RealizedOwner is not null && RealizedRoom is not null;
+        public PhysicalObject RealizedOwner => owner.realizedObject;
+        public Room RealizedRoom => owner.Room.realizedRoom;
+
+        #region Ripple Axis
+        // Ripple
+        public RippleDimension.Axis rippleAxis = new();
+        public bool AllowedToEnterRippleDimension { get; set; }
+        public Counter spawningRippleRingDelay = new(80, 0, true);
+
+        // Ripple Exposure
+        public RoomRippleExposure rippleExposure => owner.Room.GetRippleExposure();
+        public float dynamicRippleExposureFromProximity;
+        public bool updateDynamicExposureFlag { get; set; } = false;
+
+        private RippleTravelPhase rippleTravelPhase;
+        public enum RippleTravelPhase
+        {
+            Idle,
+            Rebound,
+            PassThrough,
+        }
+        public void SetRippleTravelPhase(RippleTravelPhase newType) => rippleTravelPhase = newType;
+        #endregion
+
         public AbstractDimensionData(AbstractPhysicalObject absOwner)
         {
             owner = absOwner;
-            rippleAxisPos = Random.Range(0, RippleDimension.SurfacePos);
+            rippleAxis.pos = Random.Range(0, RippleDimension.Axis.ContactPos);
+        }
+
+        private void TravelRippleAxis()
+        {
+            // Find target value
+            float targetValue = RippleDimension.Axis.ContactPos;
+            bool inRipple = owner.rippleLayer == 1;
+            switch (rippleTravelPhase)
+            {
+                case RippleTravelPhase.Idle:
+                    targetValue = RippleDimension.Axis.SurfaceTensionPos;
+                    break;
+                case RippleTravelPhase.Rebound:
+                    targetValue = 0;
+                    break;
+            }
+
+            // lerp is room exposure
+            // tick is personal dynamic exposure: default low value + currently tracked value
+            rippleAxis.pos = Custom.LerpAndTick(rippleAxis.pos, targetValue, rippleExposure.globalExposure, 0.0015f + dynamicRippleExposureFromProximity);
         }
 
         public void Update()
         {
-            IdleRippleSubmersion();
-        }
-
-        public void IdleRippleSubmersion()
-        {
-            if (reboundFromRipple)
+            if (AllowedToEnterRippleDimension)
             {
-                rippleAxisPos = Custom.LerpAndTick(rippleAxisPos, 0, globalLerpRate, globalTickRate);
-                bool closeToNone = rippleAxisPos <= Random.Range(0, 0.2f);
-                reboundFromRipple = closeToNone;
+                RippleTravel_Allowed();
             }
-            // Tick up with rebound edge case
-            else if (IsAboveRippleSurface && Random.value < 0.5f)
+            else
             {
-                rippleAxisPos = Custom.LerpAndTick(rippleAxisPos, RippleDimension.SurfaceTensionPos, globalLerpRate, globalTickRate);
-
-                // value can increase over surface tension, Activate rebound either:
-                // A- Randomly if we're getting very close to submerging.
-                // B- We're at the limit.
-
-                if (IsAgainstRippleSurfaceTension && Random.value < 0.008f)
-                {
-                    reboundFromRipple = true;
-                }
-                else if (InsideRippleWater)
-                {
-                    rippleAxisPos = RippleDimension.SurfacePos;
-                    reboundFromRipple = true;
-                }
+                RippleTravel_Idle();
             }
 
-            // Tick delay before spawning again
+            TravelRippleAxis();
+
+            // Tick delay before spawning again, otherwise spawn then tick delay
             if (spawningRippleRingDelay > 0)
             {
                 spawningRippleRingDelay.Tick();
@@ -53,27 +79,32 @@ namespace PitchBlack.AbstractDimensionData
                     spawningRippleRingDelay.Reset();
                 }
             }
-            // Spawn then begin delay
-            else if (owner.TryGetRealizedObj(out var obj) && obj.room is not null && IsAgainstRippleSurfaceTension)
+            else if (IsRealized && rippleAxis.IsUnderRippleSurface)
             {
-                spawningRippleRingDelay.max = Random.Range(40, 100);
-                RippleDimension.SpawnRippleRing(obj.firstChunk.pos, obj.room, rippleAxisPos);
+                spawningRippleRingDelay.max = Random.Range(20, 100);
+                RippleDimension.SpawnRippleRing(RealizedOwner.firstChunk.pos, RealizedRoom, rippleAxis.pos);
                 spawningRippleRingDelay.Tick();
             }
         }
 
-        public AbstractPhysicalObject owner;
+        private void RippleTravel_Idle()
+        {
+            if (rippleAxis.IsAgainstRippleSurfaceTension)
+            {
+                // value can increase over surface tension, Activate rebound either:
+                // A- Randomly if we're getting very close to submerging.
+                // B- We're at the limit.
 
-        public float rippleAxisPos;
-        public bool reboundFromRipple;
-        public Counter spawningRippleRingDelay = new(80, 0, true);
+                if (Random.value < 0.008f || rippleAxis.IsUnderRippleSurface)
+                {
+                    SetRippleTravelPhase(RippleTravelPhase.Rebound);
+                }
+            }
+        }
 
-        // Todo: move these to be associated with the current room's exposure to ripplespace and made more descriptive
-        public static float globalTickRate = 0.0025f;
-        public static float globalLerpRate = 0.008f;
-
-        public bool IsAboveRippleSurface => rippleAxisPos <= RippleDimension.SurfaceTensionPos;
-        public bool IsAgainstRippleSurfaceTension => rippleAxisPos >= RippleDimension.SurfacePos && !InsideRippleWater;
-        public bool InsideRippleWater => rippleAxisPos > RippleDimension.SurfaceTensionPos;
+        private void RippleTravel_Allowed()
+        {
+            //<Later>
+        }
     }
 }

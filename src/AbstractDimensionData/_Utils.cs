@@ -8,25 +8,23 @@ using System.Threading.Tasks;
 
 namespace PitchBlack.AbstractDimensionData
 {
-    public static class _Utils
+    public static partial class _Utils
     {
         public static readonly ConditionalWeakTable<AbstractPhysicalObject, AbstractDimensionData> objDimensionData = new();
-
-        public static void AddDimensionData(this AbstractPhysicalObject absCrit)
+        public static readonly ConditionalWeakTable<AbstractRoom, RoomRippleExposure> roomRippleExposure = new();
+        public static RoomRippleExposure GetRippleExposure(this AbstractRoom room)
         {
-            objDimensionData.Add(absCrit, new(absCrit));
+            if (!roomRippleExposure.TryGetValue(room, out var re))
+            {
+                roomRippleExposure.Add(room, new(room));
+            }
+            return re;
         }
 
-        public static bool TryGetDimensionData(this AbstractPhysicalObject absCrit, out AbstractDimensionData c)
+        public static AbstractDimensionData TryGetDimensionData(this AbstractPhysicalObject absCrit)
         {
-            c = null;
-            return (objDimensionData.TryGetValue(absCrit, out c));
-        }
-
-        public static bool TryGetRealizedObj(this AbstractPhysicalObject absObj, out PhysicalObject realizedObj)
-        {
-            realizedObj = absObj.realizedObject;
-            return realizedObj is not null && realizedObj.room is not null;
+            objDimensionData.TryGetValue(absCrit, out var c);
+            return c;
         }
     }
 }

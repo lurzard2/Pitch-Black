@@ -12,6 +12,13 @@ namespace PitchBlack.AbstractDimensionData
         {
             On.AbstractCreature.ctor += AbstractCreature_ctor;
             On.AbstractCreature.Update += AbstractCreature_Update;
+            On.Room.Update += Room_Update;
+        }
+
+        private static void Room_Update(On.Room.orig_Update orig, Room self)
+        {
+            orig(self);
+            self.abstractRoom.GetRippleExposure().Update();
         }
 
         private static void AbstractCreature_Update(On.AbstractCreature.orig_Update orig, AbstractCreature self, int time)
@@ -26,7 +33,7 @@ namespace PitchBlack.AbstractDimensionData
         private static void AbstractCreature_ctor(On.AbstractCreature.orig_ctor orig, AbstractCreature self, World world, CreatureTemplate creatureTemplate, Creature realizedCreature, WorldCoordinate pos, EntityID ID)
         {
             orig(self, world, creatureTemplate, realizedCreature, pos, ID);
-            self.AddDimensionData();
+            _Utils.objDimensionData.Add(self, new(self));
         }
     }
 }
