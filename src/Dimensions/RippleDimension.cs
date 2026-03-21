@@ -6,19 +6,20 @@ using System.Linq;
 using UnityEngine;
 using Watcher;
 
-namespace PitchBlack.AbstractDimensionData
+namespace PitchBlack.Dimensions
 {
     public static class RippleDimension
     {
-        public class Axis
+        public class PersonalRippleData
         {
-            public float pos;
-
-            // Outside
+            // Defined values
             public const float OriginPos = 0f;
-            public const float ContactPos = 0.45f;
-            public const float SurfaceTensionPos = 0.5f;
-            // Median
+            /// Surface of water
+            public const float RippleSurfaceContactPos = 0.4f;
+            const float surfaceTension = 0.15f;
+            const float InsideSurfaceTensionEndPos = RippleSurfaceContactPos + surfaceTension;
+            public float SurfaceTensionEndPos => RippleSideTag ? RippleSurfaceContactPos - surfaceTension : InsideSurfaceTensionEndPos;
+            /// Inside water
             public const float OuterZonePos = 0.65f;
 #if false
             public const float IntersticePos = 0.7f;
@@ -28,18 +29,33 @@ namespace PitchBlack.AbstractDimensionData
             public const float AbyssalZonePos = 3f;
             public const float HadalZonePos = 4f;
 #endif
+            public bool IsUnderRippleSurface => currentValue >= InsideSurfaceTensionEndPos;
+            public bool AgainstRippleSurfaceTension
+            {
+                get
+                {
+                    // Value between range of contact and max/min depending on the side you're on
+                    return RippleSideTag ?
 
-            // Coordinate tracking value progression
-            public bool IsAboveRippleSurface => pos <= SurfaceTensionPos;
-            public bool IsAgainstRippleSurfaceTension => pos >= ContactPos && pos < OuterZonePos;
-            public bool IsUnderRippleSurface => pos > SurfaceTensionPos;
-            public bool InOuterZone => pos >= OuterZonePos;
+                        currentValue < RippleSurfaceContactPos
+                        && currentValue >= SurfaceTensionEndPos
+
+                        : currentValue > RippleSurfaceContactPos
+                        && currentValue <= SurfaceTensionEndPos;
+                }
+            }
+
+            public float currentValue;
+            public bool AllowedInsideRippleTemporarily { get; set; }
+            public bool RippleSideTag { get; set; }
+            // Value 0-1 for camo effect
+            public float GraphicsMaskProgress => Mathf.InverseLerp(InsideSurfaceTensionEndPos, OuterZonePos, currentValue);
         }
 
         public static Vector2 GetReflectedPos(Vector2 pos, float intensity)
         {
             // Scatter pos in a radius randomly based on rippleAxisPos
-            float maxRadius = 30f * (intensity * 10);
+            float maxRadius = 15f * (intensity * 10);
             return pos + Custom.RNV() * Random.Range(1f, maxRadius);
         }
 
@@ -49,7 +65,7 @@ namespace PitchBlack.AbstractDimensionData
             {
                 return;
             }
-
+                
             Vector2 pos = GetReflectedPos(objPos, intensity);
             int life = Random.Range(20, Random.Range(20, 80));
             float speed = 0.15f + intensity;
@@ -57,7 +73,7 @@ namespace PitchBlack.AbstractDimensionData
             if (MiscUtils.IsRegionOutSideCycle(room.world))
             {
                 life = Random.Range(20, 120);
-                intensity = Random.Range(0.3f, Axis.ContactPos);
+                intensity = Random.Range(0.3f, PersonalRippleData.RippleSurfaceContactPos);
                 speed = Random.Range(0.5f, 1f);
             }
 

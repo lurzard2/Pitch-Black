@@ -1,4 +1,5 @@
-﻿  using UnityEngine;
+﻿using PitchBlack.Dimensions;
+using UnityEngine;
 
 namespace PitchBlack;
 
@@ -15,6 +16,7 @@ public class Beacon
     public BeaconGraphics graphics;
     public BeaconInputs inputs;
     public BeaconAbilityHandler abilityHandler;
+    public Dimensions.AbstractDimensionData dimensionData => player.abstractCreature.GetDimensionData();
 
     // Stops crafting
     public bool heldCraft = false;

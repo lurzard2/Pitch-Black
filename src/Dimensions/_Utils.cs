@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PitchBlack.AbstractDimensionData
+namespace PitchBlack.Dimensions
 {
     public static partial class _Utils
     {
@@ -21,7 +21,7 @@ namespace PitchBlack.AbstractDimensionData
             return re;
         }
 
-        public static AbstractDimensionData TryGetDimensionData(this AbstractPhysicalObject absCrit)
+        public static AbstractDimensionData GetDimensionData(this AbstractPhysicalObject absCrit)
         {
             objDimensionData.TryGetValue(absCrit, out var c);
             return c;
