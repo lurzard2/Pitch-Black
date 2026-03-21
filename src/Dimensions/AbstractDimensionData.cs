@@ -1,4 +1,5 @@
-﻿using RWCustom;
+﻿using IL.Menu;
+using RWCustom;
 using UnityEngine;
 
 namespace PitchBlack.Dimensions
@@ -11,19 +12,19 @@ namespace PitchBlack.Dimensions
         public Room RealizedRoom => owner.Room.realizedRoom;
 
 
-        public RippleDimension.PersonalRippleData rippleData = new();
-        public bool AllowedToEnterRippleDimension { get; set; }
+        public RippleDimension.PersonalRippleAxis rippleData = new();
         public Counter spawningRippleRingDelay = new(80, 0, true);
 
         // Ripple Exposure
         public RoomRippleExposure rippleExposure => owner.Room.GetRippleExposure();
         public float dynamicRippleExposureFromProximity;
-        public bool updateDynamicExposureFlag { get; set; } = false;
+        public bool hasUpdatecDynamicExposure { get; set; } = false;
 
-        private RippleTravelPhase rippleTravelPhase;
+        public RippleTravelPhase rippleTravelPhase;
         public enum RippleTravelPhase
         {
             Idle,
+            FlowIn,
             Rebound,
             SwitchSide,
         }
@@ -32,7 +33,7 @@ namespace PitchBlack.Dimensions
         public AbstractDimensionData(AbstractPhysicalObject absOwner)
         {
             owner = absOwner;
-            rippleData.currentValue = Random.Range(0, RippleDimension.PersonalRippleData.RippleSurfaceContactPos);
+            rippleData.currentValue = Random.Range(0, RippleDimension.PersonalRippleAxis.RippleSurfaceContactPos);
         }
 
         public void Update()
@@ -42,18 +43,32 @@ namespace PitchBlack.Dimensions
 
         private void RippleUpdate()
         {
-            if (AllowedToEnterRippleDimension)
+            if (rippleData.AllowedInsideRippleTemporarily)
             {
-                //<later>
+                bool lastRippleSideTag = rippleData.RippleSideTag;
+                rippleData.RippleSideTag = rippleData.IsUnderRippleSurface;
+                // Moment where side was switched so we tag it
+                if (lastRippleSideTag != rippleData.RippleSideTag)
+                {
+                    SetRippleTravelPhase(RippleTravelPhase.SwitchSide);
+                }
             }
             else
             {
-                if (rippleData.AgainstRippleSurfaceTension && rippleTravelPhase != RippleTravelPhase.Rebound)
+                if (rippleTravelPhase != RippleTravelPhase.Rebound)
                 {
-                    // value can increase over surface tension, Activate rebound either:
-                    // A- Randomly if we're getting very close to submerging.
-                    // B- We're at the limit.
-                    if (rippleData.IsUnderRippleSurface || Random.value < 0.008f)
+                    if (rippleData.AgainstRippleSurfaceTension)
+                    {
+                        // value can increase over surface tension, Activate rebound either:
+                        // A- Randomly if we're getting very close to submerging.
+                        // B- We're at the limit.
+                        if (rippleData.IsUnderRippleSurface || Random.value < 0.008f)
+                        {
+                            SetRippleTravelPhase(RippleTravelPhase.Rebound);
+                        }
+                    }
+                    // And if you're completely inside, GET OUT.
+                    else if (rippleData.IsUnderRippleSurface)
                     {
                         SetRippleTravelPhase(RippleTravelPhase.Rebound);
                     }
@@ -86,15 +101,30 @@ namespace PitchBlack.Dimensions
         private void TravelRippleAxis()
         {
             // Find target value
-            float targetValue = RippleDimension.PersonalRippleData.RippleSurfaceContactPos;
-            bool inRipple = owner.rippleLayer == 1;
+            float targetValue = RippleDimension.PersonalRippleAxis.RippleSurfaceContactPos;
             switch (rippleTravelPhase)
             {
+                // Go to either side, slowly passing through surface
                 case RippleTravelPhase.Idle:
-                    targetValue = rippleData.SurfaceTensionEndPos;
+                    targetValue = rippleData.SurfaceTensionEndTargetPos;
                     break;
+                // Go to 0
                 case RippleTravelPhase.Rebound:
                     targetValue = 0;
+                    if (rippleData.currentValue <= 0 || Random.value < 0.008f)
+                        SetRippleTravelPhase(RippleTravelPhase.Idle);
+                    break;
+                // Go a little above or below threshold to properly switch sides
+                case RippleTravelPhase.SwitchSide:
+                    targetValue = rippleData.SwitchSideEndTargetPos;
+                    if (rippleData.SwitchedRippleSides)
+                        SetRippleTravelPhase(RippleTravelPhase.Idle);
+                    break;
+                // Target inside zone while in ripples, randomly abandon
+                case RippleTravelPhase.FlowIn:
+                    targetValue = RippleDimension.PersonalRippleAxis.OuterZonePos;
+                    if (rippleData.IsInOuterZone || Random.value < 0.008f)
+                        SetRippleTravelPhase(RippleTravelPhase.Idle);
                     break;
             }
 

@@ -10,25 +10,22 @@ namespace PitchBlack.Dimensions
 {
     public static class RippleDimension
     {
-        public class PersonalRippleData
+        public class PersonalRippleAxis
         {
             // Defined values
             public const float OriginPos = 0f;
+            public float SwitchSideEndTargetPos => RippleSideTag ? OuterZonePos : SurfaceTensionEndTargetPos - 0.2f;
             /// Surface of water
             public const float RippleSurfaceContactPos = 0.4f;
             const float surfaceTension = 0.15f;
             const float InsideSurfaceTensionEndPos = RippleSurfaceContactPos + surfaceTension;
-            public float SurfaceTensionEndPos => RippleSideTag ? RippleSurfaceContactPos - surfaceTension : InsideSurfaceTensionEndPos;
+            public float SurfaceTensionEndTargetPos => RippleSideTag ? RippleSurfaceContactPos - surfaceTension : InsideSurfaceTensionEndPos;
             /// Inside water
             public const float OuterZonePos = 0.65f;
-#if false
-            public const float IntersticePos = 0.7f;
             public const float TwilightZonePos = 1f;
-            // Inside
             public const float MidnightZonePos = 2f;
             public const float AbyssalZonePos = 3f;
             public const float HadalZonePos = 4f;
-#endif
             public bool IsUnderRippleSurface => currentValue >= InsideSurfaceTensionEndPos;
             public bool AgainstRippleSurfaceTension
             {
@@ -38,12 +35,14 @@ namespace PitchBlack.Dimensions
                     return RippleSideTag ?
 
                         currentValue < RippleSurfaceContactPos
-                        && currentValue >= SurfaceTensionEndPos
+                        && currentValue >= SurfaceTensionEndTargetPos
 
                         : currentValue > RippleSurfaceContactPos
-                        && currentValue <= SurfaceTensionEndPos;
+                        && currentValue <= SurfaceTensionEndTargetPos;
                 }
             }
+            public bool SwitchedRippleSides => currentValue == SwitchSideEndTargetPos;
+            public bool IsInOuterZone => currentValue >= OuterZonePos;
 
             public float currentValue;
             public bool AllowedInsideRippleTemporarily { get; set; }
@@ -73,7 +72,7 @@ namespace PitchBlack.Dimensions
             if (MiscUtils.IsRegionOutSideCycle(room.world))
             {
                 life = Random.Range(20, 120);
-                intensity = Random.Range(0.3f, PersonalRippleData.RippleSurfaceContactPos);
+                intensity = Random.Range(0.3f, PersonalRippleAxis.RippleSurfaceContactPos);
                 speed = Random.Range(0.5f, 1f);
             }
 
