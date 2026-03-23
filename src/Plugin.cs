@@ -22,7 +22,6 @@ using static SlugBase.Features.FeatureTypes;
 namespace PitchBlack;
 
 [BepInPlugin(MOD_ID, MOD_NAME, MOD_VERSION)]
-
 class  Plugin : BaseUnityPlugin
 {
     #region modinfo dont edit
@@ -90,7 +89,7 @@ class  Plugin : BaseUnityPlugin
         DreamerHooks.Apply();
         WarpPointHooks_ForRift.Apply();
         CreatureHooks.Apply();
-        Dimensions.ImplementationHooks.Apply();
+        Dimensions._Implement.Apply();
 
         MenuSceneHooks.Apply();
         PhysicalObjectHooks.Apply();
