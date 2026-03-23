@@ -10,6 +10,7 @@ namespace PitchBlack.Dimensions
 {
     public static class RippleDimension
     {
+
         public class PersonalRippleAxis
         {
             // Defined values
@@ -49,11 +50,6 @@ namespace PitchBlack.Dimensions
             public bool RippleSideTag { get; set; }
             // Value 0-1 for camo effect
             public float GraphicsMaskProgress => Mathf.InverseLerp(InsideSurfaceTensionEndPos, OuterZonePos, currentValue);
-        }
-
-        public static void SpawnCosmeticRipple(Vector2 objPos, Room room, float intensity)
-        {
-
         }
 
         public static void SpawnRippleRing(Vector2 objPos, Room room, float intensity)

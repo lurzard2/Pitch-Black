@@ -67,7 +67,7 @@ public class DreamerPresence : World.IMigrationInfluence
     {
         get
         {
-            switch (BeaconSaveData.GetDreamerEncountersNumber(saveState))
+            switch (PBSaveData.GetDreamerEncountersNumber(saveState))
             {
                 // Write more songs to use later
                 default: return songName;

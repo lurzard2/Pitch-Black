@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace PitchBlack;
 
-public static class BeaconSaveData
+public static partial class PBSaveData
 {
     /// <summary>
     /// Gets a SaveState from the game's StoryGameSession properly without breaking other types of sessions. Must Check if null.

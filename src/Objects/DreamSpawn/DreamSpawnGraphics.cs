@@ -28,7 +28,7 @@ public class DreamSpawnGraphics : VoidSpawnGraphics
         float angle;
         float forceDirection;
 
-        int encounterNumber = BeaconSaveData.GetDreamerEncountersNumber(owner.room.world.game.GetStorySession.saveState);
+        int encounterNumber = PBSaveData.GetDreamerEncountersNumber(owner.room.world.game.GetStorySession.saveState);
 
         if (IsVariant(spawn, Enums.DreamSpawnType.DreamAmoeba))
         {

@@ -182,7 +182,7 @@ public class DreamerBehavior : PBEntity.BehaviorModule
         var riftManager = new RiftManager(Dreamer.room, placedObj, false);
         bool makeOneWay = false;
         var rift = riftManager.placedRift;
-        if (BeaconSaveData.GetDreamerEncountersNumber(Dreamer.room.world.game.GetStorySession.saveState) == 3)
+        if (PBSaveData.GetDreamerEncountersNumber(Dreamer.room.world.game.GetStorySession.saveState) == 3)
         {
             rift = riftManager.ScriptedRift(Enums.Timeline.Beacon, "pblf", "pblf_c07");
             rift.Data.effectSettings.badWarpCosmetic = true;
@@ -218,7 +218,7 @@ public class DreamerBehavior : PBEntity.BehaviorModule
         {
             var riftManager = new RiftManager(room, newPlacedObj, false);
             bool makeOneWay = false;
-            if (BeaconSaveData.GetDreamerEncountersNumber(room.world.game.GetStorySession.saveState) == 3)
+            if (PBSaveData.GetDreamerEncountersNumber(room.world.game.GetStorySession.saveState) == 3)
             {
                 riftManager.placedRift = riftManager.ScriptedRift(Enums.Timeline.Beacon, "pblf", "pblf_c07");
                 riftManager.placedRift.Data.effectSettings.badWarpCosmetic = true;
@@ -272,17 +272,17 @@ public class DreamerBehavior : PBEntity.BehaviorModule
 
     private void SaveEncounter(SaveState state, string currentRoomName)
     {
-        BeaconSaveData.SetDreamerEncounteredRooms(state, currentRoomName);
-        var encounterNumber = BeaconSaveData.GetDreamerEncountersNumber(state);
+        PBSaveData.SetDreamerEncounteredRooms(state, currentRoomName);
+        var encounterNumber = PBSaveData.GetDreamerEncountersNumber(state);
         encounterNumber++;
-        BeaconSaveData.SetDreamerEncountersNumber(state, encounterNumber);
-        string joinedString = String.Join(",", BeaconSaveData.GetDreamerEncounteredRooms(state));
+        PBSaveData.SetDreamerEncountersNumber(state, encounterNumber);
+        string joinedString = String.Join(",", PBSaveData.GetDreamerEncounteredRooms(state));
         Plugin.logger.LogDebug($"Dreamer: Set encountered rooms - {joinedString}");
     }
 
     private void IncreaseSpiralLevel(SaveState state)
     {
-        var maxLevel = BeaconSaveData.GetMaxSpiralLevel(state);
+        var maxLevel = PBSaveData.GetMaxSpiralLevel(state);
         float increment = 0f;
         if (maxLevel >= 0.5f)
         {
@@ -292,7 +292,7 @@ public class DreamerBehavior : PBEntity.BehaviorModule
         {
             increment = 0.25f;
         }
-        BeaconSaveData.SetMaxSpiralLevel(state, maxLevel += increment);
+        PBSaveData.SetMaxSpiralLevel(state, maxLevel += increment);
         Plugin.logger.LogDebug($"Dreamer: Increased your level by {increment}, level is {maxLevel}");
     }
 

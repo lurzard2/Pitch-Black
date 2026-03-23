@@ -118,7 +118,7 @@ public class DreamerConversation : PBEntity.BehaviorModule.BehaviorConversation
     {
         if (SpeakerSwitched)
         {
-            if (BeaconSaveData.GetMaxSpiralLevel(Owner.Dreamer.room.game.GetStorySession.saveState) > 4f)
+            if (PBSaveData.GetMaxSpiralLevel(Owner.Dreamer.room.game.GetStorySession.saveState) > 4f)
             {
                 return Enums.SoundID.Beacon_Hybrid_Voice;
             }

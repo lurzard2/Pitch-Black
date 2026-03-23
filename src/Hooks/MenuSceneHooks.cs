@@ -170,10 +170,10 @@ public class MenuSceneHooks
         bool saveStateExists = currentSaveState != null ? true : false;
 
         bool conditionMaxSpiralProgression = saveStateExists 
-            ? BeaconSaveData.GetMaxSpiralLevel(currentSaveState) == 5
+            ? PBSaveData.GetMaxSpiralLevel(currentSaveState) == 5
             : false;
         bool conditionSpiralProgression = saveStateExists
-            ? BeaconSaveData.GetMaxSpiralLevel(currentSaveState) >= 2.5
+            ? PBSaveData.GetMaxSpiralLevel(currentSaveState) >= 2.5
             : false;
 
         if (conditionMaxSpiralProgression)

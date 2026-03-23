@@ -134,7 +134,7 @@ public class PlaceholderEchoGraphics : PBEntity.GraphicsModule
     }
 
     public Vector2 headPos;
-    public int DreamSpawnCaught => BeaconSaveData.GetDreamerEncountersNumber(Dreamer.room.world.game.GetStorySession.saveState);
+    public int DreamSpawnCaught => PBSaveData.GetDreamerEncountersNumber(Dreamer.room.world.game.GetStorySession.saveState);
     private bool spawnedWorms = false;
 
     public PlaceholderEchoGraphics(PBEntity owner) : base(owner)

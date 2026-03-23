@@ -18,7 +18,7 @@ public class Rift : WarpPoint
     {
         this.triggersInstantly = triggersInstantly;
 
-        if (triggersInstantly && BeaconSaveData.GetDreamerEncountersNumber(room.game.GetStorySession.saveState) > 1)
+        if (triggersInstantly && PBSaveData.GetDreamerEncountersNumber(room.game.GetStorySession.saveState) > 1)
         {
             triggerTime = (float)((int)(triggerActivationTime - 1f));
             strongPull = true;

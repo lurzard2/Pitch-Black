@@ -40,7 +40,7 @@ public static class DreamerPresence_Functions
                 DreamerPresence dummyPresence = null;
                 AbstractRoom currentRoom = self.abstractRoom;
                 string encounterRoomName = abstractRoom.name;
-                bool roomMarkedEncountered = BeaconSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState).Contains(encounterRoomName);
+                bool roomMarkedEncountered = PBSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState).Contains(encounterRoomName);
                 if (roomMarkedEncountered)
                 {
                     logger.LogDebug("DreamerPresence: Dreamer was marked encountered in this room, aborting process!");

@@ -161,7 +161,7 @@ public class DevToolsHooks
                 if (obj.type == Enums.PlacedObjectType.DreamerSpot
                 && dreamerPresence.TryGetValue(self.world, out var dreamerPresences))
                 {
-                    if (BeaconSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState).Contains(self.abstractRoom.name))
+                    if (PBSaveData.GetDreamerEncounteredRooms(self.world.game.GetStorySession.saveState).Contains(self.abstractRoom.name))
                     {
                         PlaceWarp(self, objects);
                     }

@@ -97,7 +97,7 @@ public static class MiscUtils
         {
             //spawnBehavior = new DreamSpawnBehavior.Caught(spawn, room);
             spawnType = Enums.DreamSpawnType.DreamKin;
-            amountToSpawn = BeaconSaveData.GetDreamerEncountersNumber(room.world.game.GetStorySession.saveState);
+            amountToSpawn = PBSaveData.GetDreamerEncountersNumber(room.world.game.GetStorySession.saveState);
         }
 
         float getVoidMelt = room.roomSettings.GetEffectAmount(RoomSettings.RoomEffect.Type.VoidMelt);
