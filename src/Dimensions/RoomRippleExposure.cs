@@ -51,25 +51,19 @@ namespace PitchBlack.Dimensions
             var filteredRipples = RealizedRoom.cosmeticRipples.Where(r => !r.isInverted);
             foreach (var ripple in filteredRipples)
             {
+                float rippleScale = ripple.displayScale + 40f;
                 //Value like 0.0015f;
-                float tempPassedExposure = ripple.displayIntensity / (ripple.scale * 10);
+                float tempPassedExposure = ripple.displayIntensity / (rippleScale * 10);
 
                 // Compare adjacent positions and nerf this one's exposure if close enough
-                if (Vector2.Distance(lastRipple.pos, ripple.pos) < (ripple.scale * 1.25f))
+                if (Vector2.Distance(lastRipple.pos, ripple.pos) < rippleScale)
                 {
-                    if (lastRipple.pos == ripple.pos)
-                    {
-                        val = 0;
-                    }
-                    else
-                    {
-                        val /= 2;
-                    }
+                    val /= 2;
                 }
                 lastRipple = ripple;
 
                 val += tempPassedExposure;
-                float rippleScale = ripple.displayScale + 40f;
+
 
                 // We will also take this opportunity to affect creatures in room
                 // Get realized creatures without a null room and flag then store their data class into an ienumerable for iteration

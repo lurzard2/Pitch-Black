@@ -90,6 +90,7 @@ namespace PitchBlack.Dimensions
                 SpawnRippleRing();
                 spawningRippleRingDelay.Tick();
             }
+
             TravelRippleAxis();
         }
 
@@ -104,10 +105,6 @@ namespace PitchBlack.Dimensions
             float targetValue = RippleDimension.PersonalRippleAxis.RippleSurfaceContactPos;
             switch (rippleTravelPhase)
             {
-                // Go to either side, slowly passing through surface
-                case RippleTravelPhase.Idle:
-                    targetValue = rippleData.SurfaceTensionEndTargetPos;
-                    break;
                 // Go to 0
                 case RippleTravelPhase.Rebound:
                     targetValue = 0;
@@ -126,8 +123,12 @@ namespace PitchBlack.Dimensions
                     if (rippleData.IsInOuterZone || Random.value < 0.008f)
                         SetRippleTravelPhase(RippleTravelPhase.Idle);
                     break;
-            }
 
+                default:
+                    targetValue = rippleData.SurfaceTensionEndTargetPos;
+                    break;
+            }
+             
             // lerp is room exposure
             // tick is personal dynamic exposure: default low value + currently tracked value
             rippleData.currentValue = Custom.LerpAndTick(rippleData.currentValue, targetValue, rippleExposure.globalExposure, 0.0015f + dynamicRippleExposureFromProximity);

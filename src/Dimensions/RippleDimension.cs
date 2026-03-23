@@ -14,18 +14,18 @@ namespace PitchBlack.Dimensions
         {
             // Defined values
             public const float OriginPos = 0f;
-            public float SwitchSideEndTargetPos => RippleSideTag ? OuterZonePos : SurfaceTensionEndTargetPos - 0.2f;
+            public float SwitchSideEndTargetPos => RippleSideTag ? OuterZonePos : SurfaceTensionEndTargetPos - 0.25f;
             /// Surface of water
             public const float RippleSurfaceContactPos = 0.4f;
             const float surfaceTension = 0.15f;
             const float InsideSurfaceTensionEndPos = RippleSurfaceContactPos + surfaceTension;
             public float SurfaceTensionEndTargetPos => RippleSideTag ? RippleSurfaceContactPos - surfaceTension : InsideSurfaceTensionEndPos;
             /// Inside water
-            public const float OuterZonePos = 0.65f;
-            public const float TwilightZonePos = 1f;
-            public const float MidnightZonePos = 2f;
-            public const float AbyssalZonePos = 3f;
-            public const float HadalZonePos = 4f;
+            public const float OuterZonePos = InsideSurfaceTensionEndPos + 0.25f;
+            public const float TwilightZonePos = OuterZonePos + 0.25f;
+            public const float MidnightZonePos = TwilightZonePos + 0.25f;
+            public const float AbyssalZonePos = MidnightZonePos + 0.25f;
+            public const float HadalZonePos = AbyssalZonePos + 0.25f;
             public bool IsUnderRippleSurface => currentValue >= InsideSurfaceTensionEndPos;
             public bool AgainstRippleSurfaceTension
             {
@@ -42,7 +42,7 @@ namespace PitchBlack.Dimensions
                 }
             }
             public bool SwitchedRippleSides => currentValue == SwitchSideEndTargetPos;
-            public bool IsInOuterZone => currentValue >= OuterZonePos;
+            public bool IsInOuterZone => currentValue >= OuterZonePos && currentValue < TwilightZonePos;  
 
             public float currentValue;
             public bool AllowedInsideRippleTemporarily { get; set; }
@@ -51,11 +51,9 @@ namespace PitchBlack.Dimensions
             public float GraphicsMaskProgress => Mathf.InverseLerp(InsideSurfaceTensionEndPos, OuterZonePos, currentValue);
         }
 
-        public static Vector2 GetReflectedPos(Vector2 pos, float intensity)
+        public static void SpawnCosmeticRipple(Vector2 objPos, Room room, float intensity)
         {
-            // Scatter pos in a radius randomly based on rippleAxisPos
-            float maxRadius = 15f * (intensity * 10);
-            return pos + Custom.RNV() * Random.Range(1f, maxRadius);
+
         }
 
         public static void SpawnRippleRing(Vector2 objPos, Room room, float intensity)
@@ -99,6 +97,13 @@ namespace PitchBlack.Dimensions
             // Shockwave
             float intensity2 = intensity - 0.35f;
             room.AddObject(new ShockWave(objPos, intensity2, intensity, life));
+        }
+
+        public static Vector2 GetReflectedPos(Vector2 pos, float intensity)
+        {
+            // Scatter pos in a radius randomly based on rippleAxisPos
+            float maxRadius = 15f * (intensity * 10);
+            return pos + Custom.RNV() * Random.Range(1f, maxRadius);
         }
     }
 }
