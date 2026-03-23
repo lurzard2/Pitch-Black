@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PitchBlack.Dimensions
 {
-    public static class _Hooks
+    public static class ImplementationHooks
     {
         public static void Apply()
         {

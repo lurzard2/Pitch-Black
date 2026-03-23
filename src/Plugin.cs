@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security;
 using System.Security.Permissions;
@@ -89,7 +90,7 @@ class  Plugin : BaseUnityPlugin
         DreamerHooks.Apply();
         WarpPointHooks_ForRift.Apply();
         CreatureHooks.Apply();
-        Dimensions._Hooks.Apply();
+        Dimensions.ImplementationHooks.Apply();
 
         MenuSceneHooks.Apply();
         PhysicalObjectHooks.Apply();
@@ -118,6 +119,27 @@ class  Plugin : BaseUnityPlugin
             return;
         }
         init = true;
+
+        //const BindingFlags methodFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
+        //Assembly assembly = Assembly.GetAssembly(typeof(Plugin));
+        //var methods = assembly.GetTypes().SelectMany(type => type.GetMethods(methodFlags));
+
+        //foreach (MethodInfo method in methods.Where(type => type.GetCustomAttribute<Utilities.ImplicitModHookAttribute>() is not null))
+        //{
+        //    try
+        //    {
+        //        method.Invoke(null, null);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogError("Failed to invoke hook apply func " +
+        //                            $"for method {method.Name} " +
+        //                            $"from class {(method.DeclaringType is not null
+        //                                ? method.DeclaringType.FullName
+        //                                : "not specified by method")}\n" +
+        //                            $"Exception: {ex}");
+        //    }
+        //}
 
         // Always gets the correct path, whether it be workshop or mods directly
         MOD_PATH = ModManager.ActiveMods.First(x => x.id == MOD_ID).path + Path.DirectorySeparatorChar;
