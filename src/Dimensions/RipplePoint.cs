@@ -18,11 +18,11 @@ namespace PitchBlack.Dimensions
 
     public class RipplePoint : UpdatableAndDeletable
     {
-        public RipplePointData data;
+        public RipplePointData pointData;
 
         public RipplePoint(Room room, RipplePointData pointData)
         {
-            data = pointData;
+            this.pointData = pointData;
         }
 
         public override void Update(bool eu)

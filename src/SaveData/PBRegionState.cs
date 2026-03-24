@@ -18,17 +18,17 @@ public static partial class PBSaveData
     {
         // Dictionary : Key=AbstractRoom.name string, Value=RipplePointData struct
         #region RipplePoints
-        public static Dictionary<string, List<RipplePointData>> RipplePoints = [];
+        public static Dictionary<string, List<RipplePointData>> RoomRipplePoints = [];
         
         public List<RipplePointData> GetRipplePointsInRoom(AbstractRoom room)
         {
             string s = room.name;
 
-            if (!RipplePoints.ContainsKey(s))
+            if (!RoomRipplePoints.ContainsKey(s))
             {
-                RipplePoints.Add(s, []);
+                RoomRipplePoints.Add(s, []);
             }
-            return RipplePoints[s];
+            return RoomRipplePoints[s];
         }
 
         public void SetRipplePointsInRoom(AbstractRoom room, RipplePointData data)
